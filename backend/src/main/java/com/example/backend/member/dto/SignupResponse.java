@@ -4,26 +4,41 @@
 package com.example.backend.member.dto;
 
 // 2. import
-
+import com.example.backend.member.entity.User;
+import lombok.Builder;
+import lombok.Getter;
 
 // 3. 클래스 어노테이션
 // @Builder
-// record
+@Getter
+@Builder
+public class SignupResponse { // 4. 클래스 선언
 
-// 4. 클래스 선언
-public record SignupResponse(
+    // 5. 응답 필드
+    // success
+    // user
+    private boolean success;
+    private UserResponse user;
 
-        // 5. 응답 필드
-        // success
-        // user
+    @Getter
+    @Builder
+    public static class UserResponse {
 
-) {
+        // 6. 내부 DTO
+        // UserResponse
+        private String userId;
+        private String email;
+        private String name;
 
-    // 6. 내부 DTO
-    // UserResponse
-
+        public static UserResponse fromEntity(User user){
+            return UserResponse.builder()
+                    .userId(user.getUserId())
+                    .email(user.getEmail())
+                    .name(user.getName())
+                    .build();
+        }
+    }
 }
-
 /**
  * 회원가입 응답 처리 흐름
  *
