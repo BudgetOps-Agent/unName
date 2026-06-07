@@ -1,4 +1,5 @@
 import { useState, SubmitEvent } from "react";
+import { useSignUp } from "..//hooks/useSignup";
 import {
   validateEmailFormat,
   validatePasswordFormat,
@@ -9,6 +10,8 @@ import {
 
 const SignupForm = () => {
 
+  const { executeSignup } = useSignUp();
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,7 +19,7 @@ const SignupForm = () => {
   const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
 
-  const handleSubmit = (e: SubmitEvent) => {
+  const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
 
     if (!validateEmailFormat(email)) {
@@ -44,9 +47,36 @@ const SignupForm = () => {
       return;
     }
 
-    console.log({
-      name, email, password, confirmPassword, phone, birthDate
-    })
+    const signUpData = {
+      name,
+      email,
+      password,
+      phone,
+      birthDate
+    };
+
+    const result = await executeSignup(signUpData);
+
+    if (result.success) {
+      alert(`${result.data?.name}님, 회원가입이 완료되었습니다.`);
+      // Todo:회원가입 성공 후 로그인 페이지로 이동 구현
+      return;
+    }
+
+    switch (result.status) {
+      case 400:
+        alert("잘못된 요청입니다. 입력한 정보를 다시 확인해 주세요.");
+        break;
+      case 409: // 어떤 데이터가 중복되는지 명확히 알려주는 것이 좋기 때문에 추후 백엔드와 협의하여 커스텀 코드를 정의하는 것이 좋을 것 같습니다.
+        alert("이미 존재하는 사용자입니다.");
+        break;
+      case 500:
+        alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+        break;
+      default:
+        alert("네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요.")
+        break;
+    }
   };
 
   return (
