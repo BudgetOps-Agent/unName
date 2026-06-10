@@ -1,5 +1,6 @@
 import { useState, SubmitEvent } from "react";
 import { useSignUp } from "..//hooks/useSignup";
+import SignupInput from "./signupInput";
 import {
   validateEmailFormat,
   validatePasswordFormat,
@@ -81,12 +82,12 @@ const SignupForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input type="text" placeholder="이름" value={name} onChange={(e) => setName(e.target.value)} required/> <br/>
-      <input type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} required/> <br/>
-      <input type="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} required/> <br/>
-      <input type="password" placeholder="비밀번호 확인" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}required/> <br/>
-      <input type="tel" placeholder="전화번호" value={phone} onChange={(e) => setPhone(e.target.value)} required/> <br/>
-      <input type="date" placeholder="생년월일" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} required/> <br/>
+      <SignupInput id="name" label="이름" type="text" value={name} onChange={(e) => setName(e.target.value)} required/> <br/>
+      <SignupInput id="email" label="이메일" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/> <br/>
+      <SignupInput id="password" label="비밀번호" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/> <br/>
+      <SignupInput id="confirmPassword" label="비밀번호 확인" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/> <br/>
+      <SignupInput id="phone" label="전화번호" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required/> <br/>
+      <SignupInput id="birthDate" label="생년월일" type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} required/> <br/>
       <button type="submit">회원가입</button>
     </form>
   )
