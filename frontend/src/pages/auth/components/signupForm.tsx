@@ -1,6 +1,7 @@
 import { useState, SubmitEvent } from "react";
 import { useSignUp } from "..//hooks/useSignup";
 import Input from "@/shared/components/input/Input";
+import Button from "@/shared/components/button/Button";
 import {
   validateEmailFormat,
   validatePasswordFormat,
@@ -88,7 +89,7 @@ const SignupForm = () => {
       <Input id="confirmPassword" label="비밀번호 확인" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/> <br/>
       <Input id="phone" label="전화번호" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required/> <br/>
       <Input id="birthDate" label="생년월일" type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} required/> <br/>
-      <button type="submit">회원가입</button>
+      <Button type="submit" text="회원가입" />
     </form>
   )
 }

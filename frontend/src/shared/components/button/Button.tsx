@@ -1,6 +1,6 @@
-import "./Button.css"
+import React from 'react';
 
-interface Props {
+interface ButtonProps {
   id?: string
   className?: string
   type?: "button" | "submit" | "reset"
@@ -15,8 +15,8 @@ interface Props {
 }
 
 const Button = ({ 
-  id, className, type = "button", text, blind, disabled, icon, iconOnly, size="md", style="primary", onClick 
-}: Props) => {
+  id, className, type = "button", text, blind, disabled, icon, iconOnly, size="sm", style="primary", onClick 
+}: ButtonProps) => {
   return (
     <button 
       type={type} 
