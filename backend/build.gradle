@@ -41,7 +41,7 @@ dependencies {
 
     // MySQL JDBC 드라이버
     // 실제 실행 시에만 필요하므로 runtimeOnly 사용
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    // runtimeOnly 'com.mysql:mysql-connector-j'
 
     // Lombok 사용
     // 컴파일 시 Getter, Setter, Builder 등을 자동 생성
@@ -63,8 +63,12 @@ dependencies {
 
     // 테스트 코드 Lombok 어노테이션 처리기
     testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // 개발서버 자동 배포 postgresql
+    runtimeOnly 'org.postgresql:postgresql'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+
