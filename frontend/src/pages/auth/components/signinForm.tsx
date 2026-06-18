@@ -1,5 +1,6 @@
 import { useState, SubmitEvent } from "react";
 import { useSignIn } from "..//hooks/useSignin";
+import { useAuthStore } from "@/store/authStore";
 import Input from "@/shared/components/input/Input";
 import Button from "@/shared/components/button/Button";
 import {
@@ -10,6 +11,8 @@ import {
 const SigninForm = () => {
 
     const { executeSignin } = useSignIn();
+
+    const login = useAuthStore((state) => state.login);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -35,7 +38,13 @@ const SigninForm = () => {
         const result = await executeSignin(signInData);
 
         if (result.success) {
+
             alert(`${result.data?.name}님, 반갑습니다.`);
+
+            if (result.data) {
+                login(result.data);
+            }
+
             // Todo:로그인 성공 후 메인 페이지로 이동 구현
             return;
         }
