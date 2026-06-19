@@ -27,3 +27,12 @@ export interface responseSignin {
     name: string;
     role: 'ADMIN' | 'USER';
 }
+
+export interface requestFindid {
+    name: string;
+    phone: string;
+}
+
+export interface responseFindid {
+    email: string;
+}

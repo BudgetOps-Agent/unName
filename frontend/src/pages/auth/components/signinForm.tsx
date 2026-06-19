@@ -1,4 +1,5 @@
 import { useState, SubmitEvent } from "react";
+import Link from "next/link";
 import { useSignIn } from "..//hooks/useSignin";
 import { useAuthStore } from "@/store/authStore";
 import Input from "@/shared/components/input/Input";
@@ -60,7 +61,7 @@ const SigninForm = () => {
                 alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
                 break;
             default:
-                alert("네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요.")
+                alert("네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요.");
                 break;
         }
     }
@@ -69,7 +70,13 @@ const SigninForm = () => {
         <form onSubmit={handleSubmit}>
             <Input id="email" label="이메일" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/> <br/>
             <Input id="password" label="비밀번호" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/> <br/>
-            <Button type="submit" text="로그인" />
+            <Button type="submit" text="로그인" /> <br/>
+            <Link href="/auth/find-id">
+                <Button text="아이디 찾기" />
+            </Link>
+            <Link href="/auth/find-password">
+                <Button text="비밀번호 찾기" />
+            </Link>
         </form>
     )
 }
