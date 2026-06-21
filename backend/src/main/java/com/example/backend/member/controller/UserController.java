@@ -11,6 +11,8 @@ package com.example.backend.member.controller;
 //   @RequestMapping
 //   @RequiredArgsConstructor
 
+import com.example.backend.member.dto.LoginRequest;
+import com.example.backend.member.dto.LoginResponse;
 import com.example.backend.member.dto.SignupRequest;
 import com.example.backend.member.dto.SignupResponse;
 import com.example.backend.member.service.UserService;
@@ -36,6 +38,13 @@ public class UserController {// 4. 클래스 선언
     public ResponseEntity<SignupResponse> signup(@RequestBody @Valid SignupRequest request) {
         SignupResponse response = userService.signup(request);
         return ResponseEntity.status(201).body(response);
+    }
+
+    // 로그인 API
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+        LoginResponse response = userService.login(request);
+        return ResponseEntity.ok(response); // ok가 자동으로 200코드를 보내서 명시적으로 안써도 됨
     }
 
     // 6. API 메서드들
