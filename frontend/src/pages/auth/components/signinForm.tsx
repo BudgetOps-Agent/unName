@@ -1,4 +1,5 @@
 import { useState, SubmitEvent } from "react";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import { useSignIn } from "..//hooks/useSignin";
 import { useAuthStore } from "@/store/authStore";
@@ -17,6 +18,8 @@ const SigninForm = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const router = useRouter();
 
     const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
@@ -46,7 +49,7 @@ const SigninForm = () => {
                 login(result.data);
             }
 
-            // Todo:로그인 성공 후 메인 페이지로 이동 구현
+            router.push('/');
             return;
         }
 

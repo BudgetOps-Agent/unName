@@ -1,4 +1,5 @@
 import { useState, SubmitEvent } from "react";
+import { useRouter } from "next/router";
 import { useFindPw } from "../hooks/useFindpw";
 import Input from "@/shared/components/input/Input";
 import Button from "@/shared/components/button/Button";
@@ -18,6 +19,8 @@ const FindPwForm = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    const router = useRouter();
+
     const handleVerifySubmit = async (e: SubmitEvent) => {
         e.preventDefault();
 
@@ -36,6 +39,7 @@ const FindPwForm = () => {
         if (verifyResult.success) {
             alert("유저 정보가 확인되었습니다. 새 비밀번호를 입력해주세요.");
             setIsUserVerified(true);
+            return;
         }
 
         switch (verifyResult.status) {
@@ -76,6 +80,7 @@ const FindPwForm = () => {
 
         if (resetPasswordResult.success) {
             alert("비밀번호 변경이 완료되었습니다. 로그인 페이지로 이동합니다.");
+            router.push('/auth/signin');
             return;
         }
 

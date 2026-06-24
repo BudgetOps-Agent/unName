@@ -1,4 +1,5 @@
 import { useState, SubmitEvent } from "react";
+import { useRouter } from "next/router";
 import { useFindId } from "../hooks/useFindid";
 import Input from "@/shared/components/input/Input";
 import Button from "@/shared/components/button/Button";
@@ -10,6 +11,8 @@ const FindIdForm = () => {
 
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
+
+    const router = useRouter();
 
     const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
@@ -28,6 +31,7 @@ const FindIdForm = () => {
 
         if (result.success) {
             alert(`${result.data?.email}`);
+            router.push('/auth/signin');
             return;
         }
 

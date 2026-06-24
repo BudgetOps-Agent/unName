@@ -1,4 +1,5 @@
 import { useState, SubmitEvent } from "react";
+import { useRouter } from "next/router";
 import { useSignUp } from "..//hooks/useSignup";
 import Input from "@/shared/components/input/Input";
 import Button from "@/shared/components/button/Button";
@@ -20,6 +21,8 @@ const SignupForm = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
+
+  const router = useRouter();
 
   const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
@@ -61,7 +64,7 @@ const SignupForm = () => {
 
     if (result.success) {
       alert(`${result.data?.name}님, 회원가입이 완료되었습니다.`);
-      // Todo:회원가입 성공 후 로그인 페이지로 이동 구현
+      router.push('/auth/signin');
       return;
     }
 
