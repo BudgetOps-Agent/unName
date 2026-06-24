@@ -49,8 +49,8 @@ const FindIdForm = () => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <Input id="name" label="이름" type="text" value={name} onChange={(e) => setName(e.target.value)} required/> <br/>
-            <Input id="phone" label="전화번호" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required/> <br/>
+            <Input id="name" label="이름" type="text" value={name} onChange={(e) => setName(e.target.value)} required/>
+            <Input id="phone" label="전화번호" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required/>
             <Button type="submit" text="아이디 찾기" />
         </form>
     )

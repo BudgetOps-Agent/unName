@@ -36,3 +36,21 @@ export interface requestFindid {
 export interface responseFindid {
     email: string;
 }
+
+export interface requestVerifyUser {
+    name: string;
+    email: string;
+}
+
+export interface responseVerifyUser {
+    message: string;
+}
+
+export interface requestResetPassword {
+    email: string;
+    newPassword: string;
+}
+
+export interface responseResetPassword {
+    message: string;
+}
