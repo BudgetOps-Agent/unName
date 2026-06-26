@@ -1,3 +1,5 @@
+import Header from "../components/header/Header";
+
 type Props = {
   children: React.ReactNode;
 };
@@ -5,9 +7,8 @@ type Props = {
 export default function MainLayout({ children }: Props) {
   return (
     <>
-      <header>헤더</header>
+      <Header />
       <main>{children}</main>
-      <footer>푸터</footer>
     </>
   );
 }
