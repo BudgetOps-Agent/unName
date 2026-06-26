@@ -1,0 +1,28 @@
+.btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar-container {
+    display: flex;
+    flex-direction: column;
+    width: 220px;
+    height: 100vh;
+    background: #FFFFFF;
+    padding: 20px;
+    border: 0.8px solid rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.logo-section {
+    width: 220px;
+    height: 60px;
+    border: 0.8px solid rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.logo-btn {
+    font-weight: bold;
+    font-size: 15px;
+}

@@ -9,7 +9,6 @@ interface HeaderProps {
     user: responseSignin | null;
 }
 export default function Header({}) {
-
     return (
         <div className="header-container">
             <div className="header-left">
