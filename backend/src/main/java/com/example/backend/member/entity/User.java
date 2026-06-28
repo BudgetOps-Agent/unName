@@ -42,13 +42,14 @@ public class User {// 4. 클래스 선언
 //    private String userId;
 
     @Column(nullable = false)
-    private String passwordHash;
+    private String password;
 
-    @Column(nullable = false)
+
+    @Column(unique = true, nullable = false)
     private String phone;
 
     @Column(nullable = false)
-    private String role = "user"; // role로 역할을 나눠서 회원가입하면 기본값 user로 만듬
+    private String role = "USER"; // role로 역할을 나눠서 회원가입하면 기본값 user로 만듬
 
     @Column(nullable = false)
     private LocalDate birthDate;
@@ -59,16 +60,20 @@ public class User {// 4. 클래스 선언
     private LocalDateTime updatedAt;
 
     @Builder
-    public User(/*String userId,*/ String passwordHash, String email, String name, LocalDate birthDate,String phone) {
+    public User(/*String userId,*/ String password, String email, String name, LocalDate birthDate,String phone) {
 //        this.userId = userId;               // 아이디
-        this.passwordHash = passwordHash;   // 암호화된 비밀번호
+        this.password = password;   // 암호화된 비밀번호
         this.email = email;                 // 이메일(아이디)
         this.name = name;                   // 이름
         this.birthDate = birthDate;         // 생년월일
         this.phone = phone;                 // 전화번호
-        this.role = "user";                 // 기본 권한 user
+        this.role = "USER";                 // 기본 권한 user
         this.createdAt = LocalDateTime.now(); // 회원가입 했을때 시간 자동 설정
         this.updatedAt = LocalDateTime.now(); // 회원 정보 수정 했을때 자동 설정
+    }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
     }
 
     // 7. 기본 생성자
