@@ -11,10 +11,7 @@ package com.example.backend.member.controller;
 //   @RequestMapping
 //   @RequiredArgsConstructor
 
-import com.example.backend.member.dto.LoginRequest;
-import com.example.backend.member.dto.LoginResponse;
-import com.example.backend.member.dto.SignupRequest;
-import com.example.backend.member.dto.SignupResponse;
+import com.example.backend.member.dto.*;
 import com.example.backend.member.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +44,23 @@ public class UserController {// 4. 클래스 선언
         return ResponseEntity.ok(response); // ok가 자동으로 200코드를 보내서 명시적으로 안써도 됨
     }
 
+    @PostMapping("/findid")
+    public ResponseEntity<FindIdResponse> findId(@RequestBody @Valid FindIdRequest request) {
+        FindIdResponse response = userService.findId(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/verify-user")
+    public ResponseEntity<VerifyUserResponse> verifyUser(@RequestBody @Valid VerifyUserRequest request) {
+        VerifyUserResponse response = userService.verifyUser(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        ResetPasswordResponse response = userService.resetPassword(request);
+        return ResponseEntity.ok(response);
+    }
     // 6. API 메서드들
     // - signup()
     // - login()
