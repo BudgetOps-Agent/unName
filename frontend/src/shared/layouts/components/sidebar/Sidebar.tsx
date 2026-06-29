@@ -50,18 +50,31 @@ const menus = [
 export default function Sidebar({}) {
 
     const [isOpen, setIsOpen] = useState(true);
+    const [showText, setShowText] = useState(true);
+
     const pathname = usePathname();
 
     const toggleSidebar = () => {
-        setIsOpen(prev => !prev);
-    }
+        if (isOpen) {
+            setShowText(false);
+            setIsOpen(false);
+        }
+
+        else {
+            setIsOpen(true);
+
+            setTimeout(() => {
+                setShowText(true);
+            }, 150);
+        }
+    };
 
     return (
         <aside className={`sidebar-container ${isOpen ? "" : "closed"}`}>
             <div className="logo-section">
                 <Link href="/dashboard" className="logo-btn">
                     <img src={logoSvg.src} alt="logo" />
-                    {isOpen && <span>BudgetOps</span>}
+                    {showText && <span>BudgetOps</span>}
                 </Link>
             </div>
 
@@ -80,7 +93,7 @@ export default function Sidebar({}) {
                                 alt="" 
                             />
                         </span>
-                        {isOpen && <span>{menu.text}</span>}
+                        {showText && <span>{menu.text}</span>}
                     </Link>
                 ))}
             </nav>
