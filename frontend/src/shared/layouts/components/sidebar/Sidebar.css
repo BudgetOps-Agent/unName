@@ -7,11 +7,17 @@
 .sidebar-container {
     display: flex;
     flex-direction: column;
+    position: relative;
     width: 220px;
     height: 100vh;
     background: #FFFFFF;
     border-right: 0.8px solid rgba(0, 0, 0, 0.05);
     box-sizing: border-box;
+    transition: width 0.3s ease;
+}
+
+.sidebar-container.closed {
+    width: 68px;
 }
 
 .logo-section {
@@ -45,10 +51,40 @@
     font-size: 14px;
     font-weight: bold;
     color: #99A1AF;
+    transition: width 0.3s ease;
 }
 
-.active {
+.menu.closed {
+    width: 51px;
+}
+
+.menu.active {
     color: #3182F6;
     background-color: #EBF3FE;
     border-radius: 16px;
+}
+
+.sidebar-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    right: -18px;
+    transform: translateY(-50%);
+    width: 35px;
+    height: 35px;
+    background-color: #FFFFFF;
+    border-radius: 18px;
+    border: 0.8px solid #E5E7EB;
+}
+
+.sidebar-toggle img {
+    width: 10px;
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+.rotate {
+    transform: rotate(180deg);
 }
