@@ -10,19 +10,45 @@
     width: 220px;
     height: 100vh;
     background: #FFFFFF;
-    padding: 20px;
-    border: 0.8px solid rgba(0, 0, 0, 0.05);
+    border-right: 0.8px solid rgba(0, 0, 0, 0.05);
     box-sizing: border-box;
 }
 
 .logo-section {
-    width: 220px;
+    display: flex;
     height: 60px;
-    border: 0.8px solid rgba(0, 0, 0, 0.05);
+    align-items: center;
+    padding-left: 16px;
+    border-bottom: 0.8px solid rgba(0, 0, 0, 0.05);
     box-sizing: border-box;
 }
 
 .logo-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-weight: bold;
     font-size: 15px;
+}
+
+.menu-section {
+    padding: 12px 8px 16px;
+    gap: 2px;
+}
+
+.menu {
+    display: flex;
+    gap: 12px;
+    width: 203px;
+    height: 40px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #99A1AF;
+}
+
+.active {
+    color: #3182F6;
+    background-color: #EBF3FE;
+    border-radius: 16px;
 }

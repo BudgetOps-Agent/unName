@@ -1,0 +1,12 @@
+.layout {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+}
+
+.main-area {
+    flex: 1;
+}

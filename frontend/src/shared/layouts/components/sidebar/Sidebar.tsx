@@ -1,60 +1,77 @@
-import Button from "@/shared/components/button/Button";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import logoSvg from "@/assets/logo.svg";
 import dashboardSvg from "@/assets/dashboard.svg";
-import spendingSvg from "@/assets/spending.svg";
+import dashboardActiveSvg from "@/assets/dashboard-active.svg";
+import expensesSvg from "@/assets/expenses.svg";
+import expensesActiveSvg from "@/assets/expenses-active.svg";
 import budgetSvg from "@/assets/budget.svg";
+import budgetActiveSvg from "@/assets/budget-active.svg";
 import memberSvg from "@/assets/member.svg";
+import memberActiveSvg from "@/assets/member-active.svg";
 import reportSvg from "@/assets/report.svg";
+import reportActiveSvg from "@/assets/report-active.svg";
+
+const menus = [
+    {
+        text: "대시보드",
+        path: "/dashboard",
+        icon: dashboardSvg,
+        activeIcon: dashboardActiveSvg,
+    },
+    {
+        text: "지출 내역",
+        path: "/expenses",
+        icon: expensesSvg,
+        activeIcon: expensesActiveSvg,
+    },
+    {
+        text: "예산 관리",
+        path: "/budget",
+        icon: budgetSvg,
+        activeIcon: budgetActiveSvg,
+    },
+    {
+        text: "멤버",
+        path: "/member",
+        icon: memberSvg,
+        activeIcon: memberActiveSvg,
+    },
+    {
+        text: "정산 리포트",
+        path: "/report",
+        icon: reportSvg,
+        activeIcon: reportActiveSvg,
+    },
+];
 
 export default function Sidebar({}) {
+
+    const pathname = usePathname();
+
     return (
-        <div className="sidebar-container">
+        <aside className="sidebar-container">
             <div className="logo-section">
-                <Button 
-                    text="BudgetOps"
-                    className="logo-btn"
-                    iconOnly={false}
-                    iconLeft={<img src={logoSvg.src} alt="logo" />}
-                    onClick={() => console.log("대시보드 페이지로 이동")}
-                />
+                <Link href="/dashboard" className="logo-btn">
+                    <img src={logoSvg.src} alt="logo" />
+                    <span>BudgetOps</span>
+                </Link>
             </div>
-            <div className="menu-section">
-                <Button 
-                    text="대시보드"
-                    className="menu dashboard-btn"
-                    iconOnly={false}
-                    iconLeft={<img src={dashboardSvg.src} alt="dashboard" />}
-                    onClick={() => console.log("대시보드 페이지로 이동")}
-                />
-                <Button 
-                    text="지출 내역"
-                    className="menu spending-btn"
-                    iconOnly={false}
-                    iconLeft={<img src={spendingSvg.src} alt="spending" />}
-                    onClick={() => console.log("지출 내역 페이지로 이동")}
-                />
-                <Button 
-                    text="예산 관리"
-                    className="menu budget-btn"
-                    iconOnly={false}
-                    iconLeft={<img src={budgetSvg.src} alt="budget" />}
-                    onClick={() => console.log("예산 관리 페이지로 이동")}
-                />
-                <Button 
-                    text="멤버"
-                    className="menu member-btn"
-                    iconOnly={false}
-                    iconLeft={<img src={memberSvg.src} alt="member" />}
-                    onClick={() => console.log("멤버 페이지로 이동")}
-                />
-                <Button 
-                    text="정산 리포트"
-                    className="menu report-btn"
-                    iconOnly={false}
-                    iconLeft={<img src={reportSvg.src} alt="report" />}
-                    onClick={() => console.log("정산 리포트 페이지로 이동")}
-                />
-            </div>
-        </div>
+
+            <nav className="menu-section">
+                {menus.map((menu) => (
+                    <Link
+                        key={menu.path}
+                        href={menu.path}
+                        className={`menu ${pathname === menu.path ? "active" : ""}`}
+                    >
+                        <span>
+                            <img src={pathname === menu.path ? menu.activeIcon.src : menu.icon.src} alt="" />
+                        </span>
+                        <span>{menu.text}</span>
+                    </Link>
+                ))}
+            </nav>
+        </aside>
     )
 }

@@ -7,11 +7,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: auto;
     height: 60px;
     background: #FFFFFF;
     padding: 20px;
-    border: 0.8px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 0.8px solid rgba(0, 0, 0, 0.05);
     box-sizing: border-box;
 }
 
