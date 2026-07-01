@@ -1,40 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Frontend
 
-## Getting Started
+Next.js Pages Router 기반 프론트엔드 프로젝트입니다.
 
-First, run the development server:
+TypeScript를 사용하여 타입 안정성을 확보하고, 공통 컴포넌트와 레이아웃을 분리하여 재사용성을 높였습니다.
+
+---
+
+# 실행 방법
+
+## 프로젝트 설치
+
+```bash
+npm install
+```
+
+또는
+
+```bash
+npm ci
+```
+
+---
+
+## 개발 서버 실행
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+실행 후 브라우저에서 확인
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+---
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## 프로덕션 빌드
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 프로덕션 실행
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+```bash
+npm run start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+# 프로젝트 구조
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```text
+src
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+├─ pages
+│  ├─ api
+│  ├─ auth
+│  ├─ _app.tsx
+│  ├─ _document.tsx
+│  └─ index.tsx
+│
+├─ shared
+│  ├─ components
+│  └─ layouts
+│
+└─ styles
+```
+
+---
+
+# 폴더 설명
+
+## pages
+
+페이지 및 라우팅을 관리합니다.
+
+* URL과 화면을 연결
+* 페이지 단위 컴포넌트 관리
+
+---
+
+## shared
+
+프로젝트 전반에서 사용하는 공통 자원을 관리합니다.
+
+### components
+
+재사용 가능한 UI 컴포넌트를 관리합니다.
+
+예시
+
+* Button
+* Input
+* Card
+* Modal
+
+### layouts
+
+공통 레이아웃을 관리합니다.
+
+예시
+
+* Header
+* Footer
+* Navigation
+
+---
+
+## styles
+
+전역 스타일 및 공통 스타일을 관리합니다.
+
+---
+
+# 화면 처리 흐름
+
+```text
+사용자 요청
+
+↓
+
+Page
+
+↓
+
+Layout
+
+↓
+
+Component
+
+↓
+
+UI 렌더링
+```
+
+---
+
+# 설계 원칙
+
+* 컴포넌트 단위로 UI 구성
+* 공통 UI 재사용
+* TypeScript 기반 타입 관리
+* Layout을 통한 공통 구조 관리
+* 유지보수가 쉬운 구조 설계
