@@ -29,7 +29,7 @@ export default function Header({}) {
                     onClick={() => console.log('클릭')}
                 />
                 <Button 
-                    text={<span>김민준<br />관리자</span>}
+                    text={<span><strong>김민준</strong> <span>관리자</span></span>}
                     className="user-info"
                     iconOnly={false}
                     iconLeft={
