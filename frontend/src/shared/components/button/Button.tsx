@@ -4,18 +4,19 @@ interface ButtonProps {
   id?: string
   className?: string
   type?: "button" | "submit" | "reset"
-  text: string
+  text?: React.ReactNode;
   blind?: boolean
   disabled?: boolean
-  icon?: React.ReactNode
-  iconOnly?: string
+  iconLeft?: React.ReactNode;
+  iconRight?: React.ReactNode;
+  iconOnly?: boolean;
   size?: "sm" | "md" | "lg" | "xl"
   style?: "primary" | "secondary"
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 const Button = ({ 
-  id, className, type = "button", text, blind, disabled, icon, iconOnly, size="sm", style="primary", onClick 
+  id, className, type = "button", text, blind, disabled, iconLeft, iconRight, iconOnly, size="sm", style="primary", onClick 
 }: ButtonProps) => {
   return (
     <button 
@@ -25,8 +26,11 @@ const Button = ({
       onClick={onClick} 
       disabled={disabled}
     >
-      {icon && <span className="btn__icon">{icon}</span>}
-      <span className={blind || iconOnly ? 'blind' : ''}>{text}</span>
+      {iconLeft && <span className="btn__icon btn__icon--left">{iconLeft}</span>}
+      
+      {text && <span className={blind || iconOnly ? 'blind' : ''}>{text}</span>}
+      
+      {iconRight && <span className="btn__icon btn__icon--right">{iconRight}</span>}
     </button>
   )
 }

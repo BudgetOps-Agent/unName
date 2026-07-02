@@ -1,4 +1,5 @@
 import { useState, SubmitEvent } from "react";
+import { useRouter } from "next/router";
 import { useSignUp } from "..//hooks/useSignup";
 import Input from "@/shared/components/input/Input";
 import Button from "@/shared/components/button/Button";
@@ -20,6 +21,8 @@ const SignupForm = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
+
+  const router = useRouter();
 
   const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
@@ -61,7 +64,7 @@ const SignupForm = () => {
 
     if (result.success) {
       alert(`${result.data?.name}님, 회원가입이 완료되었습니다.`);
-      // Todo:회원가입 성공 후 로그인 페이지로 이동 구현
+      router.push('/auth/signin');
       return;
     }
 
@@ -83,12 +86,12 @@ const SignupForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Input id="name" label="이름" type="text" value={name} onChange={(e) => setName(e.target.value)} required/> <br/>
-      <Input id="email" label="이메일" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/> <br/>
-      <Input id="password" label="비밀번호" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/> <br/>
-      <Input id="confirmPassword" label="비밀번호 확인" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/> <br/>
-      <Input id="phone" label="전화번호" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required/> <br/>
-      <Input id="birthDate" label="생년월일" type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} required/> <br/>
+      <Input id="name" label="이름" type="text" value={name} onChange={(e) => setName(e.target.value)} required/>
+      <Input id="email" label="이메일" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+      <Input id="password" label="비밀번호" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+      <Input id="confirmPassword" label="비밀번호 확인" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
+      <Input id="phone" label="전화번호" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required/>
+      <Input id="birthDate" label="생년월일" type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} required/>
       <Button type="submit" text="회원가입" />
     </form>
   )
