@@ -11,10 +11,56 @@ package com.example.backend.member.controller;
 //   @RequestMapping
 //   @RequiredArgsConstructor
 
-// 4. 클래스 선언
-public class UserController {
-    // 5. Service 주입
+import com.example.backend.member.dto.*;
+import com.example.backend.member.service.UserService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController // JSON 반환하는 REST API 컨트롤러 (메서드 반환 값을 자동으로 JSON으로 변환해줌), @Controller랑 @ResponseBody 합친거
+@RequestMapping("/api/user") // 기본 URL경로
+@RequiredArgsConstructor
+public class UserController {// 4. 클래스 선언
+    // 5. Service 주입
+    private final UserService userService;
+
+    // 6. 회원가입 API
+    // @RequestBody JSON 객체로 변환
+    // @Valid 검증(빈칸인지, 이메일 형식인지 등등)
+    @PostMapping("/signup")
+    public ResponseEntity<SignupResponse> signup(@RequestBody @Valid SignupRequest request) {
+        SignupResponse response = userService.signup(request);
+        return ResponseEntity.status(201).body(response);
+    }
+
+    // 로그인 API
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+        LoginResponse response = userService.login(request);
+        return ResponseEntity.ok(response); // ok가 자동으로 200코드를 보내서 명시적으로 안써도 됨
+    }
+
+    @PostMapping("/findid")
+    public ResponseEntity<FindIdResponse> findId(@RequestBody @Valid FindIdRequest request) {
+        FindIdResponse response = userService.findId(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/verify-user")
+    public ResponseEntity<VerifyUserResponse> verifyUser(@RequestBody @Valid VerifyUserRequest request) {
+        VerifyUserResponse response = userService.verifyUser(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        ResetPasswordResponse response = userService.resetPassword(request);
+        return ResponseEntity.ok(response);
+    }
     // 6. API 메서드들
     // - signup()
     // - login()
