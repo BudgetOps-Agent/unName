@@ -1,29 +1,26 @@
-import axios, { AxiosError } from 'axios';
-import { requestSignup, responseSignup } from '@/types/auth';
+import { AxiosError } from 'axios';
+import { signup } from "@/pages/auth/api/authApi";
+import { RequestSignup, ResponseSignup, ErrorResponse, } from '@/types/auth';
 
-interface UseSignupResult {
-    success: boolean;
-    status?: number;
-    data?: responseSignup;
-}
+type UseSignupResult = ResponseSignup | ErrorResponse;
 
 export const useSignUp = () => {
 
-    const executeSignup = async (signUpData: requestSignup): Promise<UseSignupResult> => {
-    
+    const executeSignup = async (signUpData: RequestSignup): Promise<UseSignupResult> => {
         try {
-            const response = await axios.post<responseSignup>('/api/user/signup', signUpData);
-            return {
-                success: true,
-                data: response.data
-            };
-        } catch (error) {
-            const axiosError = error as AxiosError;
+            const response = await signup(signUpData);
 
-            return {
-                success: false,
-                status: axiosError.response?.status
-            };
+            return response.data;
+        } catch (error) {
+            const axiosError = error as AxiosError<ErrorResponse>;
+
+            return (
+                axiosError.response?.data ?? {
+                    success: false,
+                    code: "UNKNOWN_ERROR",
+                    message: "알 수 없는 오류가 발생했습니다.",
+                }
+            );
         }
     };
     return { executeSignup };

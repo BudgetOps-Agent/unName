@@ -4,9 +4,7 @@
 package com.example.backend.member.dto;
 
 // 2. import
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -19,6 +17,7 @@ public class SignupRequest { // 4. 클래스 선언
 //    @NotBlank(message = "아이디를 입력해주세요") // (공백/null)막아줌
 //    private String userId;
 
+    @Size(min=8)
     @NotBlank(message = "비밀번호를 입력해주세요")
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$",
             message = "비밀번호는 영문, 숫자를 포함하여 8자 이상이어야 합니다.")
@@ -34,6 +33,8 @@ public class SignupRequest { // 4. 클래스 선언
     @NotBlank(message = "전화번호를 입력해주세요")
     private String phone;
 
+    @NotNull (message = "생년월일를 입력해주세요.")
+    @Past(message = "생년월일은 오늘 이전이어야 합니다.")
     private LocalDate birthDate;
 
 

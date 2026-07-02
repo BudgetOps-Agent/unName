@@ -43,6 +43,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 비밀번호 조회
     Optional<User> findByEmailAndName(String email, String name);
+
+    boolean existsByPhone(String phone);
 }
 
 /**

@@ -1,0 +1,38 @@
+/* layout */
+.auth-layout {
+    min-height: 100vh;
+    padding: 40px 0;
+    background-color: var(--blue-1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+
+/* layout logo */
+.auth-layout .logo {
+    text-align: center;
+    margin-bottom: 24px;
+}
+.auth-layout .logo img {
+    display: inline-block;
+}
+.auth-layout .logo-title {
+    margin-top: 12px;
+    color: var(--gray-1);
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 33px; 
+    letter-spacing: -0.55px;
+}
+.auth-layout .logo-desc {
+    margin-top: 12px;
+    color: var(--gray-5);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+}
+

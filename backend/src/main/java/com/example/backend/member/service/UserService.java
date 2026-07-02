@@ -13,6 +13,9 @@ import com.example.backend.member.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 // 3. 클래스 어노테이션
 // @Service
@@ -33,6 +36,7 @@ public class UserService {// 4. 클래스 선언
     private final JwtProvider jwtProvider;
     // 7. 회원가입 메서드
     // signup()
+    @Transactional
     public SignupResponse signup(SignupRequest request) {
 
 //        // 아이디 중복 검사(DB에 같은 아이디가 있으면 이미 사용중인 아이디입니다 던지고 중단)
@@ -40,23 +44,39 @@ public class UserService {// 4. 클래스 선언
 //            throw new MemberException(MemberErrorCode.DUPLICATE_USER_ID);
 //        }
 
+        // 공백 제거 및 형식 통일
+        String email = request.getEmail().trim().toLowerCase();
+        String name = request.getName().trim();
+        String phone = request.getPhone()
+                .replace("-", "")
+                .trim();
+
         // 이메일 중복 검사(DB에 같은 이메일이 있으면 이미 사용중인 이메일입니다 던지고 중단)
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(email)) {
             throw new MemberException(MemberErrorCode.DUPLICATE_EMAIL);
+        }
+
+        // 전화번호 중복 검사(DB에 같은 이메일이 있으면 이미 사용중인 이메일입니다 던지고 중단)
+        if (userRepository.existsByPhone(phone)) {
+            throw new MemberException(MemberErrorCode.DUPLICATE_PHONE);
+        }
+
+        // 생년월일 오늘 날짜 이전 검증
+        if (request.getBirthDate().isAfter(LocalDate.now())) {
+            throw new MemberException(MemberErrorCode.INVALID_BIRTH_DATE);
         }
 
         // 비밀번호 암호화(클라이언트가 비밀번호를 보내면 그걸 암호화된 문자열로 변환시켜서 디비에 저장)
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
-        // User 엔티티 생성 (request로 받은 값들로 user 객체 생성)
-        User user = User.builder()
-                // .userId(request.getUserId())
-                .password(encodedPassword)
-                .email(request.getEmail())
-                .name(request.getName())
-                .phone(request.getPhone())
-                .birthDate(request.getBirthDate())
-                .build();
+        // User 엔티티 생성 (entity에서 호출)
+        User user = User.create(
+                encodedPassword,
+                email,
+                name,
+                request.getBirthDate(),
+                phone
+        );
 
         // DB 저장
         userRepository.save(user);

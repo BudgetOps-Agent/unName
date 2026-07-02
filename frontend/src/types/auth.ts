@@ -1,4 +1,4 @@
-export interface requestSignup {
+export interface RequestSignup {
     name: string;
     email: string;
     password: string;
@@ -6,51 +6,60 @@ export interface requestSignup {
     birthDate: string;
 }
 
-export interface responseSignup {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-    phone: string;
-    birthDate: string;
-    createdAt: string;
+export interface ResponseSignup {
+    success: true;
+    user: {
+        id: number;
+        name: string;
+        email: string;
+        role: string;
+        phone: string;
+        birthDate: string;
+        createdAt: string;
+    };
 }
 
-export interface requestSignin {
+export interface RequestSignin {
     email: string;
     password: string;
 }
 
-export interface responseSignin {
+export interface ResponseSignin {
     id: number;
     email: string;
     name: string;
     role: 'ADMIN' | 'USER';
 }
 
-export interface requestFindid {
+export interface RequestFindid {
     name: string;
     phone: string;
 }
 
-export interface responseFindid {
+export interface ResponseFindid {
     email: string;
 }
 
-export interface requestVerifyUser {
+export interface RequestVerifyUser {
     name: string;
     email: string;
 }
 
-export interface responseVerifyUser {
+export interface ResponseVerifyUser {
     message: string;
 }
 
-export interface requestResetPassword {
+export interface RequestResetPassword {
     email: string;
     newPassword: string;
 }
 
-export interface responseResetPassword {
+export interface ResponseResetPassword {
+    message: string;
+}
+
+export interface ErrorResponse {
+    success: false;
+    code: string;
     message: string;
 }

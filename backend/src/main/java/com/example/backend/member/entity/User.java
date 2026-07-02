@@ -59,27 +59,32 @@ public class User {// 4. 클래스 선언
 
     private LocalDateTime updatedAt;
 
-    @Builder
-    public User(/*String userId,*/ String password, String email, String name, LocalDate birthDate,String phone) {
-//        this.userId = userId;               // 아이디
-        this.password = password;   // 암호화된 비밀번호
-        this.email = email;                 // 이메일(아이디)
-        this.name = name;                   // 이름
-        this.birthDate = birthDate;         // 생년월일
-        this.phone = phone;                 // 전화번호
-        this.role = "USER";                 // 기본 권한 user
-        this.createdAt = LocalDateTime.now(); // 회원가입 했을때 시간 자동 설정
-        this.updatedAt = LocalDateTime.now(); // 회원 정보 수정 했을때 자동 설정
+    public static User create(
+            String password,
+            String email,
+            String name,
+            LocalDate birthDate,
+            String phone
+    ) {
+        User user = new User();
+
+        user.password = password;
+        user.email = email;
+        user.name = name;
+        user.birthDate = birthDate;
+        user.phone = phone;
+
+        user.role = "USER";
+        user.createdAt = LocalDateTime.now();
+        user.updatedAt = LocalDateTime.now();
+
+        return user;
     }
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
 
-    // 7. 기본 생성자
-    // JPA 사용
-
-    // 8. 회원 생성자
 }
 
 /**

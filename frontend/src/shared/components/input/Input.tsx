@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from "./Input.module.css"
 
 interface InputProps {
     id: string;
@@ -20,7 +21,7 @@ const Input = ({
     onChange,
 }: InputProps) => {
     return (
-        <div style={{ marginBottom: 0, marginTop: 0 }}>
+        <div className={styles["input-wrap"]}>
             <label htmlFor={id} style={{ marginRight: '5px' }}>{label}</label>
             <input
                 id={id}

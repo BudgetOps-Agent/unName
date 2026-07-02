@@ -77,8 +77,17 @@ public enum MemberErrorCode {
     DUPLICATE_EMAIL(
             HttpStatus.CONFLICT,
             "이미 존재하는 이메일입니다."
-    );
+    ),
 
+    DUPLICATE_PHONE(
+            HttpStatus.CONFLICT,
+    "이미 사용 중인 전화번호입니다."
+    ),
+
+    INVALID_BIRTH_DATE(
+            HttpStatus.BAD_REQUEST,
+            "올바른 생년월일을 입력해주세요."
+    );
 
 //    INVALID_PASSWORD(
 //            HttpStatus.UNAUTHORIZED,

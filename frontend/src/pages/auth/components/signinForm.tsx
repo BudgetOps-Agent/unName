@@ -70,17 +70,20 @@ const SigninForm = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <Input id="email" label="이메일" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
-            <Input id="password" label="비밀번호" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
-            <Button type="submit" text="로그인" /> <br/>
-            <Link href="/auth/find-id">
-                <Button text="아이디 찾기" />
-            </Link>
-            <Link href="/auth/find-pw">
-                <Button text="비밀번호 찾기" />
-            </Link>
-        </form>
+        <div className="form-container">
+            <h2 className="form-title">로그인</h2>
+            <form onSubmit={handleSubmit}>
+                <Input id="email" label="이메일" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+                <Input id="password" label="비밀번호" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+                <Button type="submit" text="로그인" /> <br/>
+                <Link href="/auth/find-id">
+                    <Button text="아이디 찾기" />
+                </Link>
+                <Link href="/auth/find-pw">
+                    <Button text="비밀번호 찾기" />
+                </Link>
+            </form>
+        </div>
     )
 }
 
