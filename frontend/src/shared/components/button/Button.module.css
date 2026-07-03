@@ -20,3 +20,7 @@
     color: var(--gray-5);
     background: var(--gray-4);
 }
+.btn-secondary {
+    color: var(--gray-9);
+    background: var(--gray-4);
+}

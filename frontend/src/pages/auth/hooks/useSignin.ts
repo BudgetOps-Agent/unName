@@ -1,18 +1,18 @@
 import axios, { AxiosError } from "axios";
-import { requestSignin, responseSignin } from "@/types/auth";
+import { RequestSignin, ResponseSignin } from "@/types/auth";
 
 interface UseSigninResult {
     success: boolean;
     status?: number;
-    data?: responseSignin;
+    data?: ResponseSignin;
 }
 
 export const useSignIn = () => {
     
-    const executeSignin = async (signInData: requestSignin): Promise<UseSigninResult> => {
+    const executeSignin = async (signInData: RequestSignin): Promise<UseSigninResult> => {
 
         try {
-            const response = await axios.post<responseSignin>('/api/user/login', signInData);
+            const response = await axios.post<ResponseSignin>('/api/user/login', signInData);
             return {
                 success: true,
                 data: response.data

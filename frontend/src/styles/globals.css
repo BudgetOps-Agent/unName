@@ -70,14 +70,37 @@ a {
   text-decoration: none;
 }
 
-.link-back {
-    color: #99A1AF;
+.links {
     text-align: center;
-    font-family: Pretendard;
+}
+.links .link {
+    font-size: 12px;
+}
+.links .link span {
+    vertical-align: top;
+}
+.links .link + .link:before{
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 16px;
+    background: var(--gray-5);
+    margin: 0 16px;
+    vertical-align: text-bottom;
+}
+.link {
+    color:var(--gray-5);
+    text-align: center;
     font-size: 14px;
-    font-style: normal;
     font-weight: 700;
-    line-height: 20px; /* 142.857% */
+    line-height: 20px
+}
+.link-back {
+    color:var(--gray-5);
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px
 }
 .link-back:before {
     content: "";
@@ -88,4 +111,7 @@ a {
     background: url("/arrow-gray.svg") no-repeat center center;
     background-size: 16px 16px;
     vertical-align: middle;
+}
+.buttons button + button{
+    margin-top: 10px;
 }
