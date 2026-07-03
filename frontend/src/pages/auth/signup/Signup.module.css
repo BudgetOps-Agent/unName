@@ -1,8 +1,22 @@
-.form-title {
+:global(.card) h2 {
     margin: 20px 0;
-    color: var(--gray-9);
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 28px;
+}
+
+@media screen and (max-width: 768px) {
+    :global(.auth-layout) {
+        background: var(--white);
+        padding: 0;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    :global(.auth-layout) :global(.logo) {
+        display: none;
+    }
+
+    :global(.auth-layout) :global(.card) {
+        box-shadow: none;
+        min-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+    }
 }

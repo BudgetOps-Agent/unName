@@ -1,3 +1,7 @@
+export const validateName = (name: string) => {
+  return name.trim().length >= 2;
+};
+
 export const validateEmailFormat = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

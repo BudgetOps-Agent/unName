@@ -1,0 +1,22 @@
+:global(.buttons) {
+    margin-top: 20px;
+}
+.btn {
+    width: 100%;
+    border-radius: 16px;
+}
+.btn-lg {
+    padding: 14px;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+}
+.btn-primary {
+    color: var(--white);
+    background: var(--blue-9);
+}
+.btn-primary:disabled {
+    color: var(--gray-5);
+    background: var(--gray-4);
+}

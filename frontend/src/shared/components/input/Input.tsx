@@ -9,6 +9,7 @@ interface InputProps {
     placeholder?: string;
     required?: boolean;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    error?: string;
 }
 
 const Input = ({
@@ -19,10 +20,11 @@ const Input = ({
     placeholder = '',
     required = false,
     onChange,
+    error,
 }: InputProps) => {
     return (
         <div className={styles["input-wrap"]}>
-            <label htmlFor={id} style={{ marginRight: '5px' }}>{label}</label>
+            <label htmlFor={id}>{label}</label>
             <input
                 id={id}
                 type={type}
@@ -31,6 +33,10 @@ const Input = ({
                 required={required}
                 onChange={onChange}
             />
+
+            {error && (
+                <p className={styles.error}>{error}</p>
+            )}
         </div>
     );
 };

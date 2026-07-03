@@ -8,7 +8,7 @@ interface CardProps {
 
 export const Card = ({ className, children }: CardProps) => {
   return (
-    <div className={`${styles.card} ${className}`}>
+    <div className={`card ${styles.card} ${className}`}>
         {children}
     </div>
   )

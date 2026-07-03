@@ -13,7 +13,14 @@ export const useSignUp = () => {
             return response.data;
         } catch (error) {
             const axiosError = error as AxiosError<ErrorResponse>;
-
+            
+            if (!axiosError.response) {
+                return {
+                    success: false,
+                    code: "NETWORK_ERROR",
+                    message: "네트워크 연결을 확인해주세요.",
+                };
+            }
             return (
                 axiosError.response?.data ?? {
                     success: false,
