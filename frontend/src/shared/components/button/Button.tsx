@@ -22,7 +22,7 @@ const Button = ({
     <button 
       type={type} 
       id={id} 
-      className={`btn btn-${style} btn-${size} ${iconOnly ? `btn-icon icon-${iconOnly}` : ''} ${className ?? ''} `} 
+      className={`btn btn-${style} btn-${size} ${iconOnly ? 'btn-icon' : ''} ${className ?? ''} `} 
       onClick={onClick} 
       disabled={disabled}
     >
