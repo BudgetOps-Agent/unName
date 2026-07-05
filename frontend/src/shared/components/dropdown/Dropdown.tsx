@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 interface DropdownProps {
     // 버튼 속성
@@ -23,7 +23,8 @@ const Dropdown = ({
     id, className, text, blind, disabled, iconLeft, iconRight, iconOnly, headerContent, items, renderItem, footerContent
 }: DropdownProps) => {
 
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const openDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -31,8 +32,24 @@ const Dropdown = ({
         console.log('Dropdown open state:', !isDropdownOpen);
     };
 
+    useEffect(() => {
+        const handleOutsideClick = (e:MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        if (isDropdownOpen) {
+            document.addEventListener('mousedown', handleOutsideClick);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+        };
+    }, [isDropdownOpen]);
+
     return (
-        <div className= {`dropdown ${className ?? ''}`}>
+        <div className= {`dropdown ${className ?? ''}`} ref={dropdownRef}>
             <button 
                 type="button"
                 id={id}

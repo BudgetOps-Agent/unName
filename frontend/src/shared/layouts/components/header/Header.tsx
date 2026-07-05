@@ -1,4 +1,3 @@
-import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Dropdown from "@/shared/components/dropdown/Dropdown";
 // import { responseSignin } from "@/types/auth";
