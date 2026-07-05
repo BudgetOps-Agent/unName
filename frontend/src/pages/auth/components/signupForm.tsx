@@ -226,6 +226,7 @@ const SignupForm = () => {
                     value={state.email} 
                     placeholder="이메일을 입력해주세요" 
                     onChange={(e) => handleChange("email", e.target.value)} 
+                    onFocus={() => {if (isMobile && step < 2) setStep(2);}}
                     required 
                     error={errors.email}
                 />
@@ -238,6 +239,7 @@ const SignupForm = () => {
                     value={state.password} 
                     placeholder="숫자,문자 포함 최소 8자 이상 입력해주세요" 
                     onChange={(e) => handleChange("password", e.target.value)} 
+                    onFocus={() => {if (isMobile && step < 3) setStep(3);}}
                     required  
                     error={errors.password}
                 />
@@ -250,6 +252,7 @@ const SignupForm = () => {
                     value={state.confirmPassword} 
                     placeholder="비밀번호를 확인해주세요" 
                     onChange={(e) => handleChange("confirmPassword", e.target.value)}
+                    onFocus={() => {if (isMobile && step < 4) setStep(4);}}
                     required 
                     error={errors.confirmPassword}
                 />
@@ -262,6 +265,7 @@ const SignupForm = () => {
                     value={state.phone} 
                     placeholder="전화번호를 입력해주세요" 
                     onChange={(e) => handleChange("phone", e.target.value)} 
+                    onFocus={() => {if (isMobile && step < 5) setStep(5);}}
                     required 
                     error={errors.phone}
                 />
@@ -274,6 +278,7 @@ const SignupForm = () => {
                     value={state.birthDate} 
                     placeholder="생년월일을 선택해주세요"
                     onChange={(e) => handleChange("birthDate", e.target.value)}
+                    onFocus={() => {if (isMobile && step < 6) setStep(6);}}
                     required 
                     error={errors.birthDate}/>
             </div>

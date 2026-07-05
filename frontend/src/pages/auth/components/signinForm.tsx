@@ -1,7 +1,7 @@
 import { useState, SubmitEvent } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { useSignIn } from "..//hooks/useSignin";
+import { useSignIn } from "../hooks/useSignin";
 import { useAuthStore } from "@/store/authStore";
 import Input from "@/shared/components/input/Input";
 import Button from "@/shared/components/button/Button";
@@ -43,7 +43,7 @@ const SigninForm = () => {
 
         if (result.success) {
 
-            alert(`${result.data?.name}님, 반갑습니다.`);
+            alert(`${result.user?.name}님, 반갑습니다.`);
 
             if (result.data) {
                 login(result.data);
@@ -74,16 +74,16 @@ const SigninForm = () => {
             <Input id="email" label="이메일" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
             <Input id="password" label="비밀번호" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
             <div className="links">
-                <Link href="/auth/find-id" className="link">
+                <Link href="/auth/findId" className="link">
                     <span>아이디 찾기</span>
                 </Link>
-                <Link href="/auth/find-pw" className="link">
+                <Link href="/auth/findPw" className="link">
                     <span>비밀번호 찾기</span>
                 </Link>
             </div>
             <div className="buttons">
                 <Button type="submit" text="로그인" size="lg"/>
-                <Button type="submit" text="회원가입" size="lg" style="secondary"/>
+                <Button href="/auth/signup" text="회원가입" size="lg" style="secondary"/>
             </div>
         </form>
     )

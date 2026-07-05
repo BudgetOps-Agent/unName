@@ -1,5 +1,7 @@
 import React from 'react';
 import styles from "./Button.module.css"
+import Link from "next/link";
+
 interface ButtonProps {
     id?: string
     className?: string
@@ -13,6 +15,7 @@ interface ButtonProps {
     size?: "sm" | "md" | "lg" | "xl"
     style?: "primary" | "secondary"
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+    href?: string;
 }
 
 const Button = ({ 
@@ -27,39 +30,55 @@ const Button = ({
     iconOnly, 
     size="sm", 
     style="primary", 
-    onClick 
+    onClick,
+    href
 }: ButtonProps) => {
+    const buttonClass = `
+        ${styles.btn}
+        ${styles[`btn-${style}`]}
+        ${styles[`btn-${size}`]}
+        ${iconOnly ? `${styles["btn-icon"]} ${styles[`icon-${iconOnly}`]}` : ""}
+        ${className ?? ""}
+    `
+    const content = (
+        <>
+            {iconLeft && (
+                <span className={`${styles["btn__icon"]} ${styles["btn__icon--left"]}`}>
+                    {iconLeft}
+                </span>
+            )}
+
+            {text && (
+                <span className={blind || iconOnly ? styles.blind : ""}>
+                    {text}
+                </span>
+            )}
+
+            {iconRight && (
+                <span className={`${styles["btn__icon"]} ${styles["btn__icon--right"]}`}>
+                    {iconRight}
+                </span>
+            )}
+        </>
+    )
+
+    if (href) {
+        return (
+        <Link href={href} className={buttonClass}>
+            {content}
+        </Link>
+        );
+    }
+
     return (
         <button
             type={type}
             id={id}
-            className={`
-            ${styles.btn}
-            ${styles[`btn-${style}`]}
-            ${styles[`btn-${size}`]}
-            ${iconOnly ? `${styles["btn-icon"]} ${styles[`icon-${iconOnly}`]}` : ""}
-            ${className ?? ""}
-            `}
+            className={buttonClass}
             onClick={onClick}
             disabled={disabled}
         >
-        {iconLeft && (
-            <span className={`${styles["btn__icon"]} ${styles["btn__icon--left"]}`}>
-                {iconLeft}
-            </span>
-        )}
-
-        {text && (
-            <span className={blind || iconOnly ? styles.blind : ""}>
-                {text}
-            </span>
-        )}
-
-        {iconRight && (
-            <span className={`${styles["btn__icon"]} ${styles["btn__icon--right"]}`}>
-                {iconRight}
-            </span>
-        )}
+            {content}
         </button>
     )
 }

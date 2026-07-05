@@ -1,9 +1,14 @@
 :global(.buttons) {
     margin-top: 20px;
 }
+:global(.buttons) .btn + .btn {
+    margin-top: 12px;
+}
 .btn {
     width: 100%;
     border-radius: 16px;
+    box-sizing: border-box;
+    text-align: center
 }
 .btn-lg {
     padding: 14px;

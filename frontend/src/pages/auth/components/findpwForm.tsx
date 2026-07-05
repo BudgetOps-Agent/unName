@@ -107,13 +107,17 @@ const FindPwForm = () => {
                 <form onSubmit={handleVerifySubmit}>
                     <Input id="name" label="이름" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
                     <Input id="email" label='이메일' type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                    <Button type="submit" text="비밀번호 찾기" />
+                    <div className="buttons">
+                        <Button type="submit" text="비밀번호 찾기" size="lg"/>
+                    </div>
                 </form>
             ) : (
                 <form onSubmit={handleResetPasswordSubmit}>
                     <Input id="newPassword" label="비밀번호" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required/>
-                    <Input id="confirmPassword" label="비밀번호 확인" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/> <br/>
-                    <Button type="submit" text="비밀번호 변경하기" />
+                    <Input id="confirmPassword" label="비밀번호 확인" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
+                    <div className="buttons">
+                        <Button type="submit" text="비밀번호 변경하기" size="lg"/>
+                    </div>
                 </form>
             )}
         </div>

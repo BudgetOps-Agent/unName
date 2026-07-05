@@ -1,7 +1,7 @@
 import { Card } from "@/shared/components/card/Card";
 import FindIdForm from "../components/findidForm";
-import "../signin/signin.module.css";
 import Link from "next/link";
+import "../signin/signin.module.css";
 
 const Findid = () => {
     return (

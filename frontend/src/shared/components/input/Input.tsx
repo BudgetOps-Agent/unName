@@ -9,6 +9,7 @@ interface InputProps {
     placeholder?: string;
     required?: boolean;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onFocus: (e: React.ChangeEvent<HTMLInputElement>) => void;
     error?: string;
 }
 
@@ -20,6 +21,7 @@ const Input = ({
     placeholder = '',
     required = false,
     onChange,
+    onFocus,
     error,
 }: InputProps) => {
     return (
@@ -32,6 +34,7 @@ const Input = ({
                 placeholder={placeholder}
                 required={required}
                 onChange={onChange}
+                onFocus={onFocus}
             />
 
             {error && (
