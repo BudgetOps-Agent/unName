@@ -1,20 +1,12 @@
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Dropdown from "@/shared/components/dropdown/Dropdown";
-/* import containerSvg from "@/public/header/container.svg";
-import checkGreenSvg from "@/public/header/check-green.svg";
-import checkBlueSvg from "@/public/header/check-blue.svg";
-import vertorSvg from "@/public/header/vector.svg";
-import noticeSvg from "@/public/header/notice.svg";
-import noticeYellowSvg from "@/public/header/notice-yellow.svg";
-import noticeBlueSvg from "@/public/header/notice-blue.svg";
-import mypageSvg from "@/public/header/mypage.svg";
-import logoutSvg from "@/public/header/logout.svg"; */
-import { responseSignin } from "@/types/auth";
+// import { responseSignin } from "@/types/auth";
 
-interface HeaderProps {
-    isLoggedIn: boolean;
-    user: responseSignin | null;
-}
+// interface HeaderProps {
+//     isLoggedIn: boolean;
+//     user: responseSignin | null;
+// }
 
 const grouplist = [
     {
@@ -153,11 +145,13 @@ export default function Header({}) {
                     items={[
                         {
                             menu: "마이페이지",
+                            classname: "mypage",
                             href: "/mypage",
                             icon: "/header/mypage.svg",
                         },
                         {
                             menu: "로그아웃",
+                            classname: "logout",
                             href: "/login",
                             icon: "/header/logout.svg",
                         }
@@ -166,9 +160,9 @@ export default function Header({}) {
                         <Link
                             key={index}
                             href={item.href}
-                            className="user-menu"
+                            className={`user-menu ${item.classname}`}
                         >
-                            <span className="user-menu icon">
+                            <span className="user-menu-icon">
                                 <img src={item.icon} alt={item.menu} />
                             </span>
                             <span className="user-menu-text">{item.menu}</span>

@@ -1,18 +1,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-/* import logoSvg from "@/public/sidebar/logo.svg";
-import dashboardSvg from "@/public/sidebar/dashboard.svg";
-import dashboardActiveSvg from "@/public/sidebar/dashboard-active.svg";
-import expensesSvg from "@/public/sidebar/expenses.svg";
-import expensesActiveSvg from "@/public/sidebar/expenses-active.svg";
-import budgetSvg from "@/public/sidebar/budget.svg";
-import budgetActiveSvg from "@/public/sidebar/budget-active.svg";
-import memberSvg from "@/public/sidebar/member.svg";
-import memberActiveSvg from "@/public/sidebar/member-active.svg";
-import reportSvg from "@/public/sidebar/report.svg";
-import reportActiveSvg from "@/public/sidebar/report-active.svg";
-import toggleIcon from "@/public/sidebar/sidebar-toggle.svg"; */
 
 const menus = [
     {
