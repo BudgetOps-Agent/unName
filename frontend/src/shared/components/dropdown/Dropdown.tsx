@@ -34,7 +34,7 @@ const Dropdown = ({
 
     useEffect(() => {
         const handleOutsideClick = (e:MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
                 setIsDropdownOpen(false);
             }
         };
