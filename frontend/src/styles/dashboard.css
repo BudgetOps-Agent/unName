@@ -167,6 +167,47 @@
     font-weight: bold;
 }
 
+.donut-chart-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 382px;
+    height: 141px;
+    padding-top: 16px;
+    gap: 32px;
+}
+
+.donut-chart-left {
+    width: 130px;
+    height: 110px;
+}
+
+.donut-legend-right {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    height: 125px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-color-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    display: inline-block;
+}
+
+.legend-text {
+    font-size: 14px;
+    color: #4b5563;
+    font-weight: 500;
+}
+
 .request-card {
     width: 860px;
     height: auto;

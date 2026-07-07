@@ -1,5 +1,7 @@
 import Link from "next/link";
 import ProgressBar from "@/shared/components/progressbar/ProgressBar";
+import MainBarChart from "@/shared/layouts/components/dashboard/MainBarChart";
+import CategoryDonutChart from "@/shared/layouts/components/dashboard/CategoryDonutChart";
 
 const requestItems = [
   {
@@ -16,6 +18,23 @@ const requestItems = [
     memberName: "박지호",
     expense: 500000,
   },
+];
+
+const barData = [
+  { name: '9월', amount: 320000 },
+  { name: '10월', amount: 580000 },
+  { name: '11월', amount: 410000 },
+  { name: '12월', amount: 290000 },
+  { name: '1월', amount: 743000 },
+];
+
+const donutData = [
+  { name: 'IT/인프라', value: 228000 },
+  { name: '교육', value: 500000 },
+  { name: '행사', value: 300000 },
+  { name: '회의', value: 45000 },
+  { name: '식비', value: 150000 },
+  { name: '디자인', value: 70000 },
 ];
 
 const dashboard = () => {
@@ -77,10 +96,12 @@ const dashboard = () => {
         <div className="statistics-section">
           <div className="monthly-card">
             <p>월별 지출</p>
+            <MainBarChart data={barData} />
           </div>
 
           <div className="category-card">
             <p>카테고리 분포</p>
+            <CategoryDonutChart data={donutData} />
           </div>
         </div>
 
