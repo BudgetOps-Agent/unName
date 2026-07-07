@@ -5,22 +5,30 @@ package com.example.backend.member.controller;
 
 // 2. import
 import com.example.backend.global.exception.ErrorResponse;
+import com.example.backend.global.jwt.JwtProvider;
+import com.example.backend.global.jwt.RefreshTokenRepository;
 import com.example.backend.member.dto.*;
+import com.example.backend.member.entity.User;
+import com.example.backend.member.exception.MemberErrorCode;
+import com.example.backend.member.exception.MemberException;
+import com.example.backend.member.repository.UserRepository;
 import com.example.backend.member.service.UserService;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
+import java.time.Duration;
 
 // 3. 클래스 어노테이션
 //   @RestController
@@ -32,6 +40,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 public class UserController {// 4. 클래스 선언
     // 5. Service 주입
     private final UserService userService;
+    private final JwtProvider jwtProvider;
+    private final UserRepository userRepository;
 
     // 6. 회원가입 API
     @Operation(summary = "회원가입", description = "신규 회원을 등록합니다.")
@@ -112,9 +122,61 @@ public class UserController {// 4. 클래스 선언
 
     // 로그인 API
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
-        LoginResponse response = userService.login(request);
-        return ResponseEntity.ok(response); // ok가 자동으로 200코드를 보내서 명시적으로 안써도 됨
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request, HttpServletResponse httpResponse) {
+        LoginResult result = userService.login(request);
+
+        String accessToken = result.getAccessToken();
+        String refreshToken = result.getRefreshToken();
+
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(Duration.ofMinutes(30))
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(Duration.ofDays(14))
+                .build();
+
+        httpResponse.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        httpResponse.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+        return ResponseEntity.ok(result.getResponse()); // ok가 자동으로 200코드를 보내서 명시적으로 안써도 됨
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<LoginResponse> reissue(@CookieValue("refreshToken") String refreshToken, HttpServletResponse httpResponse) {
+        LoginResult result = userService.reissue(refreshToken);
+
+        String newAccessToken = result.getAccessToken();
+        String newRefreshToken = result.getRefreshToken();
+
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", newAccessToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(Duration.ofMinutes(30))
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", newRefreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(Duration.ofDays(14))
+                .build();
+
+        httpResponse.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        httpResponse.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+        return ResponseEntity.ok(result.getResponse());
     }
 
     @PostMapping("/findid")

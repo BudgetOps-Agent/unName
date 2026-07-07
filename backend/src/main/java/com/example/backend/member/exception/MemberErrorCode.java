@@ -87,6 +87,16 @@ public enum MemberErrorCode {
     INVALID_BIRTH_DATE(
             HttpStatus.BAD_REQUEST,
             "올바른 생년월일을 입력해주세요."
+    ),
+
+    INVALID_REFRESH_TOKEN(
+        HttpStatus.UNAUTHORIZED, // 401
+            "토큰 재발급이 불가합니다."
+    ),
+
+    REUSED_REFRESH_TOKEN(
+            HttpStatus.UNAUTHORIZED, // 401
+            "보안을 위해 다시 로그인해주세요"
     );
 
 //    INVALID_PASSWORD(

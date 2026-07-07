@@ -42,7 +42,6 @@ const SigninForm = () => {
         const result = await executeSignin(signInData);
 
         if (result.success) {
-
             alert(`${result.user?.name}님, 반갑습니다.`);
 
             if (result.data) {
@@ -53,20 +52,7 @@ const SigninForm = () => {
             return;
         }
 
-        switch (result.status) {
-            case 400:
-                alert("잘못된 요청입니다. 입력한 정보를 다시 확인해 주세요.");
-                break;
-            case 409: // 회원가입과 마찬가지로 추후 백엔드와 협의하여 커스텀 코드를 정의하는 것이 좋을 것 같습니다.
-                alert("이미 다른 기기에서 로그인 중입니다.");
-                break;
-            case 500:
-                alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
-                break;
-            default:
-                alert("네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요.");
-                break;
-        }
+        alert(result.message || "네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요.");
     }
 
     return (
