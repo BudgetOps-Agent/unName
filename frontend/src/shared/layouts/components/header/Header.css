@@ -1,0 +1,40 @@
+/* .btn {
+    border: none;
+    background: none;
+} */
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    background: #FFFFFF;
+    padding: 20px;
+    border-bottom: 0.8px solid rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.group-list {
+    display: flex;
+    align-items: center;
+    width: 167px;
+    height: 28px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    width: 100px;
+    height: 37px;
+    font-size: 13px;
+    gap: 8px;
+    padding: 4px;
+}
