@@ -1,49 +1,37 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import logoSvg from "@/assets/logo.svg";
-import dashboardSvg from "@/assets/sidebar/dashboard.svg";
-import dashboardActiveSvg from "@/assets/sidebar/dashboard-active.svg";
-import expensesSvg from "@/assets/sidebar/expenses.svg";
-import expensesActiveSvg from "@/assets/sidebar/expenses-active.svg";
-import budgetSvg from "@/assets/sidebar/budget.svg";
-import budgetActiveSvg from "@/assets/sidebar/budget-active.svg";
-import memberSvg from "@/assets/sidebar/member.svg";
-import memberActiveSvg from "@/assets/sidebar/member-active.svg";
-import reportSvg from "@/assets/sidebar/report.svg";
-import reportActiveSvg from "@/assets/sidebar/report-active.svg";
-import toggleIcon from "@/assets/sidebar/sidebar-toggle.svg";
 
 const menus = [
     {
         text: "대시보드",
         path: "/dashboard",
-        icon: dashboardSvg,
-        activeIcon: dashboardActiveSvg,
+        icon: "/sidebar/dashboard.svg",
+        activeIcon: "/sidebar/dashboard-active.svg",
     },
     {
         text: "지출 내역",
         path: "/expenses",
-        icon: expensesSvg,
-        activeIcon: expensesActiveSvg,
+        icon: "/sidebar/expenses.svg",
+        activeIcon: "/sidebar/expenses-active.svg",
     },
     {
         text: "예산 관리",
         path: "/budget",
-        icon: budgetSvg,
-        activeIcon: budgetActiveSvg,
+        icon: "/sidebar/budget.svg",
+        activeIcon: "/sidebar/budget-active.svg",
     },
     {
         text: "멤버",
         path: "/member",
-        icon: memberSvg,
-        activeIcon: memberActiveSvg,
+        icon: "/sidebar/member.svg",
+        activeIcon: "/sidebar/member-active.svg",
     },
     {
         text: "정산 리포트",
         path: "/report",
-        icon: reportSvg,
-        activeIcon: reportActiveSvg,
+        icon: "/sidebar/report.svg",
+        activeIcon: "/sidebar/report-active.svg",
     },
 ];
 
@@ -73,7 +61,7 @@ export default function Sidebar({}) {
         <aside className={`sidebar-container ${isOpen ? "" : "closed"}`}>
             <div className="logo-section">
                 <Link href="/dashboard" className="logo-btn">
-                    <img src={logoSvg.src} alt="logo" />
+                    <img src="/sidebar/logo.svg" alt="logo" />
                     {showText && <span>BudgetOps</span>}
                 </Link>
             </div>
@@ -88,8 +76,8 @@ export default function Sidebar({}) {
                         <span>
                             <img src={
                                 pathname === menu.path 
-                                ? menu.activeIcon.src 
-                                : menu.icon.src} 
+                                ? menu.activeIcon 
+                                : menu.icon} 
                                 alt="" 
                             />
                         </span>
@@ -103,7 +91,7 @@ export default function Sidebar({}) {
                 onClick={toggleSidebar}
             >
                 <img
-                    src={toggleIcon.src} 
+                    src="/sidebar/sidebar-toggle.svg"
                     alt="sidebar-open" 
                     className={`${isOpen ? "" : "rotate"}`}
                 />
