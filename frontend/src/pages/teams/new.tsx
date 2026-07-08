@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/shared/components/card/Card";
-import NewteamForm from "./components/NewteamForm";
+import NewteamForm from "./components/CreateTeamForm/CreateTeamForm";
 
 const NewTeam = () => {
     return (

@@ -13,10 +13,11 @@ import AuthLayout from "@/shared/layouts/authLayout/AuthLayout";
 export default function App({ Component, pageProps, router }: AppProps) {
     const isAuthPage = router.pathname.startsWith("/auth");
     const isNewTeamPage = router.pathname.startsWith("/teams/new");
-    const showLogo = !["/teams/new",].includes(router.pathname);
+    const isMyPage = router.pathname.startsWith("/teams/[teamId]/mypage");
+    const showLogo = !["/teams/new", "/teams/[teamId]/mypage"].includes(router.pathname);
     return (
         <>
-            {isAuthPage || isNewTeamPage ? (
+            {isAuthPage || isNewTeamPage || isMyPage ? (
                 <AuthLayout showLogo={showLogo}>
                     <Component {...pageProps} />
                 </AuthLayout>
