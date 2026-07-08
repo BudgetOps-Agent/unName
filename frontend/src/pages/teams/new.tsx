@@ -1,15 +1,16 @@
-import type { ReactElement } from 'react';
+import Link from "next/link";
+import { Card } from "@/shared/components/card/Card";
+import NewteamForm from "./components/NewteamForm";
 
 const NewTeam = () => {
     return (
-        <div>
-            새 모임 생성
-        </div>
+        <>
+            <Link href="/" className="link-back"><span>내 모임으로 돌아가기</span></Link>
+            <Card>
+                <NewteamForm />
+            </Card>
+        </>
     )
 }
-
-NewTeam.getLayout = function getLayout(page: ReactElement) {
-        return page;
-};
 
 export default NewTeam

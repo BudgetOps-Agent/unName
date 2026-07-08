@@ -33,23 +33,6 @@ const Button = ({
     onClick,
     href
 }: ButtonProps) => {
-<<<<<<< HEAD
-  return (
-    <button 
-      type={type} 
-      id={id} 
-      className={`btn btn-${style} btn-${size} ${iconOnly ? 'btn-icon' : ''} ${className ?? ''} `} 
-      onClick={onClick} 
-      disabled={disabled}
-    >
-      {iconLeft && <span className="btn__icon btn__icon--left">{iconLeft}</span>}
-      
-      {text && <span className={blind || iconOnly ? 'blind' : ''}>{text}</span>}
-      
-      {iconRight && <span className="btn__icon btn__icon--right">{iconRight}</span>}
-    </button>
-  )
-=======
     const buttonClass = `
         ${styles.btn}
         ${styles[`btn-${style}`]}
@@ -98,7 +81,6 @@ const Button = ({
             {content}
         </button>
     )
->>>>>>> dev
 }
 
 export default Button
