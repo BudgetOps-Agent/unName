@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { responseSignin } from "@/types/auth";
+import { ResponseSignin } from "@/types/auth";
 
 interface AuthState {
     isLoggedIn: boolean;
-    user: responseSignin | null;
-    login: (userData: responseSignin) => void;
+    user: ResponseSignin | null;
+    login: (userData: ResponseSignin) => void;
     logout: () => void;
 }
 

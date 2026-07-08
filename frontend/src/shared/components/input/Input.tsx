@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from "./Input.module.css"
 
 interface InputProps {
     id: string;
@@ -7,7 +8,9 @@ interface InputProps {
     value: string;
     placeholder?: string;
     required?: boolean;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onFocus?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    error?: string;
 }
 
 const Input = ({
@@ -18,10 +21,12 @@ const Input = ({
     placeholder = '',
     required = false,
     onChange,
+    onFocus,
+    error,
 }: InputProps) => {
     return (
-        <div style={{ marginBottom: 0, marginTop: 0 }}>
-            <label htmlFor={id} style={{ marginRight: '5px' }}>{label}</label>
+        <div className={styles["input-wrap"]}>
+            <label htmlFor={id}>{label}</label>
             <input
                 id={id}
                 type={type}
@@ -29,7 +34,12 @@ const Input = ({
                 placeholder={placeholder}
                 required={required}
                 onChange={onChange}
+                onFocus={onFocus}
             />
+
+            {error && (
+                <p className={styles.error}>{error}</p>
+            )}
         </div>
     );
 };
