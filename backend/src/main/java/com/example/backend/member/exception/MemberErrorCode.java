@@ -98,7 +98,7 @@ public enum MemberErrorCode {
             HttpStatus.UNAUTHORIZED, // 401
             "보안을 위해 다시 로그인해주세요"
     ),
-    
+
     INACTIVE_MEMBER(
             HttpStatus.UNAUTHORIZED,
             "비활성화된 계정입니다. 관리자에게 문의해주세요."
