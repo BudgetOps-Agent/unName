@@ -2,6 +2,7 @@
 package com.example.backend.global.exception;
 
 import com.example.backend.member.exception.MemberException;
+import com.example.backend.teamMember.exception.TeamMemberException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,38 @@ public class GlobalExceptionHandler {
         );
 
         // 에러 응답 생성 후 반환
+        return ResponseEntity
+                .status(
+                        e.getErrorCode().getStatus()
+                )
+                .body(
+                        ErrorResponse.builder()
+                                .success(false)
+                                .message(
+                                        e.getErrorCode().getMessage()
+                                )
+                                .build()
+                );
+    }
+
+    /**
+     * 모임 멤버(초대) 관련 예외 처리
+     *
+     * 예)
+     * throw new TeamMemberException(...)
+     *
+     * 발생 시 여기서 잡는다.
+     */
+    @ExceptionHandler(TeamMemberException.class)
+    public ResponseEntity<ErrorResponse> handleTeamMemberException(
+            TeamMemberException e
+    ) {
+
+        log.warn(
+                "TeamMember Exception : {}",
+                e.getMessage()
+        );
+
         return ResponseEntity
                 .status(
                         e.getErrorCode().getStatus()
