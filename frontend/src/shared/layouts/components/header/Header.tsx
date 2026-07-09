@@ -117,7 +117,7 @@ export default function Header({}) {
 
                             <div className="notice-item-info">
                                 <span className="notice-item-title ellipsis">{item.title}</span>
-                                <span className="notice-item-content ellipsis">{item.content}</span>
+                                <span className="notice-item-content ellipsis-2">{item.content}</span>
                                 <span className="notice-item-time">{item.time}</span>
                             </div>
 

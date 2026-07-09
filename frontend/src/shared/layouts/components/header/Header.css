@@ -238,6 +238,8 @@
     font-size: 12px;
     font-weight: 600;
     color: #99A1AF;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 .notice-item-time {
@@ -365,4 +367,12 @@ strong {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+.ellipsis-2 {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }
