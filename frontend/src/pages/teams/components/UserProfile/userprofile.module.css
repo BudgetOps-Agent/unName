@@ -8,19 +8,6 @@
     gap: 16px;
 }
 
-.profileHeader .logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 9999px;
-    background-color: #EDE9FE;
-    color: #7F22FE;
-    font-size: 16px;
-    font-weight: 700;
-}
-
 .profileHeader .name {
     color: var(--gray-9);
     font-size: 20px;

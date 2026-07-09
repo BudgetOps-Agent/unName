@@ -5,8 +5,6 @@ const UserProfile = () => {
     return (
         <div className={styles.profileContainer}>
             <div className={styles.profileHeader}>
-                <span className={styles.logo}>김</span>
-                
                 <div>
                     <p className={styles.name}>김민준</p>
                     <span className={styles.role}>관리자</span>
