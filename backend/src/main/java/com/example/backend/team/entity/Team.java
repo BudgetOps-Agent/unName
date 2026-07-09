@@ -28,7 +28,10 @@ public class Team {
     private Long initialBudget; // 초기 예산
 
     @Column(nullable = false)
-    private Integer maxMembers = 10; // 모임 최대인원에 대해서 제대로 정해진게 없어서 그냥 일단 max 10명으로 해놓음
+    private Integer maxMembers = 20; // 모임 최대인원 일단 20명으로 해놓기로 해서 20명으로 해놓음
+
+    @Column(nullable = false)
+    private TeamType teamType; // 모임 유형 (동아리·학생회, 스터디, 친목, 동호회, 회사)
 
     // admin_id FK → users.id (users 테이블에서 가져온 외래키)
     // ManyToOne = 다대일
@@ -46,11 +49,12 @@ public class Team {
     private LocalDateTime updatedAt; // 모임 수정 시간
 
     @Builder
-    public Team(String name, String description, Long initialBudget, User admin) {
+    public Team(String name, String description,TeamType teamType, Long initialBudget, User admin) {
         this.name = name;
         this.description = description;
         this.initialBudget = initialBudget;
-        this.maxMembers = 10;
+        this.teamType = teamType;
+        this.maxMembers = 20;
         this.admin = admin;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();

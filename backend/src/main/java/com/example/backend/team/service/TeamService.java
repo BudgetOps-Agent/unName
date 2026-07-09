@@ -1,5 +1,7 @@
 package com.example.backend.team.service;
 
+import com.example.backend.budget.entity.Budget;
+import com.example.backend.budget.repository.BudgetRepository;
 import com.example.backend.member.entity.User;
 import com.example.backend.member.exception.MemberErrorCode;
 import com.example.backend.member.exception.MemberException;
@@ -8,6 +10,8 @@ import com.example.backend.team.dto.CreateTeamRequest;
 import com.example.backend.team.dto.CreateTeamResponse;
 import com.example.backend.team.entity.Team;
 import com.example.backend.team.repository.TeamRepository;
+import com.example.backend.teamMember.entity.TeamMember;
+import com.example.backend.teamMember.repository.TeamMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,6 +22,8 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
+    private final TeamMemberRepository teamMemberRepository;
+    private final BudgetRepository budgetRepository;
 
     public CreateTeamResponse createTeam(CreateTeamRequest request) {
 
@@ -39,9 +45,10 @@ public class TeamService {
             throw new RuntimeException("이미 존재하는 모임 이름입니다.");
         }
 
-        // Team 엔티티 생성 (아직 모임 최대 인원 안정해져서 기본 값으로 10명으로 최대인원 되어있어서 자동으로 됨)
+        // Team 엔티티 생성 (아직 모임 최대 인원 안정해져서 기본 값으로 20명으로 최대인원 되어있어서 자동으로 됨)
         Team team = Team.builder()
                 .name(request.getName())
+                .teamType(request.getTeamType())
                 .description(request.getDescription())
                 .initialBudget(request.getInitialBudget())
                 .admin(admin)
@@ -50,10 +57,30 @@ public class TeamService {
         // DB 저장
         teamRepository.save(team);
 
+        // 모임장을 team_members에 ADMIN, ACCEPTED로 자동 추가
+        // 방 만들면 바로 ADMIN 권한 부여 그리고 바로 상태는 수락된 상태로
+        TeamMember adminMember = TeamMember.builder()
+                .team(team)
+                .user(admin)
+                .role("ADMIN")
+                .status("ACCEPTED")
+                .build();
+        teamMemberRepository.save(adminMember);
+
+        // budgets row 생성
+        Budget budget = Budget.builder()
+                .team(team)
+                .remainingBudget(team.getInitialBudget()) // 처음엔 초기예산 그대로
+                .usedBudget(0L) // 사용한 건 0
+                .build();
+        budgetRepository.save(budget);
+
         // Response 반환 (성공하면 반환할것들 만들어서 json 객체로 만들어서 반환)
         return CreateTeamResponse.builder()
                 .success(true)
                 .team(CreateTeamResponse.TeamInfo.fromEntity(team))
                 .build();
+
+
     }
 }
