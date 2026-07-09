@@ -24,19 +24,6 @@
     gap: 12px;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 9999px;
-    background-color: var(--blue-8);
-    color: var(--white);
-    font-size: 14px;
-    font-weight: 700;
-}
-
 .groupName {
     color: var(--gray-9);
     font-size: 14px;

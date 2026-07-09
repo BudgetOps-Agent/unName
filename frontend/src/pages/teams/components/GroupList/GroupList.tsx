@@ -32,8 +32,6 @@ const GroupList = () => {
                         key={group.id}
                     >
                         <div className={styles.boxLeft}>
-                            <span className={styles.logo}>{group.name[0]}</span>
-
                             <div className={styles.groupInfo}>
                                 <p className={styles.groupName}>{group.name}</p>
                                 <p className={styles.memberCount}>멤버 {group.member}명</p>
