@@ -15,6 +15,7 @@ import com.example.backend.teamMember.repository.TeamMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service // 비즈니스 로직 담당한다고 알려주는것이고 spring이 Bean 자동 등록해줌
 @RequiredArgsConstructor // final 필드 생성자 자동 생성
@@ -25,6 +26,7 @@ public class TeamService {
     private final TeamMemberRepository teamMemberRepository;
     private final BudgetRepository budgetRepository;
 
+    @Transactional
     public CreateTeamResponse createTeam(CreateTeamRequest request) {
 
         // JWT 토큰에서 이메일 꺼내기 (현재 로그인한 사람 확인하기 위해서)

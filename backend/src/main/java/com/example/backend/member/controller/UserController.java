@@ -203,6 +203,11 @@ public class UserController {// 4. 클래스 선언
     // - updateUser()
 
     // 7. private 메서드 (있다면)
+    @GetMapping("/me")
+    public ResponseEntity<MyPageResponse> getMyPage() {
+        MyPageResponse response = userService.getMyPage();
+        return ResponseEntity.ok(response);
+    }
 }
 
 /**
