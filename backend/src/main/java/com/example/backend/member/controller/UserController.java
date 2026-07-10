@@ -16,10 +16,7 @@ import com.example.backend.member.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController // JSON 반환하는 REST API 컨트롤러 (메서드 반환 값을 자동으로 JSON으로 변환해줌), @Controller랑 @ResponseBody 합친거
 @RequestMapping("/api/user") // 기본 URL경로
@@ -68,6 +65,11 @@ public class UserController {// 4. 클래스 선언
     // - updateUser()
 
     // 7. private 메서드 (있다면)
+    @GetMapping("/me")
+    public ResponseEntity<MyPageResponse> getMyPage() {
+        MyPageResponse response = userService.getMyPage();
+        return ResponseEntity.ok(response);
+    }
 }
 
 /**

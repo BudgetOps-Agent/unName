@@ -10,9 +10,17 @@ import com.example.backend.member.entity.User;
 import com.example.backend.member.exception.MemberErrorCode;
 import com.example.backend.member.exception.MemberException;
 import com.example.backend.member.repository.UserRepository;
+import com.example.backend.team.entity.Team;
+import com.example.backend.teamMember.entity.TeamMember;
+import com.example.backend.teamMember.repository.TeamMemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 // 3. 클래스 어노테이션
 // @Service
@@ -31,8 +39,14 @@ public class UserService {// 4. 클래스 선언
 
     // Jwt 주입
     private final JwtProvider jwtProvider;
+
+    // 마이페이지에서 모임 조회할때 사용
+    private final TeamMemberRepository teamMemberRepository;
+
+
     // 7. 회원가입 메서드
     // signup()
+    @Transactional // DB 계속 사용 할 수 있게 열어놓기
     public SignupResponse signup(SignupRequest request) {
 
 //        // 아이디 중복 검사(DB에 같은 아이디가 있으면 이미 사용중인 아이디입니다 던지고 중단)
@@ -131,6 +145,7 @@ public class UserService {// 4. 클래스 선언
                 .build();
     }
 
+    @Transactional
     public ResetPasswordResponse resetPassword(ResetPasswordRequest request) {
 
         // 이메일로 유저 조회
@@ -149,6 +164,53 @@ public class UserService {// 4. 클래스 선언
         return ResetPasswordResponse.builder()
                 .success(true)
                 .message("비밀번호가 변경되었습니다.")
+                .build();
+    }
+
+    // 마이페이지 조회 (API-013)
+    // 로그인한 사람의 기본 정보 + 소속 모임 목록을 같이 내려줌
+    // Team이 지연로딩(LAZY)이라 안에서 team.getName() 등을 쓰려면 세션이 살아있어야 함
+    // @Transactional(readOnly = true)로 세션 유지 (API-009 getMyTeams()랑 같은 이유)
+    @Transactional(readOnly = true)
+    public MyPageResponse getMyPage() {
+
+        // 1. JWT 토큰에서 현재 로그인한 사람 이메일 꺼내기
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        // 2. 이메일로 유저 조회
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 3. User 엔티티 → UserInfo(DTO)로 변환
+        MyPageResponse.UserInfo userInfo = MyPageResponse.UserInfo.fromEntity(user);
+
+        // 4. 내가 ACCEPTED(수락)인 모임 목록 가져오기 (TeamMemberRepository 재사용)
+        List<TeamMember> acceptedMembers = teamMemberRepository
+                .findByUserIdAndStatus(user.getId(), "ACCEPTED");
+
+        // 5. 각 TeamMember마다 Team, memberCount 조회해서 TeamInfo로 변환
+        List<MyPageResponse.TeamInfo> teams = acceptedMembers.stream()
+                .map(teamMember -> {
+                    Team team = teamMember.getTeam();
+
+                    long memberCount = teamMemberRepository
+                            .countByTeamIdAndStatus(team.getId(), "ACCEPTED");
+
+                    return MyPageResponse.TeamInfo.builder()
+                            .name(team.getName())
+                            .memberCount(memberCount)
+                            .role(teamMember.getRole())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        // 6. 응답 반환
+        return MyPageResponse.builder()
+                .success(true)
+                .user(userInfo)
+                .teams(teams)
                 .build();
     }
 }
