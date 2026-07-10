@@ -1,13 +1,10 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import "@/styles/globals.css";
-import "@/styles/components.css";
+import "@/styles/style.css";
 import "@/shared/layouts/components/header/Header.css";
 import "@/shared/layouts/components/sidebar/Sidebar.css";
 import "@/shared/layouts/mainLayout/MainLayout.css";
-import "@/styles/dashboard.css";
 import "@/shared/layouts/authLayout/AuthLayout.css";
-import "@/styles/dashboard.css";
 import MainLayout from "@/shared/layouts/mainLayout/MainLayout";
 import AuthLayout from "@/shared/layouts/authLayout/AuthLayout";
 

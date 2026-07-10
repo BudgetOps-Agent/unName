@@ -5,6 +5,21 @@
     box-sizing: border-box;
 }
 
+
+.sidebar-container + header {
+    padding-left: 240px;
+}
+.sidebar-container ~ .main-area main {
+    padding: 84px 72px 32px 292px;
+}
+
+.sidebar-container.closed + header {
+    padding-left: 80px;
+}
+.sidebar-container.closed ~ .main-area main {
+    padding-left: 140px;
+}
+
 .main-area {
     flex: 1;
     display: flex;
@@ -14,6 +29,6 @@
 
 .main-area main {
     justify-content: center;
-    padding: 24px;
     background-color: #F6F7FB;
+    transition: all .3s;
 }

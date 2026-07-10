@@ -9,3 +9,14 @@
 .noPadding {
     padding: 0;
 }
+
+:global(.cards) {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+:global(.cards) .card{
+    flex: 1;
+    min-width: auto;
+}

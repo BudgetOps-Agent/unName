@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const menus = [
     {
@@ -61,8 +62,8 @@ export default function Sidebar({}) {
         <aside className={`sidebar-container ${isOpen ? "" : "closed"}`}>
             <div className="logo-section">
                 <Link href="/dashboard" className="logo-btn">
-                    <img src="/sidebar/logo.svg" alt="logo" />
-                    {showText && <span>BudgetOps</span>}
+                    <Image src="/sidebar/logo.svg" alt="logo" width={32} height={32}/>
+                    <span className={`${showText ? "" : "blind"}`}>BudgetOps</span>
                 </Link>
             </div>
 
@@ -73,14 +74,7 @@ export default function Sidebar({}) {
                         href={menu.path}
                         className={`menu ${pathname === menu.path ? "active" : ""} ${isOpen ? "" : "closed"}`}
                     >
-                        <span>
-                            <img src={
-                                pathname === menu.path 
-                                ? menu.activeIcon 
-                                : menu.icon} 
-                                alt="" 
-                            />
-                        </span>
+                        <Image src={pathname === menu.path ? menu.activeIcon : menu.icon} alt={`${menu} 로고 아이콘`} width={18} height={18}/>
                         {showText && <span>{menu.text}</span>}
                     </Link>
                 ))}
@@ -95,6 +89,7 @@ export default function Sidebar({}) {
                     alt="sidebar-open" 
                     className={`${isOpen ? "" : "rotate"}`}
                 />
+                <span className="blind">{`${isOpen ? "닫기" : "열기"}`}</span>
             </button>
         </aside>
     )
