@@ -60,9 +60,9 @@ const Dropdown = ({
             >
                 {iconLeft && <span className={`${className}-icon-left`}>{iconLeft}</span>}
                 
-                <span className={blind || iconOnly ? 'blind' : ''}>{text}</span>
+                <span className={`${className}-btn-text ${blind || iconOnly ? 'blind' : ''}`}>{text}</span>
                 
-                {iconRight && <span className={`${className}-icon-right`}>{iconRight}</span>}
+                {iconRight && <span className={`${className}-icon-right ${isDropdownOpen ? 'rotate' : ''}`}>{iconRight}</span>}
             </button>
 
             {isDropdownOpen && (

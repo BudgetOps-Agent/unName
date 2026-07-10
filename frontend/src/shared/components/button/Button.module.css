@@ -26,6 +26,6 @@
     background: var(--gray-4);
 }
 .btn-secondary {
-    color: var(--gray-9);
-    background: var(--gray-4);
+    color: var(--gray-7);
+    background: var(--white);
 }

@@ -31,14 +31,26 @@
     background-color: #FFFFFF;
 }
 
-.grouplist-btn{
+.grouplist-btn {
     display: flex;
     align-items: center;
-    width: 167px;
+    max-width: 300px;
     height: 28px;
     font-weight: bold;
     font-size: 14px;
     gap: 8px;
+}
+
+.grouplist-btn-text {
+    max-width: 250px;
+}
+
+.grouplist-icon-right {
+    transition: transform 0.2s ease;
+}
+
+.rotate {
+    transform: rotate(180deg);
 }
 
 .grouplist-item {
@@ -52,25 +64,13 @@
     background-color: #F9FAFB;
 }
 
-.grouplist .icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    color: #6A7282;
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 50%;
-    background-color: #F3F4F6;
-}
-
 .grouplist-item:first-child {
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
 }
 
 .grouplist-item-info {
+    width: 90%;
     padding: 0px 12px;
     font-weight: bold;
     gap: 0;
@@ -98,6 +98,16 @@
     font-weight: bold;
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
+}
+
+.grouplist-footer-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9999px;
+    background-color: var(--gray-4);
 }
 
 .header-right {
@@ -157,6 +167,17 @@
     background-color: #F9FAFB;
 }
 
+.notice-btn .blind {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}
+
 .notice .dropdown-items {
     display: flex;
     flex-direction: column;
@@ -206,15 +227,19 @@
 }
 
 .notice-item-title {
+    max-width: 170px;
     font-size: 14px;
     font-weight: bold;
     color: #191F28;
 }
 
 .notice-item-content {
+    max-width: 170px;
     font-size: 12px;
     font-weight: 600;
     color: #99A1AF;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 .notice-item-time {
@@ -243,24 +268,16 @@
 .user-btn {
     display: flex;
     align-items: center;
-    width: 100px;
+    max-width: 100px;
     height: 37px;
     font-size: 13px;
     gap: 8px;
     padding: 4px;
 }
 
-.user-icon-left {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background-color: #EDE9FE;
-    font-size: 12px;
-    font-weight: bold;
-    color: #7F22FE;
+.user-btn-text {
+    max-width: 100px;
+    text-align: left;
 }
 
 .user .dropdown-container {
@@ -344,4 +361,18 @@
 strong {
     display: block;
     font-size: 13px;
+}
+
+.ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.ellipsis-2 {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }

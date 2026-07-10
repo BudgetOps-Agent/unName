@@ -62,15 +62,14 @@ const noticelist = [
 export default function Header({}) {
 
     const pendingCount = noticelist.filter((item) => item.status === 'pending').length;
-    
+
     return (
         <div className="header-container">
             <div className="header-left">
                 <Dropdown
-                    text="GDSC 한양대학교"
+                    text={<p className="ellipsis">GDSC 한양대학교</p>}
                     className="grouplist"
                     iconOnly={false}
-                    iconLeft={<img src="/header/container.svg" alt="container" />}
                     iconRight={<img src="/header/vector.svg" alt="vector" />}
                     items={grouplist}
                     renderItem={(item, index) => (
@@ -79,9 +78,8 @@ export default function Header({}) {
                             href={`teams/${item.id}/dashboard`}
                             className="grouplist-item"
                         >
-                            <span className="grouplist-item icon">{item.name[0]}</span>
                             <div className="grouplist-item-info">
-                                <span className="grouplist-item-name">{item.name}</span>
+                                <span className="grouplist-item-name ellipsis">{item.name}</span>
                                 <span className="grouplist-item-member">멤버 {item.member}명</span>
                             </div>
                         </Link>
@@ -92,7 +90,7 @@ export default function Header({}) {
                             href="/teams/new"
                             className="grouplist-footer"
                         >
-                            <span className="grouplist-footer icon">+</span>
+                            <span className="grouplist-footer-icon">+</span>
                             <span className="grouplist-footer-text">새 모임 만들기</span>
                         </Link>
                     }
@@ -118,8 +116,8 @@ export default function Header({}) {
                             : <span className="notice-item-icon approved"><img className="approved" src="/header/check-green.svg" alt="approved" /></span>}
 
                             <div className="notice-item-info">
-                                <span className="notice-item-title">{item.title}</span>
-                                <span className="notice-item-content">{item.content}</span>
+                                <span className="notice-item-title ellipsis">{item.title}</span>
+                                <span className="notice-item-content ellipsis-2">{item.content}</span>
                                 <span className="notice-item-time">{item.time}</span>
                             </div>
 
@@ -129,12 +127,9 @@ export default function Header({}) {
                 />
 
                 <Dropdown
-                    text={<span><strong>김민준</strong> <span>관리자</span></span>}
+                    text={<><strong className="ellipsis">김민준</strong> <span>관리자</span></>}
                     className="user"
                     iconOnly={false}
-                    iconLeft={
-                        <span>김</span>
-                    }
                     headerContent={
                         <div className="user-info">
                             <span className="user-info-name">김민준</span>
@@ -161,9 +156,6 @@ export default function Header({}) {
                             href={item.href}
                             className={`user-menu ${item.classname}`}
                         >
-                            <span className="user-menu-icon">
-                                <img src={item.icon} alt={item.menu} />
-                            </span>
                             <span className="user-menu-text">{item.menu}</span>
                         </Link>
                     )}

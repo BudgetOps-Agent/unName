@@ -1,0 +1,22 @@
+.profileCard {
+    margin-top: 4px;
+}
+
+.grouplistCard {
+    margin-top: 16px;
+}
+
+.logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 480px;
+    padding: 16px 0px;
+    margin-top: 16px;
+    gap: 8px;
+    border: 1.6px solid #FFE2E2;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--red-7);
+}

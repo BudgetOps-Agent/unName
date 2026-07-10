@@ -3,12 +3,13 @@ import styles from "./Card.module.css";
 
 interface CardProps {
     className?: string;
+    noPadding?: boolean;
     children: React.ReactNode;
 }
 
-export const Card = ({ className, children }: CardProps) => {
+export const Card = ({ className, noPadding, children }: CardProps) => {
   return (
-    <div className={`card ${styles.card} ${className}`}>
+    <div className={`${styles.card} ${className} ${noPadding ? styles.noPadding : ''}`}>
         {children}
     </div>
   )
