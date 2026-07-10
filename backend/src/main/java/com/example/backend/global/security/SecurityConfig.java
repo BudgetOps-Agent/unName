@@ -31,11 +31,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 아래 URL은 토큰 없이 누구나 접근 가능 (로그인 전 화면)
                         .requestMatchers(
-                                "/api/user/signup",       // 회원가입
-                                "/api/user/login",        // 로그인
-                                "/api/user/findid",       // 아이디 찾기
-                                "/api/user/verify-user",  // 유저 정보 확인
-                                "/api/user/reset-password" // 비밀번호 재설정
+                                "/api/user/signup",         // 회원가입
+                                "/api/user/login",          // 로그인
+                                "/api/user/findid",         // 아이디 찾기
+                                "/api/user/verify-user",    // 유저 정보 확인
+                                "/api/user/reset-password", // 비밀번호 재설정
+                                "/api/user/reissue",
+                                "/swagger-ui/**",           // 스웨거 접속
+                                "/swagger-ui.html",         // 스웨거 접속
+                                "/v3/api-docs/**"           // api-docs
+
                         ).permitAll() // permitAll() 쓰면 누구나 접근 가능
                         // 나머지 모든 요청은 JWT 토큰 필요
                         .anyRequest().authenticated()

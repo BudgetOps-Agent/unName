@@ -32,54 +32,65 @@ public class User {// 4. 클래스 선언
     private Long id;
 
     // 6. 회원 정보 필드
-    @Column(nullable = false) // nullable = false는 null값이면 안된다
+    @Column(nullable = false, length = 50) // nullable = false는 null값이면 안된다
     private String name;
 
-    @Column(unique = true, nullable = false) // unique = true 유니크(고유한 값) 중복 안되게
+    @Column(unique = true, nullable = false, length = 100) // unique = true 유니크(고유한 값) 중복 안되게
     private String email;
 
 //    @Column(unique = true, nullable = false)
 //    private String userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String password;
 
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 20)
     private String phone;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role = "USER"; // role로 역할을 나눠서 회원가입하면 기본값 user로 만듬
+    private Role role = Role.USER; // role로 역할을 나눠서 회원가입하면 기본값 user로 만듬
 
     @Column(nullable = false)
     private LocalDate birthDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status = UserStatus.ACTIVE;
+
     @Column(nullable = false, updatable = false) // updatable = false는 수정하거나 했을때 여기는
     private LocalDateTime createdAt;            // 처음 회원가입 했을때 시간이기때문에 수정되면 안돼서 이렇게함
 
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @Builder
-    public User(/*String userId,*/ String password, String email, String name, LocalDate birthDate,String phone) {
-//        this.userId = userId;               // 아이디
-        this.password = password;   // 암호화된 비밀번호
-        this.email = email;                 // 이메일(아이디)
-        this.name = name;                   // 이름
-        this.birthDate = birthDate;         // 생년월일
-        this.phone = phone;                 // 전화번호
-        this.role = "USER";                 // 기본 권한 user
-        this.createdAt = LocalDateTime.now(); // 회원가입 했을때 시간 자동 설정
-        this.updatedAt = LocalDateTime.now(); // 회원 정보 수정 했을때 자동 설정
+    public static User create(
+            String password,
+            String email,
+            String name,
+            LocalDate birthDate,
+            String phone
+    ) {
+        User user = new User();
+
+        user.password = password;
+        user.email = email;
+        user.name = name;
+        user.birthDate = birthDate;
+        user.phone = phone;
+
+        user.createdAt = LocalDateTime.now();
+        user.updatedAt = LocalDateTime.now();
+
+        return user;
     }
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;
+        this.updatedAt = LocalDateTime.now();
     }
 
-    // 7. 기본 생성자
-    // JPA 사용
-
-    // 8. 회원 생성자
 }
 
 /**

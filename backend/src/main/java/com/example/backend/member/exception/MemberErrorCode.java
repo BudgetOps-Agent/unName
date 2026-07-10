@@ -77,8 +77,32 @@ public enum MemberErrorCode {
     DUPLICATE_EMAIL(
             HttpStatus.CONFLICT,
             "이미 존재하는 이메일입니다."
-    );
+    ),
 
+    DUPLICATE_PHONE(
+            HttpStatus.CONFLICT,
+    "이미 사용 중인 전화번호입니다."
+    ),
+
+    INVALID_BIRTH_DATE(
+            HttpStatus.BAD_REQUEST,
+            "올바른 생년월일을 입력해주세요."
+    ),
+
+    INVALID_REFRESH_TOKEN(
+        HttpStatus.UNAUTHORIZED, // 401
+            "토큰 재발급이 불가합니다."
+    ),
+
+    REUSED_REFRESH_TOKEN(
+            HttpStatus.UNAUTHORIZED, // 401
+            "보안을 위해 다시 로그인해주세요"
+    ),
+
+    INACTIVE_MEMBER(
+            HttpStatus.UNAUTHORIZED,
+            "비활성화된 계정입니다. 관리자에게 문의해주세요."
+    );
 
 //    INVALID_PASSWORD(
 //            HttpStatus.UNAUTHORIZED,
