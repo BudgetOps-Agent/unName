@@ -69,5 +69,40 @@ public class JwtProvider {
     private SecretKey getSecretKey() { // 프로포티즈에서 가져온 문자열 비밀키
         return Keys.hmacShaKeyFor(secretKey.getBytes()); // getBytes() 문자열을 바이트로 변환
                                                             // Keys.hmacShaKeyFor 바이트 배열을 JWT가 쓸 수 있는 SecretKey 객체로 변환
-    }                                                       // JWT 라이브러리는 문자열 그대로 못쓰고 SecretKey 객체 형태로 줘야함
+    }
+    // JWT 라이브러리는 문자열 그대로 못쓰고 SecretKey 객체 형태로 줘야함
+
+    // token
+    @Value("${jwt.access-expiration}")
+    private  long accessExpiration;
+
+    @Value("${jwt.refresh-expiration}")
+    private long refreshExpiration;
+
+    // AccessToken
+    public String generateAccessToken (String email) {
+        return Jwts.builder()
+                .subject(email)
+                .claim("type", "access")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + accessExpiration))
+                .signWith(getSecretKey())
+                .compact();
+    }
+
+    // Refresh Token
+    public String generateRefreshToken(String email) {
+        return Jwts.builder()
+                .subject(email)
+                .claim("type", "refresh")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
+                .signWith(getSecretKey())
+                .compact();
+    }
+
+    public boolean isRefreshToken(String token) {
+        String type = getClaims(token).get("type", String.class);
+        return type.equals("refresh");
+    }
 }

@@ -32,31 +32,37 @@ public class User {// 4. 클래스 선언
     private Long id;
 
     // 6. 회원 정보 필드
-    @Column(nullable = false) // nullable = false는 null값이면 안된다
+    @Column(nullable = false, length = 50) // nullable = false는 null값이면 안된다
     private String name;
 
-    @Column(unique = true, nullable = false) // unique = true 유니크(고유한 값) 중복 안되게
+    @Column(unique = true, nullable = false, length = 100) // unique = true 유니크(고유한 값) 중복 안되게
     private String email;
 
 //    @Column(unique = true, nullable = false)
 //    private String userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String password;
 
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 20)
     private String phone;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role = "USER"; // role로 역할을 나눠서 회원가입하면 기본값 user로 만듬
+    private Role role = Role.USER; // role로 역할을 나눠서 회원가입하면 기본값 user로 만듬
 
     @Column(nullable = false)
     private LocalDate birthDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status = UserStatus.ACTIVE;
+
     @Column(nullable = false, updatable = false) // updatable = false는 수정하거나 했을때 여기는
     private LocalDateTime createdAt;            // 처음 회원가입 했을때 시간이기때문에 수정되면 안돼서 이렇게함
 
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     public static User create(
@@ -74,7 +80,6 @@ public class User {// 4. 클래스 선언
         user.birthDate = birthDate;
         user.phone = phone;
 
-        user.role = "USER";
         user.createdAt = LocalDateTime.now();
         user.updatedAt = LocalDateTime.now();
 
@@ -83,6 +88,7 @@ public class User {// 4. 클래스 선언
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;
+        this.updatedAt = LocalDateTime.now();
     }
 
 }

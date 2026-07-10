@@ -5,8 +5,10 @@ package com.example.backend.member.service;
 
 // 2. import
 import com.example.backend.global.jwt.JwtProvider;
+import com.example.backend.global.jwt.RefreshTokenRepository;
 import com.example.backend.member.dto.*;
 import com.example.backend.member.entity.User;
+import com.example.backend.member.entity.UserStatus;
 import com.example.backend.member.exception.MemberErrorCode;
 import com.example.backend.member.exception.MemberException;
 import com.example.backend.member.repository.UserRepository;
@@ -34,6 +36,9 @@ public class UserService {// 4. 클래스 선언
 
     // Jwt 주입
     private final JwtProvider jwtProvider;
+
+    private final RefreshTokenRepository refreshTokenRepository;
+
     // 7. 회원가입 메서드
     // signup()
     @Transactional
@@ -88,7 +93,7 @@ public class UserService {// 4. 클래스 선언
                 .build();
     }
 
-    public LoginResponse login(LoginRequest request) {
+    public LoginResult login(LoginRequest request) {
 
         // 이메일로 유저 조회
         User user = userRepository.findByEmail(request.getEmail()) // findByEmail() DB에서 email로 유저 찾기
@@ -104,14 +109,23 @@ public class UserService {// 4. 클래스 선언
             throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND); // 일치하지 않으면 예외 던지기
         }
 
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new MemberException(MemberErrorCode.INACTIVE_MEMBER);
+        }
+
         // 토큰 생성
         // 로그인 성공 했으니깐 JWT 토큰 생성
-        String token = jwtProvider.generateToken(user.getEmail(), user.getRole()); // 이메일이랑, 권한 넣어서 토큰 만들기
+        // String token = jwtProvider.generateToken(user.getEmail(), user.getRole()); // 이메일이랑, 권한 넣어서 토큰 만들기
+
+        String accessToken = jwtProvider.generateAccessToken(user.getEmail());
+        String refreshToken = jwtProvider.generateRefreshToken(user.getEmail());
+
+        refreshTokenRepository.save(user.getEmail(), refreshToken);
 
         // LoginResponse 반환 (성공 여부,토큰,유저 정보 담아서 반환)
-        return LoginResponse.builder()
+        LoginResponse response = LoginResponse.builder()
                 .success(true)
-                .token(token)
+                // .token(token)
                 .user(LoginResponse.UserInfo.builder()
                         .id(user.getId())
                         .email(user.getEmail())
@@ -119,7 +133,44 @@ public class UserService {// 4. 클래스 선언
                         .role(user.getRole())
                         .build())
                 .build();
+
+        return new LoginResult(response, accessToken, refreshToken);
     }
+
+    public LoginResult reissue(String refreshToken) {
+
+        if (!jwtProvider.isRefreshToken(refreshToken)) {
+            throw new MemberException(MemberErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        String email = jwtProvider.getEmail(refreshToken);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        if (!refreshTokenRepository.find(email).equals(refreshToken)) {
+            refreshTokenRepository.delete(email);
+            throw new MemberException(MemberErrorCode.REUSED_REFRESH_TOKEN);
+        }
+
+        String newAccessToken = jwtProvider.generateAccessToken(user.getEmail());
+        String newRefreshToken = jwtProvider.generateRefreshToken(user.getEmail());
+
+        refreshTokenRepository.save(user.getEmail(), newRefreshToken);
+
+        LoginResponse response = LoginResponse.builder()
+                .success(true)
+                .user(LoginResponse.UserInfo.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .name(user.getName())
+                        .role(user.getRole())
+                        .build())
+                .build();
+
+        return new LoginResult(response, newAccessToken, newRefreshToken);
+    }
+
 
     public FindIdResponse findId(FindIdRequest request) {
 

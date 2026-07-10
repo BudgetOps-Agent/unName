@@ -1,5 +1,5 @@
 import api from "@/shared/api/api";
-import { RequestSignup, ResponseSignup } from "@/types/auth";
+import { RequestSignin, RequestSignup, ResponseSignin, ResponseSignup } from "@/types/auth";
 import { AxiosResponse } from "axios";
 
 export const signup = (signUpData: RequestSignup): Promise<AxiosResponse<ResponseSignup>> => {
