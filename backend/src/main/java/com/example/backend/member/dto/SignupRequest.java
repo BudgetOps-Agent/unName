@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
+import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDate;
 
@@ -31,7 +32,14 @@ public class SignupRequest { // 4. 클래스 선언
     @NotBlank(message = "이름을 입력해주세요")
     private String name;
 
+    // ^ = 문자열 시작
+    // 01 = 무조건 01로 시작
+    // [0-9] = 숫자 하나
+    // {9} = 바로 앞의 [0-9]를 9번 반복 (그러니까 01 다음에 숫자 9개 더)
+    // $ = 문자열 끝
     @NotBlank(message = "전화번호를 입력해주세요")
+    @Pattern(regexp = "^01[0-9]{9}$",
+            message = "전화번호는 숫자만 11자리로 입력해주세요. (예: 01012345678)")
     private String phone;
 
     private LocalDate birthDate;

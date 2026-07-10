@@ -31,6 +31,7 @@ public class TeamMemberService {
     private final TeamRepository teamRepository;
     private final BudgetRepository budgetRepository;
 
+    @Transactional
     public InviteMemberResponse inviteMember(Long teamId, InviteMemberRequest request) {
 
         // 1. JWT 토큰에서 현재 로그인한 사람 이메일 꺼내기
@@ -84,7 +85,9 @@ public class TeamMemberService {
                 .message("초대가 완료되었습니다.")
                 .build();
     }
+
     // 초대 수락 메서ㅡㄷ
+    @Transactional
     public AcceptInviteResponse acceptInvite(Long memberId) {
 
         // 1. JWT 토큰에서 현재 로그인한 사람 이메일 꺼내기
@@ -124,6 +127,7 @@ public class TeamMemberService {
     }
 
     // 초대 거절 메서드
+    @Transactional
     public RejectInviteResponse rejectInvite(Long memberId) {
 
         // 1. JWT 토큰에서 현재 로그인한 사람 이메일 꺼내기
