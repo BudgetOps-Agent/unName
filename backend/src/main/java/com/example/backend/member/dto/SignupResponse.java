@@ -4,6 +4,7 @@
 package com.example.backend.member.dto;
 
 // 2. import
+import com.example.backend.member.entity.Role;
 import com.example.backend.member.entity.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class SignupResponse { // 4. 클래스 선언
         private Long id;
         private String name;
         private String email;
-        private String role;
+        private Role role;
         private String phone;
         private LocalDate birthDate;
         private LocalDateTime createdAt;
