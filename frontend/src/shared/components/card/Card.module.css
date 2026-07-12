@@ -20,3 +20,46 @@
     flex: 1;
     min-width: auto;
 }
+
+:global(.card-title) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 16px;
+}
+
+:global(.card-title .title) {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+:global(.card-title .desc) {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+:global(.card-title .count) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 16px;
+      background-color: #FFB900;
+      color: #FFFFFF;
+      font-size: 10px;
+}
+
+:global(.card-title .link) {
+    color: #3182F6;
+    font-size: 12px;
+}
+
+:global(.card-title .title-left) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

@@ -4,19 +4,10 @@
     min-height: 100vh;
     box-sizing: border-box;
 }
-
-
-.sidebar-container + header {
-    padding-left: 240px;
-}
-.sidebar-container ~ .main-area main {
-    padding: 84px 72px 32px 292px;
-}
-
-.sidebar-container.closed + header {
+.layout:has(.sidebar-container.closed) .header-container {
     padding-left: 80px;
 }
-.sidebar-container.closed ~ .main-area main {
+.layout:has(.sidebar-container.closed) .main-area main {
     padding-left: 140px;
 }
 
@@ -31,4 +22,8 @@
     justify-content: center;
     background-color: #F6F7FB;
     transition: all .3s;
+    padding: 84px 72px 32px 292px;
+}
+.header-container {
+    padding-left: 240px;
 }

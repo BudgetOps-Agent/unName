@@ -2,11 +2,13 @@
     --white: #ffffff;
     --black: #171717;
 
+    --gray-2: #FFFBEB;
     --gray-3: #F9FAFB;
     --gray-4: #F3F4F6;
     --gray-5: #E5E7EB;
     --gray-6: #99A1AF;
     --gray-7: #4A5565;
+    --gray-8: #6A7282;
     --gray-9: #191F28;
 
     --blue-1: #F6F7FB;
@@ -15,8 +17,13 @@
     --blue-8: #3182F6;
     --blue-9: #155DFC;
 
+    --orange-1: #E17100;
+    --orange-2: #FE9A00;
+
     --red-6: #E53E3E;
     --red-7: #FB2C36;
+
+    --green-1: #00BC7D;
 }
 
 body {
