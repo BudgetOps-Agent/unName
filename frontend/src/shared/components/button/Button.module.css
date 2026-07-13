@@ -26,6 +26,10 @@
     background: var(--gray-4);
 }
 .btn-secondary {
-    color: var(--gray-7);
+    color: var(--gray-6);
     background: var(--white);
+}
+.btn-tertiary {
+    color: var(--white);
+    background: var(--blue-8);
 }
