@@ -1,0 +1,38 @@
+.memberItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+}
+
+.nameBox, .itemRight {
+    display: flex;
+    align-items: center;
+}
+
+.nameBox {
+    gap: 8px;
+}
+
+.name {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.email {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.itemRight {
+    font-size: 12px;
+    font-weight: 700;
+    gap: 4px;
+}
+
+.mandateBtn, .changeBtn, .outBtn {
+    padding: 6px 10px;
+    white-space: nowrap;
+}
