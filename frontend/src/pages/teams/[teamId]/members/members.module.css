@@ -1,0 +1,55 @@
+.membersContainer {
+    display: flex;
+    flex-direction: column;
+    max-width: 860px;
+    margin: 0 auto;
+    gap: 20px;
+}
+
+.membersHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title {
+    color: var(--gray-9);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.subTitle {
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.inviteBtn {
+    max-width: 100px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.roleGuide {
+    padding: 20px;
+}
+
+.guideTitle {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.roleItem {
+    display: flex;
+    align-items: center;
+    padding-top: 12px;
+    font-size: 12px;
+    gap: 12px;
+}
+
+.roleContent {
+    color: var(--gray-7);
+    font-weight: 600;
+}
