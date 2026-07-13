@@ -47,15 +47,15 @@ const FindIdForm = () => {
             phone
         };
 
-        const result = await executeFindid(findIdData);
+        const response = await executeFindid(findIdData);
         
-        if (result.success) {
-            alert(`${result.data?.email}`);
+        if (response.success) {
+            alert(`${response.email}`);
             router.push('/auth/signin');
             return;
         }
 
-        alert(result.message || "네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요.");
+        alert(response.message || "네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요.");
     }
 
     return (

@@ -6,6 +6,14 @@
     box-shadow: 0 2px 20px 0 rgba(0, 0, 0, 0.06);
 }
 
+.card form {
+    margin: 20px 0 0;
+}
+
+.card form :global(.links) {
+    margin: 20px 0 0;
+}
+
 .noPadding {
     padding: 0;
 }
@@ -19,6 +27,10 @@
 :global(.cards) .card{
     flex: 1;
     min-width: auto;
+}
+
+:global(.form-title:not(:first-child)) {
+    margin-top: 20px;
 }
 
 :global(.card-title) {

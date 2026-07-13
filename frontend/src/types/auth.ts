@@ -40,6 +40,7 @@ export interface RequestFindid {
 }
 
 export interface ResponseFindid {
+    success: boolean;
     email: string;
 }
 

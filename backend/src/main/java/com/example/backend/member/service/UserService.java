@@ -49,7 +49,7 @@ public class UserService {// 4. 클래스 선언
 
     // 7. 회원가입 메서드
     // signup()
-    @Transactional // DB 계속 사용 할 수 있게 열어놓기
+//    @Transactional // DB 계속 사용 할 수 있게 열어놓기
     private final RefreshTokenRepository refreshTokenRepository;
 
     // 7. 회원가입 메서드
@@ -187,10 +187,14 @@ public class UserService {// 4. 클래스 선언
 
     public FindIdResponse findId(FindIdRequest request) {
 
+        // 공백 제거 및 형식 통일
+        String name = request.getName().trim();
+        String phone = request.getPhone()
+                .replace("-", "")
+                .trim();
+
         // 이름, 전화번호로 유저 조회
-        User user = userRepository.findByNameAndPhone(
-                        request.getName(),
-                        request.getPhone())
+        User user = userRepository.findByNameAndPhone(name, phone)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
 
         // FindIdResponse 반환
