@@ -1,5 +1,6 @@
 package com.example.backend.member.dto;
 
+import com.example.backend.member.entity.Role;
 import com.example.backend.member.entity.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class MyPageResponse {
     @Builder
     public static class UserInfo {
         private String name;
-        private String role;      // users.role 값 그대로 (지금은 String, enum으로 되어있으면 .toString() 붙이면 됨)
+        private Role role;      // users.role 값 그대로 (지금은 String, enum으로 되어있으면 .toString() 붙이면 됨)
         private String email;
         private String phone;
         private String createdAt;
