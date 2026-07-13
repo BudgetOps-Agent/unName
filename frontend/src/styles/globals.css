@@ -6,7 +6,8 @@
     --gray-4: #F3F4F6;
     --gray-5: #E5E7EB;
     --gray-6: #99A1AF;
-    --gray-7: #4A5565;
+    --gray-7: #6A7282;
+    --gray-8: #4A5565;
     --gray-9: #191F28;
 
     --blue-1: #F6F7FB;
@@ -17,6 +18,9 @@
 
     --red-6: #E53E3E;
     --red-7: #FB2C36;
+
+    --purple-2: #EEF2FF;
+    --purple-6 :#4F39F6;
 }
 
 body {
