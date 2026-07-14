@@ -1,3 +1,16 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
 .memberItem {
     display: flex;
     align-items: center;
@@ -35,4 +48,19 @@
 .mandateBtn, .changeBtn, .outBtn {
     padding: 6px 10px;
     white-space: nowrap;
+}
+
+.mandateBtn:hover {
+    color: var(--yellow-6);
+    background-color: var(--yellow-4);
+}
+
+.changeBtn:hover {
+    color: var(--blue-8);
+    background-color: var(--blue-2);
+}
+
+.outBtn:hover {
+    color: var(--red-5);
+    background-color: var(--red-2);
 }
