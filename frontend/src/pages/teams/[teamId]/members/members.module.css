@@ -31,6 +31,10 @@
     font-weight: 700;
 }
 
+.inviteBtn:hover {
+    background-color: #1B6EF3;
+}
+
 .modalOverlay {
     position: fixed;
     top: 0;

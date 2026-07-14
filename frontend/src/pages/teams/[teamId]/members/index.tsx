@@ -4,7 +4,7 @@ import Button from "@/shared/components/button/Button";
 import { Card } from "@/shared/components/card/Card";
 import { Badge } from "@/shared/components/badge/Badge";
 import MemberList from "../../components/MemberList/MemberList";
-import InvitationCard from "../../components/InvitationCard/InvitationCard";
+import InvitationCard from "../../components/MemberManageCard/InvitationCard";
 
 const memberlist = [
     {
@@ -60,14 +60,9 @@ const rolelist = [
 const members = () => {
 
     const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
-
-    const handleOpenInviteModal = () => {
-        setIsInviteModalOpen(true);
-    }
-
-    const handleCloseInviteModal = () => {
-        setIsInviteModalOpen(false);
-    }
+    
+    const openInviteModal = () => setIsInviteModalOpen(true);
+    const closeInviteModal = () => setIsInviteModalOpen(false);
 
     return (
         <div className={styles.membersContainer}>
@@ -81,12 +76,12 @@ const members = () => {
                     className={styles.inviteBtn}
                     text="+ 초대하기"
                     style="tertiary"
-                    onClick={handleOpenInviteModal}
+                    onClick={openInviteModal}
                 />
 
                 {isInviteModalOpen && (
                     <div className={styles.modalOverlay}>
-                        <InvitationCard onClick={handleCloseInviteModal} />
+                        <InvitationCard onClick={closeInviteModal} />
                     </div>
                 )}
 
