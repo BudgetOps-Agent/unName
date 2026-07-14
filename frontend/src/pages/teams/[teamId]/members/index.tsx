@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import styles from "./members.module.css";
 import Button from "@/shared/components/button/Button";
 import { Card } from "@/shared/components/card/Card";
 import { Badge } from "@/shared/components/badge/Badge";
 import MemberList from "../../components/MemberList/MemberList";
+import InvitationCard from "../../components/InvitationCard/InvitationCard";
 
 const memberlist = [
     {
@@ -56,6 +58,17 @@ const rolelist = [
 ]
 
 const members = () => {
+
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
+
+    const handleOpenInviteModal = () => {
+        setIsInviteModalOpen(true);
+    }
+
+    const handleCloseInviteModal = () => {
+        setIsInviteModalOpen(false);
+    }
+
     return (
         <div className={styles.membersContainer}>
             <div className={styles.membersHeader}>
@@ -64,7 +77,19 @@ const members = () => {
                     <p className={styles.subTitle}>총 {memberlist.length}명이에요</p>
                 </div>
 
-                <Button className={styles.inviteBtn} text="+ 초대하기" style="tertiary" />
+                <Button 
+                    className={styles.inviteBtn}
+                    text="+ 초대하기"
+                    style="tertiary"
+                    onClick={handleOpenInviteModal}
+                />
+
+                {isInviteModalOpen && (
+                    <div className={styles.modalOverlay}>
+                        <InvitationCard onClick={handleCloseInviteModal} />
+                    </div>
+                )}
+
             </div>
 
             <Card className={styles.membersCard} noPadding={true}>
