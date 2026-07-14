@@ -8,6 +8,7 @@
 
 .smallCard {
     min-width: 384px;
+    box-sizing: border-box;
 }
 
 .noPadding {

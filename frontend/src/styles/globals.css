@@ -16,11 +16,18 @@
     --blue-8: #3182F6;
     --blue-9: #155DFC;
 
+    --red-2: #FEF2F2;
+    --red-5: #EF4444;
     --red-6: #E53E3E;
     --red-7: #FB2C36;
+    --red-8: #DC2626;
 
     --purple-2: #EEF2FF;
-    --purple-6 :#4F39F6;
+    --purple-6: #4F39F6;
+
+    --yellow-4: #FEF3C7;
+    --yellow-5: #FBBF24;
+    --yellow-6: #F59E0B;
 }
 
 body {
