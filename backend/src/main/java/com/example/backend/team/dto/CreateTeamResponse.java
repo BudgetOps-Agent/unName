@@ -1,6 +1,7 @@
 package com.example.backend.team.dto;
 
 import com.example.backend.team.entity.Team;
+import com.example.backend.team.entity.TeamType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,6 +17,7 @@ public class CreateTeamResponse {
     public static class TeamInfo {
         private Long id;
         private String name;
+        private TeamType teamType;
         private String description;
         private Long initialBudget;
         private Long adminId;
@@ -28,6 +30,7 @@ public class CreateTeamResponse {
             return TeamInfo.builder()
                     .id(team.getId())
                     .name(team.getName())
+                    .teamType(team.getTeamType())
                     .description(team.getDescription())
                     .initialBudget(team.getInitialBudget())
                     .adminId(team.getAdmin().getId())

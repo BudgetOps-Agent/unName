@@ -25,10 +25,13 @@ export interface RequestSignin {
 }
 
 export interface ResponseSignin {
-    id: number;
-    email: string;
-    name: string;
-    role: 'ADMIN' | 'USER';
+    success: boolean;
+    user: {
+        id: number;
+        email: string;
+        name: string;
+        role: 'ADMIN' | 'USER';
+    };
 }
 
 export interface RequestFindid {
@@ -37,6 +40,7 @@ export interface RequestFindid {
 }
 
 export interface ResponseFindid {
+    success: boolean;
     email: string;
 }
 
