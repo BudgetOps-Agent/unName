@@ -4,9 +4,12 @@
 package com.example.backend.member.dto;
 
 // 2. import
+import com.example.backend.member.entity.Role;
 import com.example.backend.member.entity.User;
 import lombok.Builder;
 import lombok.Getter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 // 3. 클래스 어노테이션
 // @Builder
@@ -26,15 +29,23 @@ public class SignupResponse { // 4. 클래스 선언
 
         // 6. 내부 DTO
         // UserResponse
-        private String userId;
-        private String email;
+        private Long id;
         private String name;
+        private String email;
+        private Role role;
+        private String phone;
+        private LocalDate birthDate;
+        private LocalDateTime createdAt;
 
-        public static UserResponse fromEntity(User user){
+        public static UserResponse fromEntity(User user) {
             return UserResponse.builder()
-                    .userId(user.getUserId())
-                    .email(user.getEmail())
+                    .id(user.getId())
                     .name(user.getName())
+                    .email(user.getEmail())
+                    .role(user.getRole())
+                    .phone(user.getPhone())
+                    .birthDate(user.getBirthDate())
+                    .createdAt(user.getCreatedAt())
                     .build();
         }
     }

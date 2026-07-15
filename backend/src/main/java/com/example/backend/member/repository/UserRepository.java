@@ -32,11 +32,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // existsByUserId()
     // existsByEmail()
 
-    Optional<User> findByUserId(String userId); // 사용자 정의 조회 메서드
+    // Optional<User> findByUserId(String userId); // 사용자 정의 조회 메서드
     Optional<User> findByEmail(String email);
 
-    boolean existsByUserId(String userId); // 중복 확인 메서드
+    // boolean existsByUserId(String userId); // 중복 확인 메서드
     boolean existsByEmail(String email);
+
+    // 아이디 찾기
+    Optional<User> findByNameAndPhone(String name, String phone);
+
+    // 비밀번호 조회
+    Optional<User> findByEmailAndName(String email, String name);
+
+    boolean existsByPhone(String phone);
 }
 
 /**
