@@ -50,6 +50,7 @@ export interface RequestVerifyUser {
 }
 
 export interface ResponseVerifyUser {
+    success: boolean;
     message: string;
 }
 
@@ -59,6 +60,7 @@ export interface RequestResetPassword {
 }
 
 export interface ResponseResetPassword {
+    success: boolean;
     message: string;
 }
 

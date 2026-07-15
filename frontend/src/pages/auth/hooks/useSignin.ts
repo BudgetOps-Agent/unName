@@ -18,10 +18,6 @@ export const useSignIn = () => {
             const response = await signin(signInData);
 
             return response.data;
-            return {
-                success: true,
-                data: response.data
-            };
         } catch (error) {
             const axiosError = error as AxiosError<ErrorResponse>;
 

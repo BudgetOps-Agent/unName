@@ -9,6 +9,7 @@
 .smallCard {
     min-width: 384px;
     box-sizing: border-box;
+}
 .card form {
     margin: 20px 0 0;
 }
