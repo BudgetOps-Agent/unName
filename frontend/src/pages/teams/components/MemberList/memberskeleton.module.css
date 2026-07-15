@@ -12,7 +12,6 @@
     flex-direction: column;
 }
 
-/* 기존 memberItem과 패딩, 정렬을 똑같이 맞춥니다. */
 .memberItem {
     display: flex;
     align-items: center;
@@ -24,7 +23,7 @@
 .itemLeft {
     display: flex;
     flex-direction: column;
-    gap: 6px; /* 이름과 이메일 사이의 간격 */
+    gap: 6px;
 }
 
 .nameBox {
@@ -33,25 +32,24 @@
     gap: 8px;
 }
 
-/* 실제 폰트 크기만큼 회색 영역을 잡아 덜컹거림을 예방합니다 */
 .skeletonName {
     width: 60px;
-    height: 14px; /* .name의 font-size 반영 */
-    background-color: var(--gray-3, #e5e7eb);
+    height: 14px;
+    background-color: var(--gray-3);
     border-radius: 4px;
 }
 
 .skeletonBadge {
     width: 48px;
-    height: 18px; /* Badge 컴포넌트 평균 높이 반영 */
-    background-color: var(--gray-3, #e5e7eb);
+    height: 18px;
+    background-color: var(--gray-3);
     border-radius: 999px;
 }
 
 .skeletonEmail {
     width: 140px;
-    height: 12px; /* .email의 font-size 반영 */
-    background-color: var(--gray-2, #f3f4f6);
+    height: 12px;
+    background-color: var(--gray-3);
     border-radius: 4px;
 }
 
@@ -61,10 +59,10 @@
     gap: 4px;
 }
 
-/* 버튼 자리도 똑같이 크기를 맞춰 잡아줍니다 */
+
 .skeletonButton {
-    width: 68px; /* 가로 버튼 크기 보존 */
-    height: 28px; /* 세로 padding 포함한 대략적인 버튼 높이 보존 */
-    background-color: var(--gray-2, #f3f4f6);
+    width: 68px;
+    height: 28px;
+    background-color: var(--gray-3);
     border-radius: 6px;
 }
