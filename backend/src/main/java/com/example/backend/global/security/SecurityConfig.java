@@ -36,6 +36,7 @@ public class SecurityConfig {
                                 "/api/user/findid",         // 아이디 찾기
                                 "/api/user/verify-user",    // 유저 정보 확인
                                 "/api/user/reset-password", // 비밀번호 재설정
+                                "/api/user/reissue",
                                 "/swagger-ui/**",           // 스웨거 접속
                                 "/swagger-ui.html",         // 스웨거 접속
                                 "/v3/api-docs/**"           // api-docs

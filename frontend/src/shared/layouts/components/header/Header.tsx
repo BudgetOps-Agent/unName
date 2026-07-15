@@ -64,7 +64,7 @@ export default function Header({}) {
     const pendingCount = noticelist.filter((item) => item.status === 'pending').length;
 
     return (
-        <div className="header-container">
+        <header className="header-container">
             <div className="header-left">
                 <Dropdown
                     text={<p className="ellipsis">GDSC 한양대학교</p>}
@@ -161,6 +161,6 @@ export default function Header({}) {
                     )}
                 />
             </div>
-        </div>
+        </header>
     )
 }

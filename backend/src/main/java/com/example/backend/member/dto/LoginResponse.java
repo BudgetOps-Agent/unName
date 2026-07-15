@@ -1,5 +1,6 @@
 package com.example.backend.member.dto;
 
+import com.example.backend.member.entity.Role;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,7 +9,6 @@ import lombok.Getter;
 public class LoginResponse {
 
     private boolean success; // 로그인 성공 여부
-    private String token; // 발급된 JWT 토큰
     private UserInfo user; // 유저 정보
 
     @Getter
@@ -17,6 +17,6 @@ public class LoginResponse {
         private Long id;        // 유저 id PK
         private String email;   // 이메일
         private String name;    // 이름
-        private String role;    // 권한
+        private Role role;    // 권한
     }
 }

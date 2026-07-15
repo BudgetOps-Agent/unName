@@ -2,12 +2,13 @@
     --white: #ffffff;
     --black: #171717;
 
+    --gray-2: #FFFBEB;
     --gray-3: #F9FAFB;
     --gray-4: #F3F4F6;
     --gray-5: #E5E7EB;
     --gray-6: #99A1AF;
-    --gray-7: #6A7282;
-    --gray-8: #4A5565;
+    --gray-7: #4A5565;
+    --gray-8: #6A7282;
     --gray-9: #191F28;
 
     --blue-1: #F6F7FB;
@@ -28,6 +29,11 @@
     --yellow-4: #FEF3C7;
     --yellow-5: #FBBF24;
     --yellow-6: #F59E0B;
+  
+    --orange-1: #E17100;
+    --orange-2: #FE9A00;
+
+    --green-1: #00BC7D;
 }
 
 body {
@@ -105,7 +111,7 @@ a {
     vertical-align: text-bottom;
 }
 .link {
-    color:var(--gray-5);
+    color:var(--gray-6);
     text-align: center;
     font-size: 14px;
     font-weight: 700;
@@ -127,4 +133,15 @@ a {
     background: url("/arrow-gray.svg") no-repeat center center;
     background-size: 16px 16px;
     vertical-align: middle;
+}
+
+.blind {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
 }

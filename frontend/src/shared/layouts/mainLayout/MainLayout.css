@@ -4,6 +4,12 @@
     min-height: 100vh;
     box-sizing: border-box;
 }
+.layout:has(.sidebar-container.closed) .header-container {
+    padding-left: 80px;
+}
+.layout:has(.sidebar-container.closed) .main-area main {
+    padding-left: 140px;
+}
 
 .main-area {
     flex: 1;
@@ -14,6 +20,10 @@
 
 .main-area main {
     justify-content: center;
-    padding: 24px;
     background-color: #F6F7FB;
+    transition: all .3s;
+    padding: 84px 72px 32px 292px;
+}
+.header-container {
+    padding-left: 240px;
 }

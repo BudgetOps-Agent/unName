@@ -7,20 +7,16 @@ type Props = {
 
 export default function MainLayout({ children }: Props) {
   return (
-    <div className="layout">
-      <aside className="sidebar">
-        <Sidebar />
-      </aside>
-
-      <div className="main-area">
-        <header>
-          <Header />
-        </header>
-
-        <main>
-          { children }
-        </main>
-      </div>
-    </div>
+    <>  
+        <div className="layout">
+            <Header />
+            <Sidebar />
+            <div className="main-area">
+                <main>
+                    { children }
+                </main>
+            </div>
+        </div>
+    </>
   );
 }
