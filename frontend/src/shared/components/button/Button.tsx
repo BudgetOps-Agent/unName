@@ -13,7 +13,7 @@ interface ButtonProps {
     iconRight?: React.ReactNode;
     iconOnly?: boolean;
     size?: "sm" | "md" | "lg" | "xl"
-    style?: "primary" | "secondary"
+    style?: "primary" | "secondary" | "tertiary"
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
     href?: string;
 }

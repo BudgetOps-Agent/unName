@@ -4,7 +4,7 @@ import { Card } from "@/shared/components/card/Card";
 import UserProfile from "../../components/UserProfile/UserProfile";
 import GroupList from "../../components/GroupList/GroupList";
 
-const NewTeam = () => {
+const mypage = () => {
     return (
         <>
             <Link href="/teams/[teamId]/dashboard" className="link-back"><span>대시보드</span></Link>
@@ -24,4 +24,4 @@ const NewTeam = () => {
     )
 }
 
-export default NewTeam
+export default mypage
