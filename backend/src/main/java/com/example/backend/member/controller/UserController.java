@@ -495,9 +495,8 @@ public class UserController {// 4. 클래스 선언
     })
     @PostMapping("/reset-password")
     public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
-//        ResetPasswordResponse response = userService.resetPassword(request);
-//        return ResponseEntity.ok(response);
-        throw new RuntimeException("500 테스트");
+        ResetPasswordResponse response = userService.resetPassword(request);
+        return ResponseEntity.ok(response);
     }
     // 6. API 메서드들
     // - signup()
