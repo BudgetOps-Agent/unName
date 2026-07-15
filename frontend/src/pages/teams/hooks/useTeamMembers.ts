@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react';
 import { Member, UseTeamMembersResult } from '@/types/member';
 
 export const useTeamMembers = (teamId: string | undefined) => {
+
     const [members, setMembers] = useState<Member[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
     const fetchMembers = async (): Promise<UseTeamMembersResult> => {
         if (!teamId) {
@@ -16,6 +18,7 @@ export const useTeamMembers = (teamId: string | undefined) => {
 
         try {
             setIsLoading(true);
+            setError(null);
 
             const response = await axios.get<Member[]>(`/api/teams/${teamId}/members`);
             
@@ -28,11 +31,14 @@ export const useTeamMembers = (teamId: string | undefined) => {
 
         } catch (error) {
             const axiosError = error as AxiosError<{message: string}>;
+            const errMsg = axiosError.response?.data?.message || '멤버 목록을 불러오는 중 오류가 발생했습니다.';
+
+            setError(errMsg);
 
             return {
                 success: false,
                 status: axiosError.response?.status,
-                message: axiosError.response?.data?.message
+                message: errMsg
             };
         } finally {
             setIsLoading(false);
@@ -40,9 +46,11 @@ export const useTeamMembers = (teamId: string | undefined) => {
     };
 
     useEffect(() => {
-        fetchMembers();
+        if (teamId) {
+            fetchMembers();
+        }
     }, [teamId]);
 
 
-    return { members, isLoading, refetch: fetchMembers };
+    return { members, isLoading, error, refetch: fetchMembers };
 };
