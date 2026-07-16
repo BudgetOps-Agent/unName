@@ -5,12 +5,11 @@ interface CardProps {
     className?: string;
     noPadding?: boolean;
     children: React.ReactNode;
-    style?: 'smallCard';
 }
 
-export const Card = ({ className, noPadding, children, style }: CardProps) => {
+export const Card = ({ className, noPadding, children }: CardProps) => {
   return (
-    <div className={`${styles.card} ${className} ${noPadding ? styles.noPadding : ''} ${styles[`${style}`]}`}>
+    <div className={`${styles.card} ${className} ${noPadding ? styles.noPadding : ''}`}>
         {children}
     </div>
   )

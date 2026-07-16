@@ -102,6 +102,21 @@ public enum MemberErrorCode {
     INACTIVE_MEMBER(
             HttpStatus.UNAUTHORIZED,
             "비활성화된 계정입니다. 관리자에게 문의해주세요."
+    ),
+
+    BAD_REQUEST(
+            HttpStatus.BAD_REQUEST,
+            "요청 형식이 올바르지 않습니다."
+    ),
+
+    INTERNAL_SERVER_ERROR(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "서버 내부 오류가 발생했습니다."
+    ),
+
+    SAME_PASSWORD(
+            HttpStatus.BAD_REQUEST,
+            "이전에 사용한 비밀번호입니다."
     );
 
 //    INVALID_PASSWORD(

@@ -42,20 +42,7 @@ const FindPwForm = () => {
             return;
         }
 
-        switch (verifyResult.status) {
-            case 400:
-                alert("요청 형식이 올바르지 않습니다.");
-                break;
-            case 404:
-                alert("일치하는 회원 정보가 없습니다. 입력하신 정보를 다시 확인해 주세요.");
-                break;
-            case 500:
-                alert("서버가 일시적으로 원활하지 않습니다. 잠시 후 다시 시도해 주세요.");
-                break;
-            default:
-                alert("네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요.");
-                break;
-        }
+        alert(verifyResult.message || "네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요.");
     }
 
     const handleResetPasswordSubmit = async (e: SubmitEvent) => {
@@ -84,21 +71,7 @@ const FindPwForm = () => {
             return;
         }
 
-        switch (resetPasswordResult.status) {
-            case 400:
-                alert("이전에 사용하던 비밀번호와 동일합니다. 새로운 비밀번호를 입력해 주세요.");
-                break;
-            case 401:
-                alert("인증 정보가 올바르지 않거나 만료되었습니다. 처음부터 다시 시도해 주세요.");
-                setIsUserVerified(false); 
-                break;
-            case 500:
-                alert("서버 오류로 인해 변경에 실패했습니다. 잠시 후 다시 시도해 주세요.");
-                break;
-            default:
-                alert("네트워크 연결이 원활하지 않습니다.");
-                break;
-        }
+        alert(resetPasswordResult.message || "네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요.");
     }
 
     return (
