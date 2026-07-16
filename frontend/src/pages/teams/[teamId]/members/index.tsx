@@ -1,43 +1,46 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import styles from "./members.module.css";
+import { useTeamMembers } from '../../hooks/useTeamMembers';
 import Button from "@/shared/components/button/Button";
 import { Card } from "@/shared/components/card/Card";
 import { Badge } from "@/shared/components/badge/Badge";
 import MemberList from "../../components/MemberList/MemberList";
+import MemberSkeleton from '../../components/MemberList/MemberSkeleton';
 import InvitationCard from "../../components/MemberManageCard/InvitationCard";
 
-const memberlist = [
-    {
-        id: 1,
-        name: "김민준",
-        role: "관리자",
-        email: "minjun.kim@hyu.ac.kr"
-    },
-    {
-        id: 2,
-        name: "이서연",
-        role: "총무",
-        email: "seoyeon.lee@hyu.ac.kr"
-    },
-    {
-        id: 3,
-        name: "박지호",
-        role: "멤버",
-        email: "jiho.park@hyu.ac.kr"
-    },
-    {
-        id: 4,
-        name: "최수아",
-        role: "멤버",
-        email: "sua.choi@hyu.ac.kr"
-    },
-    {
-        id: 5,
-        name: "정다은",
-        role: "멤버",
-        email: "daeun.jung@hyu.ac.kr"
-    },
-]
+// const memberlist = [
+//     {
+//         id: 1,
+//         name: "김민준",
+//         role: "관리자",
+//         email: "minjun.kim@hyu.ac.kr"
+//     },
+//     {
+//         id: 2,
+//         name: "이서연",
+//         role: "총무",
+//         email: "seoyeon.lee@hyu.ac.kr"
+//     },
+//     {
+//         id: 3,
+//         name: "박지호",
+//         role: "멤버",
+//         email: "jiho.park@hyu.ac.kr"
+//     },
+//     {
+//         id: 4,
+//         name: "최수아",
+//         role: "멤버",
+//         email: "sua.choi@hyu.ac.kr"
+//     },
+//     {
+//         id: 5,
+//         name: "정다은",
+//         role: "멤버",
+//         email: "daeun.jung@hyu.ac.kr"
+//     },
+// ]
 
 const rolelist = [
     {
@@ -51,16 +54,26 @@ const rolelist = [
         content: '지출 승인ㆍ반려, 예산 항목 관리, 정산 리포트 조회'
     },
     {
-        id: 1,
+        id: 3,
         role: '멤버',
         content: '지출 요청, 내 지출 내역 조회'
     },
 ]
 
-const members = () => {
+const Members = () => {
 
-    const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
+    const router = useRouter();
+    const { teamId } = router.query;
+    const validTeamId = typeof teamId === 'string' ? teamId : undefined;
+
+    const isRouterLoading = !router.isReady;
+
+    const { members, isLoading, error, refetch } = useTeamMembers(validTeamId);
     
+    const isPageLoading = isRouterLoading || isLoading;
+    
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
+
     const openInviteModal = () => setIsInviteModalOpen(true);
     const closeInviteModal = () => setIsInviteModalOpen(false);
 
@@ -69,7 +82,7 @@ const members = () => {
             <div className={styles.membersHeader}>
                 <div className={styles.headerLeft}>
                     <p className={styles.title}>멤버</p>
-                    <p className={styles.subTitle}>총 {memberlist.length}명이에요</p>
+                    <p className={styles.subTitle}>총 {members.length}명이에요</p>
                 </div>
 
                 <Button 
@@ -88,7 +101,17 @@ const members = () => {
             </div>
 
             <Card className={styles.membersCard} noPadding={true}>
-                <MemberList members={memberlist} />
+                {isPageLoading ? (
+                    <MemberSkeleton />
+                ) : error ? (
+                    <div className={styles.errorContainer}>
+                        <p className={styles.errorTextTitle}>⚠️ 멤버 정보를 불러오지 못했습니다</p>
+                        <p className={styles.errorTextSub}>{error}</p>
+                        <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
+                    </div>
+                ) : (
+                    <MemberList members={members} />
+                )}
             </Card>
 
             <Card className={styles.roleGuide}>
@@ -114,4 +137,4 @@ const members = () => {
     )
 }
 
-export default members
+export default Members
