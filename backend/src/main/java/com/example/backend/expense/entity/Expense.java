@@ -1,0 +1,89 @@
+package com.example.backend.expense.entity;
+
+import com.example.backend.member.entity.User;
+import com.example.backend.team.entity.Team;
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "expenses")
+@Getter
+@NoArgsConstructor
+public class Expense {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // teams 테이블 외래키 (다대일 - 여러 지출이 한 모임에 속함)
+    @ManyToOne(fetch = FetchType.LAZY) // LAZY 쓰는 이유는 필요할때만 써서 불필요한 조회 안하게 만들어서 속도를 느려지는걸 막기 위해서
+    @JoinColumn(name = "team_id", nullable = false)
+    private Team team;
+
+    // users 테이블 외래키 (작성자/신청자)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    // users 테이블 외래키 (최종 승인/반려 처리자, 처리 전엔 NULL)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approved_by")
+    private User approvedBy;
+
+    @Column(nullable = false)
+    private String title; // 지출 제목
+
+    @Column(nullable = false)
+    private String category; // 지출 카테고리 (회의/IT인프라/행사/교육/식비/디자인/기타)
+
+    @Column(nullable = false)
+    private Long amount; // 지출 금액
+
+    @Column(columnDefinition = "TEXT")
+    private String description; // 지출 사유 상세
+
+    @Column(name = "receipt_url", length = 500)
+    private String receiptUrl; // 영수증 파일 경로
+
+    @Column(nullable = false)
+    private String status; // 처리 상태 (SUBMITTED/ESCALATED/APPROVED/REJECTED)
+                            // 처리 상태 (대기/에스컬레이션/승인/거절)
+
+    @Column(name = "processed_by")
+    private String processedBy; // 최종 처리 주체 (AI/HUMAN)
+
+    @Column(name = "reject_reason", length = 500)
+    private String rejectReason; // 반려 사유
+
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt; // 승인/반려 확정 시각
+
+    @Column(nullable = false)
+    private Integer version = 0; // 동시 승인 방지용 버전 (여러 명이 동시에 승인 못 하게 방지 체크)
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt; // 지출 등록 시간
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt; // 수정 시간
+
+    @Builder
+    public Expense(Team team, User user, String title, String category,
+                   Long amount, String description, String receiptUrl) {
+        this.team = team;
+        this.user = user;
+        this.title = title;
+        this.category = category;
+        this.amount = amount;
+        this.description = description;
+        this.receiptUrl = receiptUrl;
+        this.status = "SUBMITTED"; // 지출 등록하면 기본값은 항상 SUBMITTED (승인 대기)
+        this.version = 0;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+}
