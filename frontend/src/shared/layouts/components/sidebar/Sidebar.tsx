@@ -1,47 +1,21 @@
 import Link from "next/link";
+import { useRouter } from 'next/router';
 import { useState } from "react";
-import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { getSidebarMenus } from "./menus";
 
-const menus = [
-    {
-        text: "대시보드",
-        path: "/dashboard",
-        icon: "/sidebar/dashboard.svg",
-        activeIcon: "/sidebar/dashboard-active.svg",
-    },
-    {
-        text: "지출 내역",
-        path: "/expenses",
-        icon: "/sidebar/expenses.svg",
-        activeIcon: "/sidebar/expenses-active.svg",
-    },
-    {
-        text: "예산 관리",
-        path: "/budget",
-        icon: "/sidebar/budget.svg",
-        activeIcon: "/sidebar/budget-active.svg",
-    },
-    {
-        text: "멤버",
-        path: "/member",
-        icon: "/sidebar/member.svg",
-        activeIcon: "/sidebar/member-active.svg",
-    },
-    {
-        text: "정산 리포트",
-        path: "/report",
-        icon: "/sidebar/report.svg",
-        activeIcon: "/sidebar/report-active.svg",
-    },
-];
 
 export default function Sidebar({}) {
+
+    const router = useRouter();
+    const { teamId } = router.query;
+
+    const menus = getSidebarMenus(teamId);
 
     const [isOpen, setIsOpen] = useState(true);
     const [showText, setShowText] = useState(true);
 
-    const pathname = usePathname();
+    const pathname = router.asPath;
 
     const toggleSidebar = () => {
         if (isOpen) {
