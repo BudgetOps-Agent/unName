@@ -26,6 +26,7 @@
     --purple-2: #EEF2FF;
     --purple-6: #4F39F6;
 
+    --yellow-3: #FFFBEB;
     --yellow-4: #FEF3C7;
     --yellow-5: #FBBF24;
     --yellow-6: #F59E0B;
@@ -33,7 +34,9 @@
     --orange-1: #E17100;
     --orange-2: #FE9A00;
 
-    --green-1: #00BC7D;
+    --green-1: #ECFDF5;
+    --green-2: #00BC7D;
+    --green-3: #009966;
 }
 
 body {
