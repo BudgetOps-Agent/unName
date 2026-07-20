@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styles from './progressbar.module.css';
 
 interface ProgressBarProps {
     total: number;
@@ -21,10 +22,10 @@ export default function ProgressBar({
     }, [targetPercentage]);
 
     return (
-        <div className="progress-bar-container">
-            <div className="progress-bar-track">
+        <div className={styles.progressBarContainer}>
+            <div className={styles.progressBarTrack}>
                 <div 
-                    className="progress-bar-fill"
+                    className={styles.progressBarFill}
                     style={{ width: `${currentWidth}%` }}
                 />
             </div>

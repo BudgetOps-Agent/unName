@@ -72,8 +72,9 @@ const dashboard = () => {
                 <p>{`${usedBudget.toLocaleString()}원`}</p>
                 <span>사용됨</span>
                 </div>
-                
-                <ProgressBar total={totalBudget} used={usedBudget} />
+                <div className="progress-bar">
+                    <ProgressBar total={totalBudget} used={usedBudget} />
+                </div>
             </div>
 
             <div className="budget-status-section">
