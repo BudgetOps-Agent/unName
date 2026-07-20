@@ -1,4 +1,4 @@
-import { useState, SubmitEvent } from "react";
+import { useState, SubmitEvent, useRef } from "react";
 import { useRouter } from "next/router";
 import { useFindPw } from "../hooks/useFindpw";
 import Input from "@/shared/components/input/Input";
@@ -13,11 +13,13 @@ const FindPwForm = () => {
     const { executeVerify, executeResetPassword } = useFindPw();
 
     const [isUserVerified, setIsUserVerified] = useState(false);
+    const [verifyToken, setVerifyToken] = useState(''); 
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const newPasswordRef = useRef<HTMLInputElement>(null);
 
     const router = useRouter();
 
@@ -38,6 +40,7 @@ const FindPwForm = () => {
 
         if (verifyResult.success) {
             alert("유저 정보가 확인되었습니다. 새 비밀번호를 입력해주세요.");
+            setVerifyToken(verifyResult.verifyToken);
             setIsUserVerified(true);
             return;
         }
@@ -60,7 +63,8 @@ const FindPwForm = () => {
 
         const resetPasswordData = {
             email,
-            newPassword
+            newPassword,
+            verifyToken
         };
 
         const resetPasswordResult = await executeResetPassword(resetPasswordData);
@@ -71,7 +75,22 @@ const FindPwForm = () => {
             return;
         }
 
-        alert(resetPasswordResult.message || "네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요.");
+        if(resetPasswordResult.code === "SAME_PASSWORD") {
+          alert(resetPasswordResult.message);
+          setNewPassword('');
+          newPasswordRef.current?.focus();
+          setConfirmPassword('');
+          return;
+        } 
+        
+        if (resetPasswordResult.code !== "SAME_PASSWORD") {
+            alert(resetPasswordResult.message || "네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요.");
+            setIsUserVerified(false);
+            setVerifyToken('');
+            return;
+        }
+
+        alert(resetPasswordResult.message);
     }
 
     return (
@@ -86,7 +105,7 @@ const FindPwForm = () => {
                 </form>
             ) : (
                 <form onSubmit={handleResetPasswordSubmit}>
-                    <Input id="newPassword" label="비밀번호" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required/>
+                    <Input id="newPassword" label="비밀번호" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} ref={newPasswordRef}  required/>
                     <Input id="confirmPassword" label="비밀번호 확인" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
                     <div className="buttons">
                         <Button type="submit" text="비밀번호 변경하기" size="lg"/>

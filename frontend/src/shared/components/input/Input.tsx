@@ -11,6 +11,7 @@ interface InputProps {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onFocus?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     error?: string;
+    ref?: React.Ref<HTMLInputElement>;
 }
 
 const Input = ({
@@ -23,6 +24,7 @@ const Input = ({
     onChange,
     onFocus,
     error,
+    ref
 }: InputProps) => {
     return (
         <div className={styles["input-wrap"]}>
@@ -35,6 +37,7 @@ const Input = ({
                 required={required}
                 onChange={onChange}
                 onFocus={onFocus}
+                ref={ref}
             />
 
             {error && (

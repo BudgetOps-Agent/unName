@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -65,6 +66,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // OncePerRe
         String bearer = request.getHeader("Authorization");
         if (bearer != null && bearer.startsWith("Bearer ")) {
             return bearer.substring(7); // "Bearer " 7글자 제거(띄어쓰기까지 7글자 제거하고 뒤에 토큰 값만 꺼낼려고)
+        }
+
+        if(request.getCookies() != null) {
+            for(Cookie cookie : request.getCookies()) {
+                if("accessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
         }
         return null; // 토큰 없으면 null 반환
     }
