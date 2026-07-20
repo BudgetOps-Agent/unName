@@ -1,24 +1,9 @@
 import Link from "next/link";
 import Dropdown from "@/shared/components/dropdown/Dropdown";
-// import { responseSignin } from "@/types/auth";
-
-// interface HeaderProps {
-//     isLoggedIn: boolean;
-//     user: responseSignin | null;
-// }
-
-const grouplist = [
-    {
-        id: 1,
-        name: "GDSC 한양대학교",
-        member: 24,
-    },
-    {
-        id: 2,
-        name: "스타트업 스터디",
-        member: 8,
-    },
-]
+import { useRouter } from "next/router";
+import { useAuthStore } from "@/store/authStore";
+import { useEffect, useState } from "react";
+import { logout, mypage } from "@/pages/auth/api/authApi";
 
 const noticelist = [
     {
@@ -59,31 +44,93 @@ const noticelist = [
     }
 ]
 
-export default function Header({}) {
+const ROLE_LABEL: Record<string, string> = {
+    ADMIN: "관리자",
+    ACCOUNTANT: "회계담당자",
+    MEMBER: "멤버",
+} 
+
+const Header = () => {
+
+    const router = useRouter();
+    const user = useAuthStore((state) => state.user);
+    const clearAuth = useAuthStore((state) => state.logout);
 
     const pendingCount = noticelist.filter((item) => item.status === 'pending').length;
+
+    const userName = user?.user?.name ?? "";
+
+    const { teamId, from } = router.query;
+    const effectiveTeamId = teamId ?? from;
+    const [teamRoleLabel, setTeamRoleLabel] = useState("");
+    const [myTeams, setMyTeams] = useState<{ teamId: number; name: string; role: string }[]>([]);
+
+    useEffect(() => {
+        let isCancelled = false;
+
+        const fetchMyTeams = async () => {
+            try {
+                const response = await mypage();
+                const teams = response.data.teams;
+
+                if (!isCancelled) {
+                    setMyTeams(teams);
+
+                    const currentTeam = teams.find((team) => String(team.teamId) === String(effectiveTeamId));
+                    setTeamRoleLabel(
+                        currentTeam ? (ROLE_LABEL[currentTeam.role] ?? currentTeam.role) : ""
+                    );
+                }
+            } catch (error) {
+                console.error("유저 정보 조회 실패:", error);
+                if (!isCancelled) {
+                    setMyTeams([]);
+                    setTeamRoleLabel("");
+                }
+            }
+        };
+
+        fetchMyTeams();
+
+        return () => {
+            isCancelled = true;
+        };
+    }, [effectiveTeamId]);
+
+    const userRole = teamRoleLabel;
+    const currentTeamName = myTeams.find((team) => String(team.teamId) === String(effectiveTeamId))?.name ?? "모임 선택";
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } catch (error) {
+            console.error("로그아웃 요청 실패:", error);
+        } finally {
+            clearAuth();
+            router.push('/auth/signin');
+        }
+    };
 
     return (
         <header className="header-container">
             <div className="header-left">
                 <Dropdown
-                    text={<p className="ellipsis">GDSC 한양대학교</p>}
+                    text={<p className="ellipsis">{currentTeamName}</p>}
                     className="grouplist"
                     iconOnly={false}
                     iconRight={<img src="/header/vector.svg" alt="vector" />}
-                    items={grouplist}
+                    items={myTeams}
                     renderItem={(item, index) => (
                         <Link 
                             key={index}
-                            href={`teams/${item.id}/dashboard`}
+                            href={`/teams/${item.teamId}/dashboard`}
                             className="grouplist-item"
                         >
                             <div className="grouplist-item-info">
                                 <span className="grouplist-item-name ellipsis">{item.name}</span>
-                                <span className="grouplist-item-member">멤버 {item.member}명</span>
+                                <span className="grouplist-item-member">{ROLE_LABEL[item.role] ?? item.role}</span>
                             </div>
                         </Link>
-
                     )}
                     footerContent={
                         <Link
@@ -127,20 +174,20 @@ export default function Header({}) {
                 />
 
                 <Dropdown
-                    text={<><strong className="ellipsis">김민준</strong> <span>관리자</span></>}
+                    text={<><strong className="ellipsis">{userName}</strong> <span>{userRole}</span></>}
                     className="user"
                     iconOnly={false}
                     headerContent={
                         <div className="user-info">
-                            <span className="user-info-name">김민준</span>
-                            <span className="user-info-role">관리자</span>
+                            <span className="user-info-name">{userName}</span>
+                            <span className="user-info-role">{userRole}</span>
                         </div>
                     }
                     items={[
                         {
                             menu: "마이페이지",
                             classname: "mypage",
-                            href: "/mypage",
+                            href: `/mypage?from=${teamId ?? ''}`,
                             icon: "/header/mypage.svg",
                         },
                         {
@@ -151,16 +198,30 @@ export default function Header({}) {
                         }
                     ]}
                     renderItem={(item, index) => (
-                        <Link
-                            key={index}
-                            href={item.href}
-                            className={`user-menu ${item.classname}`}
-                        >
-                            <span className="user-menu-text">{item.menu}</span>
-                        </Link>
+                        item.classname === "logout" ? (
+                            <button
+                                key={index}
+                                type="button"
+                                onClick={handleLogout}
+                                className={`user-menu ${item.classname}`}
+                            >
+                                <span className="user-menu-text">{item.menu}</span>
+                            </button>
+                        ) : (
+                            <Link
+                                key={index}
+                                href={item.href}
+                                className={`user-menu ${item.classname}`}
+                            >
+                                <span className="user-menu-text">{item.menu}</span>
+                            </Link>
+                        )
                     )}
                 />
             </div>
         </header>
     )
 }
+
+
+export default Header

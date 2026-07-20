@@ -30,6 +30,7 @@ public class Team {
     @Column(nullable = false)
     private Integer maxMembers = 20; // 모임 최대인원 일단 20명으로 해놓기로 해서 20명으로 해놓음
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TeamType teamType; // 모임 유형 (동아리·학생회, 스터디, 친목, 동호회, 회사)
 
@@ -39,7 +40,7 @@ public class Team {
     // 모임 하나당 모임장은 한 명, 한 사람이 여러 모임의 모임장이 될 수 있음
     // FetchType.LAZY = admin 정보가 실제로 필요할 때만 DB 조회
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", nullable = false)
+    @JoinColumn(name = "created_by", nullable = false)
     private User admin;
 
     @Column(nullable = false, updatable = false)

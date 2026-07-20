@@ -9,6 +9,7 @@ import {
     validateEmailFormat,
     validatePasswordFormat
 } from "../utils/signupValidator";
+import { ResponseSignin } from "@/types/auth";
 
 const SigninForm = () => {
 
@@ -44,9 +45,7 @@ const SigninForm = () => {
         if (result.success) {
             alert(`${result.user?.name}님, 반갑습니다.`);
 
-            if (result.data) {
-                login(result.data);
-            }
+            login(result as ResponseSignin); 
 
             router.push('/');
             return;

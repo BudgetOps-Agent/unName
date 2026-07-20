@@ -1,6 +1,25 @@
 import styles from './userprofile.module.css';
 import Button from '@/shared/components/button/Button';
 
+interface UserInfo {
+    name: string;
+    role: "ADMIN" | "USER";
+    email: string;
+    phone: string;
+    createAt: string;
+}
+
+const ROLE_LABEL: Record<string, string> = {
+    ADMIN: "관리자",
+    ACCOUNTANT: "회계담당자",
+    MEMBER: "멤버",
+}
+
+const formatData = (isoString: string) => {
+    if(!isoString) return "";
+    return isoString.slice(0, 10);
+}
+
 const UserProfile = () => {
     return (
         <div className={styles.profileContainer}>
@@ -26,7 +45,7 @@ const UserProfile = () => {
                 </div>
             </div>
 
-            <Button className={styles.modifyBtn} style="secondary" text="프로필 수정" />
+            {/* <Button className={styles.modifyBtn} style="secondary" text="프로필 수정" /> */}
         </div>
     )
 }

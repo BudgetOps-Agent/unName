@@ -1,5 +1,4 @@
 import type { AppProps } from "next/app";
-import Head from "next/head";
 import "@/styles/style.css";
 import "@/shared/layouts/components/header/Header.css";
 import "@/shared/layouts/components/sidebar/Sidebar.css";
@@ -13,12 +12,11 @@ export default function App({ Component, pageProps, router }: AppProps) {
 
     const isAuthPage = currentPath.startsWith("/auth");
     const isNewTeamPage = currentPath.startsWith("/teams/new");
-    const isMyPage = currentPath.startsWith("/teams/[teamId]/mypage");
     const isMyGroup = currentPath === "/teams";
 
-    const showLogo = !["/teams", "/teams/new", "/teams/[teamId]/mypage"].includes(currentPath);
+    const showLogo = !["/teams", "/teams/new"].includes(currentPath);
     
-    const useAuthLayout = isAuthPage || isMyGroup || isNewTeamPage || isMyPage;
+    const useAuthLayout = isAuthPage || isMyGroup || isNewTeamPage;
     
     return (
         <>

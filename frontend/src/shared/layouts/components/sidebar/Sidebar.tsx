@@ -8,9 +8,10 @@ import { getSidebarMenus } from "./menus";
 export default function Sidebar({}) {
 
     const router = useRouter();
-    const { teamId } = router.query;
+    const { teamId, from } = router.query;
+    const effectiveTeamId = teamId ?? from;
 
-    const menus = getSidebarMenus(teamId);
+    const menus = getSidebarMenus(effectiveTeamId);
 
     const [isOpen, setIsOpen] = useState(true);
     const [showText, setShowText] = useState(true);
