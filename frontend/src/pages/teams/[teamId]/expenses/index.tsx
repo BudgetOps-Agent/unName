@@ -53,7 +53,7 @@ const Expenses = () => {
             <div className={styles.expensesHeader}>
                 <div className={styles.headerLeft}>
                     <p className={styles.title}>지출 내역</p>
-                    <p className={styles.subTitle}>총 7건이에요</p>
+                    <p className={styles.subTitle}>총 {expenses.length}건이에요</p>
                 </div>
 
                 <Link className={styles.requestBtn} href={`/teams/${validTeamId}/expenses/new`}>+ 지출 요청</Link>

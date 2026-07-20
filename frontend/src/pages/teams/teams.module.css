@@ -38,3 +38,54 @@
 .newTeamBtn:hover {
     background-color: #1B6EF3;
 }
+
+.inviteListSection{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.inviteAlarm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.inviteCount {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 6px;
+    border-radius: 9999px;
+    color: var(--white);
+    background-color: var(--blue-8);
+    font-size: 10px;
+}
+
+.groupListSection {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.logoutBtnSection {
+    display: flex;
+    justify-content: center;
+    padding-top: 8px;
+}
+
+.logoutBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 700;
+    transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logoutBtn:hover {
+    color: #4b5563;
+}

@@ -9,14 +9,20 @@ import MainLayout from "@/shared/layouts/mainLayout/MainLayout";
 import AuthLayout from "@/shared/layouts/authLayout/AuthLayout";
 
 export default function App({ Component, pageProps, router }: AppProps) {
-    const isAuthPage = router.pathname.startsWith("/auth");
-    const isMyGroup = router.pathname.startsWith("/teams");
-    const isNewTeamPage = router.pathname.startsWith("/teams/new");
-    const isMyPage = router.pathname.startsWith("/teams/[teamId]/mypage");
-    const showLogo = !["/teams", "/teams/new", "/teams/[teamId]/mypage"].includes(router.pathname);
+    const currentPath = router.pathname;
+
+    const isAuthPage = currentPath.startsWith("/auth");
+    const isNewTeamPage = currentPath.startsWith("/teams/new");
+    const isMyPage = currentPath.startsWith("/teams/[teamId]/mypage");
+    const isMyGroup = currentPath === "/teams";
+
+    const showLogo = !["/teams", "/teams/new", "/teams/[teamId]/mypage"].includes(currentPath);
+    
+    const useAuthLayout = isAuthPage || isMyGroup || isNewTeamPage || isMyPage;
+    
     return (
         <>
-            {isAuthPage || isMyGroup || isNewTeamPage || isMyPage ? (
+            {useAuthLayout ? (
                 <AuthLayout showLogo={showLogo}>
                     <Component {...pageProps} />
                 </AuthLayout>

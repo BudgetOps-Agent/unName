@@ -19,6 +19,11 @@ interface GroupCardProps {
 
 const GroupCard = ({ group }: GroupCardProps) => {
     const { id, name, member, role, budget, usedBudget } = group;
+    
+    const budgetUsageRate = budget > 0
+        ? Math.round((usedBudget / budget) * 100)
+        : 0;
+
     return (
         <Card className={styles.groupCard}>
             <Link className={styles.cardContainer} href={`/teams/${id}/dashboard`}>
@@ -39,8 +44,17 @@ const GroupCard = ({ group }: GroupCardProps) => {
                 </div>
 
                 <div className={styles.progressSection}>
-                    <p>예산 사용률</p>
+                    <div className={styles.progressHeader}>
+                        <p>예산 사용률</p>
+                        <p style={{ color: '#191F28', fontWeight: 'bold' }}>{budgetUsageRate}%</p>
+                    </div>
+
                     <ProgressBar total={budget} used={usedBudget} />
+                    
+                    <div className={styles.progressFooter}>
+                        <p>{usedBudget.toLocaleString()}원 사용</p>
+                        <p>총 {budget.toLocaleString()}원</p>
+                    </div>
                 </div>
             </Link>
         </Card>
