@@ -28,14 +28,6 @@ export default function App({ Component, pageProps, router }: AppProps) {
                 </AuthLayout>
             ) : (
                 <MainLayout>
-                    <Head>
-                        <link 
-                        rel="stylesheet" 
-                        as="style" 
-                        crossOrigin="anonymous" 
-                        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" 
-                        />
-                    </Head>
                     <Component {...pageProps} />
                 </MainLayout>
             )}
