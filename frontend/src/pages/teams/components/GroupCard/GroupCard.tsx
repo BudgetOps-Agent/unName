@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Card } from '@/shared/components/card/Card';
 import { Badge } from '@/shared/components/badge/Badge';
 import ProgressBar from '@/shared/components/progressbar/ProgressBar';
+import Skeleton from '@/shared/components/skeleton/Skeleton';
 
 interface Group {
     id: number;
@@ -14,10 +15,42 @@ interface Group {
 }
 
 interface GroupCardProps {
-    group: Group;
+    group?: Group;
+    isLoading?: boolean;
 }
 
-const GroupCard = ({ group }: GroupCardProps) => {
+const GroupCard = ({ group, isLoading = false }: GroupCardProps) => {
+
+    if (isLoading || !group) {
+        return (
+            <Card className={styles.groupCard}>
+                <div className={styles.cardContainer}>
+                    <div className={styles.cardHeader}>
+                        <div className={styles.headerLeft}>
+                            <Skeleton width={120} height={16} delay={0} />
+                            <Skeleton width={70} height={12} delay={0.1} />
+                        </div>
+                        <Skeleton width={48} height={20} radius={999} delay={0.2} />
+                    </div>
+
+                    <div className={styles.progressSection}>
+                        <div className={styles.progressHeader}>
+                            <Skeleton width={60} height={12} delay={0.3} />
+                            <Skeleton width={32} height={12} delay={0.35} />
+                        </div>
+
+                        <Skeleton height={8} radius={999} delay={0.4} />
+
+                        <div className={styles.progressFooter}>
+                            <Skeleton width={80} height={12} delay={0.5} />
+                            <Skeleton width={80} height={12} delay={0.55} />
+                        </div>
+                    </div>
+                </div>
+            </Card>
+        );
+    }
+
     const { id, name, member, role, budget, usedBudget } = group;
     
     const budgetUsageRate = budget > 0

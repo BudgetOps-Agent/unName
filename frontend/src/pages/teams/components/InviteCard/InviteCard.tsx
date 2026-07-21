@@ -7,10 +7,6 @@ interface Invitation {
     id: number;
     name: string;
     inviter: string;
-    category: string;
-    member: number;
-    budget: number;
-    role: string;
 }
 
 interface InviteCardProps {
@@ -18,7 +14,7 @@ interface InviteCardProps {
 }
 
 const InviteCard = ({ invitation }: InviteCardProps) => {
-    const { id, name, inviter, category, member, budget, role } = invitation;
+    const { name, inviter} = invitation;
     
     return (
         <Card className={styles.invitationCard} noPadding={true}>
@@ -27,24 +23,8 @@ const InviteCard = ({ invitation }: InviteCardProps) => {
                     <p className={styles.name}>{name}</p>
                     <p className={styles.subTitle}>
                         <span className={styles.inviter}>{inviter}</span>
-                        님이 초대했어요 ·
-                        <span className={styles.category}> {category}</span>
+                        님이 초대했어요
                     </p>
-                </div>
-
-                <div className={styles.subContent}>
-                    <span>멤버 {member}명</span>
-                    ·
-                    <span>예산 {budget.toLocaleString()}원</span>
-                    ·
-                    <Badge 
-                        text={role}
-                        style={
-                            role === '관리자' ? 'blue'
-                            : role === '총무' ? 'purple'
-                            : 'gray'
-                        }
-                    />
                 </div>
                 
                 <div className={styles.btnSection}>

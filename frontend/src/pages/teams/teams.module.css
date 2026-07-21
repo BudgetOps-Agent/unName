@@ -89,3 +89,18 @@
 .logoutBtn:hover {
     color: #4b5563;
 }
+
+.error {
+    padding: 24px 0;
+    color: var(--red-7);
+    font-weight: bold;
+    text-align: center;
+}
+
+.empty {
+    padding: 24px 0;
+    color: var(--gray-6);
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}

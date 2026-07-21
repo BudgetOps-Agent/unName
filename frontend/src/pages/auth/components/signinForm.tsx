@@ -47,7 +47,7 @@ const SigninForm = () => {
 
             login(result as ResponseSignin); 
 
-            router.push('/');
+            router.push('/teams');
             return;
         }
 

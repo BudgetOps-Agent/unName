@@ -3,49 +3,25 @@ import styles from './teams.module.css';
 import Link from 'next/link';
 import InviteCard from './components/InviteCard/InviteCard';
 import GroupCard from './components/GroupCard/GroupCard';
+import useMyTeams from './hooks/useMyTeams';
+import { Card } from '@/shared/components/card/Card';
 
 const inviteInfo = [
     {
         id: 1,
         name: 'AI 연구 동아리',
         inviter: '이정민',
-        category: '동아리/학생회',
-        member: 12,
-        budget: 2000000,
-        role: '멤버'
     },
     {
         id: 2,
         name: '사이드 프로젝트 팀',
         inviter: '최준혁',
-        category: '스터디',
-        member: 6,
-        budget: 500000,
-        role: '총무'
     },
 ]
 
-const groupInfo = [
-    { 
-        id: 1,
-        name: 'GDSC 한양대학교', 
-        member: 24, 
-        role: '관리자', 
-        budget: 5000000, 
-        usedBudget: 2293000
-    },
-    { 
-        id: 2,
-        name: '스타트업 스터디', 
-        member: 8, 
-        role: '멤버', 
-        budget: 800000, 
-        usedBudget: 320000
-    },
-];
-
 const Teams = () => {
 
+    const { groupInfo, isLoading, error } = useMyTeams();
     const [isHoverd, setIsHoverd] = useState(false);
 
     return (
@@ -73,9 +49,23 @@ const Teams = () => {
             )}
 
             <div className={styles.groupListSection}>
-                {groupInfo.map((group) => (
-                    <GroupCard key={group.id} group={group} />
-                ))}
+                {isLoading ? (
+                    <>
+                        <GroupCard isLoading />
+                        <GroupCard isLoading />
+                        <GroupCard isLoading />
+                    </>
+                ) : error ? (
+                    <Card><p className={styles.error}>{error}</p></Card>
+                ) : groupInfo.length === 0 ? (
+                    <Card>
+                        <p className={styles.empty}>아직 속한 모임이 없어요. 새 모임을 만들어보세요.</p>
+                    </Card>
+                ) : (
+                    groupInfo.map((group) => (
+                        <GroupCard key={group.id} group={group} />
+                    ))
+                )}
             </div>
 
             <div className={styles.logoutBtnSection}>
