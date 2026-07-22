@@ -1,5 +1,5 @@
 .grouplistContainer {
-    width: 432px;
+    width: 100%;
 }
 
 .grouplistHeader {
@@ -11,11 +11,12 @@
 
 .itemBox {
     display: flex;
-    width: 440px;
+    width: 100%;
     align-items: center;
     justify-content: space-between;
     padding: 14px 20px;
     border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
 }
 
 .boxLeft {

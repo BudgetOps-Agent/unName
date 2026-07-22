@@ -42,6 +42,7 @@ public class MyPageResponse {
     @Getter
     @Builder
     public static class TeamInfo {
+        private Long teamId;
         private String name;
         private long memberCount;
         private String role;

@@ -206,25 +206,41 @@ public class UserService {// 4. 클래스 선언
 
     public VerifyUserResponse verifyUser(VerifyUserRequest request) {
 
-        // 이메일, 이름으로 유저 조회
-        userRepository.findByEmailAndName(
+        User user = userRepository.findByEmailAndName(
                         request.getEmail(),
                         request.getName())
                 .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        String verifyToken = jwtProvider.generateVerifyToken(user.getEmail());
 
         // VerifyUserResponse 반환
         return VerifyUserResponse.builder()
                 .success(true)
                 .message("사용자 확인이 완료되었습니다.")
+                .verifyToken(verifyToken)
                 .build();
     }
 
     @Transactional
     public ResetPasswordResponse resetPassword(ResetPasswordRequest request) {
 
-        // 이메일로 유저 조회
+        if (!jwtProvider.isVerifyToken(request.getVerifyToken())) {
+            throw new MemberException(MemberErrorCode.INVALID_VERIFY_TOKEN);
+        }
+
+        String tokenEmail = jwtProvider.getEmail(request.getVerifyToken());
+
+        if(!tokenEmail.equals(request.getEmail())) {
+            throw new MemberException(MemberErrorCode.INVALID_VERIFY_TOKEN);
+        }
+
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException((MemberErrorCode.USER_NOT_FOUND)));
+
+        // 기존 비밀번호와 동일한지 검증
+        if(passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new MemberException(MemberErrorCode.SAME_PASSWORD);
+        }
 
         // 새 비밀번호 암호화(회원가입 할때처럼)
         String encodedPassword = passwordEncoder.encode(request.getNewPassword());
@@ -239,6 +255,14 @@ public class UserService {// 4. 클래스 선언
                 .success(true)
                 .message("비밀번호가 변경되었습니다.")
                 .build();
+    }
+
+    public void logout() {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        refreshTokenRepository.delete(email);
     }
 
     // 마이페이지 조회 (API-013)
@@ -273,6 +297,7 @@ public class UserService {// 4. 클래스 선언
                             .countByTeamIdAndStatus(team.getId(), "ACCEPTED");
 
                     return MyPageResponse.TeamInfo.builder()
+                            .teamId(team.getId())
                             .name(team.getName())
                             .memberCount(memberCount)
                             .role(teamMember.getRole())

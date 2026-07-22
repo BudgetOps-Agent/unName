@@ -1,0 +1,26 @@
+package com.example.backend.expense.repository;
+
+import com.example.backend.expense.entity.Expense;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface ExpenseRepository extends JpaRepository<Expense, Long> {
+
+    // 특정 모임(teamId)의 지출 목록을 상태(status) 조건으로 걸러서 조회하는 메서드 (필터링)
+    // statuses는 하나가 아니라 여러 개를 리스트로 받음
+    // DB에서 "WHERE team_id = ? AND status IN (...)" 쿼리로 변환됨
+    // IN 조건이라서 리스트 안에 있는 값 중 하나만 일치해도 결과에 포함됨
+    // 전체 탭 -> List.of("SUBMITTED","ESCALATED","APPROVED","REJECTED") 넘기면 다 조회됨
+    // 대기 탭 -> List.of("SUBMITTED","ESCALATED") 넘기면 이 둘만 조회됨
+    // Ai 가 애매해서 에스컬레이션으로 넘기면 거기에도 승인대기, 에스컬레이션 이렇게 뜨니깐 이렇게 함
+    // 승인 탭 -> List.of("APPROVED")만 넘기면 승인만 조회 됨
+    // 반려 탭 -> List.of("REJECTED")만 넘기면 반려만 조회 됨
+    List<Expense> findByTeamIdAndStatusIn(Long teamId, List<String> statuses);
+
+    // 상태별 개수 세기 - 탭에 표시할 카운트(전체/대기/승인/반려) 계산할 때 씀
+    // 상태별 개수 셀때 마다 findByTeamIdAndStatusIn() 바로 위에 있는 이 메서드를 사용하면
+    // 전체 목록을 가져와서 .size()해서 조회하는거라 비효율적인거 같고 불필요한것들이 같이 조회 될 수도 있어서 이 메서드 씀(안쓰는 데이터까지 가져와서 보여주고 계산함)
+    // DB한테만 이거 몇개인지 알려줘 하는 메서드 "SELECT COUNT(*) WHERE team_id = ? AND status IN (...)"
+    long countByTeamIdAndStatusIn(Long teamId, List<String> statuses);
+}

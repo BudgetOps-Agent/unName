@@ -21,6 +21,7 @@
 .main-area main {
     justify-content: center;
     background-color: #F6F7FB;
+    min-height: 100vh;
     transition: all .3s;
     padding: 84px 72px 32px 292px;
 }

@@ -61,11 +61,7 @@ const dashboard = () => {
             </Link>
         </div>
         
-        <Card>
-            <div className="card-title">
-                <p className="title">이번 달 예산</p>
-                <span className="desc">{`총 ${totalBudget.toLocaleString()}원`}</span>
-            </div>
+        <Card title="이번 달 예산" desc={`총 ${totalBudget.toLocaleString()}원`}>
 
             <div className="budget-progress-section">
                 <div className="progress-content">
@@ -95,10 +91,7 @@ const dashboard = () => {
         </Card>
 
         <div className="cards">
-            <Card>
-              <div className="card-title">
-                  <p className="title">이번 달 예산</p>
-              </div>
+            <Card title="이번 달 예산">
                 <MainBarChart data={barData} />
             </Card>
             
@@ -110,16 +103,7 @@ const dashboard = () => {
             </Card>
         </div>
 
-        <Card>
-            <div className="card-title ">
-                <div className="title-left">
-                  <p className="title">승인이 필요해요</p>
-                  <span className="count">{requestCount}</span>
-                </div>
-                
-                <Link href="/expenses" className="link">전체 보기</Link>
-            </div>
-
+        <Card title="승인이 필요해요" count={requestCount} headerRight={<Link href="/expenses" className="link">전체 보기</Link>}>
             <div className="request-list-items">
                 {requestItems.map((request) => (
                 <Link 

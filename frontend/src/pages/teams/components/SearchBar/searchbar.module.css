@@ -1,0 +1,21 @@
+.searchbarContainer {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    background-color: var(--white);
+    border-radius: 9999px;
+    box-shadow: 0px 2px 20px 0px rgba(0, 0, 0, 0.06);
+}
+
+.searchKeyword {
+    width: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    outline: none;
+    border: none;
+    background: transparent;
+}
+
+input::placeholder {
+    color: #D1D5DC;
+}

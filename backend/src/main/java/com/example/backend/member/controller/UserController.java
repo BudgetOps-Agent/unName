@@ -498,11 +498,64 @@ public class UserController {// 4. 클래스 선언
         ResetPasswordResponse response = userService.resetPassword(request);
         return ResponseEntity.ok(response);
     }
-    // 6. API 메서드들
-    // - signup()
-    // - login()
-    // - findUser()
-    // - updateUser()
+
+    @Operation(summary = "로그아웃", description = "로그인된 회원을 로그아웃 처리합니다.")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "로그아웃 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "인증 실패",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "서버 내부 오류",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                        value = """
+                            {
+                              "success": false,
+                              "code": "INTERNAL_SERVER_ERROR",
+                              "message": "서버 내부 오류가 발생했습니다."
+                            }
+                            """
+                    )
+                )
+            )
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse httpResponse) {
+        userService.logout();
+
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        httpResponse.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        httpResponse.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+        return ResponseEntity.ok().build();
+    }
 
     @Operation(summary = "마이페이지 조회", description = "로그인한 회원의 정보를 조회합니다.")
     @ApiResponses({

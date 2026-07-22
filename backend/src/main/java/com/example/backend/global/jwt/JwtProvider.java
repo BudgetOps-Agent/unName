@@ -1,7 +1,9 @@
 package com.example.backend.global.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -104,5 +106,26 @@ public class JwtProvider {
     public boolean isRefreshToken(String token) {
         String type = getClaims(token).get("type", String.class);
         return type.equals("refresh");
+    }
+
+    private static final long VERIFY_TOKEN_EXPIRE_MS = 1000*60*1;
+
+    public String generateVerifyToken(String email) {
+        return Jwts.builder()
+                .subject(email)
+                .claim("type", "verify")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + VERIFY_TOKEN_EXPIRE_MS))
+                .signWith(getSecretKey())
+                .compact();
+    }
+
+    public boolean isVerifyToken(String token) {
+        try {
+            String type = getClaims(token).get("type", String.class);
+            return "verify".equals(type);
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 }

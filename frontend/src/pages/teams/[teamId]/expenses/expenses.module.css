@@ -1,0 +1,88 @@
+.expensesContainer {
+    display: flex;
+    flex-direction: column;
+    max-width: 860px;
+    margin: 0 auto;
+    gap: 20px;
+}
+
+.expensesHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title {
+    color: var(--gray-9);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.subTitle {
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.requestBtn {
+    max-width: 100px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    background: var(--blue-8);
+    border-radius: 16px;
+}
+
+.requestBtn:hover {
+    background-color: #1B6EF3;
+}
+
+.filterSection {
+    display: flex;
+    gap: 8px;
+}
+
+.filterBtn {
+    max-width: 75px;
+    padding: 8px 16px;
+    border: 0.8px solid var(--gray-5);
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    background: var(--white);
+    border-radius: 9999px;
+}
+
+.filterBtn:hover {
+    border: 0.8px solid var(--gray-6);
+}
+
+.active {
+    background-color: var(--gray-9);
+    box-shadow: 
+        0px 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0px 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.active .btnTitle {
+    color: var(--white);
+}
+
+.filterBtnText {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btnTitle {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.btnCount {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}

@@ -42,6 +42,7 @@ export interface RequestFindid {
 export interface ResponseFindid {
     success: boolean;
     email: string;
+    message: string;
 }
 
 export interface RequestVerifyUser {
@@ -51,16 +52,20 @@ export interface RequestVerifyUser {
 
 export interface ResponseVerifyUser {
     success: boolean;
+    code: string;
     message: string;
+    verifyToken: string;
 }
 
 export interface RequestResetPassword {
     email: string;
     newPassword: string;
+    verifyToken: string; 
 }
 
 export interface ResponseResetPassword {
     success: boolean;
+    code: string;
     message: string;
 }
 

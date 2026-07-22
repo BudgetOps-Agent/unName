@@ -23,3 +23,18 @@
     color: var(--gray-7);
     background-color: var(--gray-4);
 }
+
+.yellow {
+    color: var(--orange-1);
+    background-color: var(--yellow-3);
+}
+
+.red {
+    color: var(--red-7);
+    background-color: var(--red-2);
+}
+
+.green {
+    color: var(--green-3);
+    background-color: var(--green-1);
+}

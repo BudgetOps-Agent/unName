@@ -114,9 +114,14 @@ public enum MemberErrorCode {
             "서버 내부 오류가 발생했습니다."
     ),
 
+    INVALID_VERIFY_TOKEN(
+            HttpStatus.UNAUTHORIZED,
+            "인증 정보가 올바르지 않거나 만료되었습니다. 처음부터 다시 시도해 주세요."
+    ),
+
     SAME_PASSWORD(
             HttpStatus.BAD_REQUEST,
-            "이전에 사용한 비밀번호입니다."
+            "이전에 사용한 비밀번호입니다. 새로운 비밀번호를 입력해주세요."
     );
 
 //    INVALID_PASSWORD(

@@ -9,4 +9,5 @@ public class VerifyUserResponse {
 
     private boolean success;
     private String message;
+    private String verifyToken;
 }

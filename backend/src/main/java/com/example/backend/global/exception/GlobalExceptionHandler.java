@@ -41,6 +41,7 @@ public class GlobalExceptionHandler {
                 .body(
                         ErrorResponse.builder()
                                 .success(false)
+                                .code(e.getErrorCode().name())
                                 .message(
                                         e.getErrorCode().getMessage()
                                 )

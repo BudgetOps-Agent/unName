@@ -8,21 +8,11 @@ import {
 } from "@/types/auth";
 import { findPW, resetPw } from "../api/authApi";
 
-interface ExecuteVerifyResult {
-    success: boolean;
-    status?: number;
-    data?: ResponseVerifyUser;
-    message?: string;
-}
-
-interface ExecuteResetPasswordResult {
-    success: boolean;
-    status?: number;
-    data?: ResponseResetPassword;
-}
+type UseExecuteVerifyResult = ResponseVerifyUser | ErrorResponse;
+type UseExecuteResetPasswordResult = ResponseResetPassword | ErrorResponse;
 
 export const useFindPw = () => {
-    const executeVerify = async (verifyData: RequestVerifyUser): Promise<ExecuteVerifyResult> => {
+    const executeVerify = async (verifyData: RequestVerifyUser): Promise<UseExecuteVerifyResult> => {
         try {
             const response = await findPW(verifyData);
 
@@ -32,24 +22,25 @@ export const useFindPw = () => {
 
             return {
                 success: false,
-                status: axiosError.response?.status,
-                message: axiosError.response?.data?.message
+                code: axiosError.response?.data?.code ?? "UNKNOWN_ERROR",
+                message: axiosError.response?.data?.message ?? "네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요."
             };
         }
     };
     
-    const executeResetPassword = async (resetPwData: RequestResetPassword): Promise<ExecuteResetPasswordResult> => {
+    const executeResetPassword = async (resetPwData: RequestResetPassword): Promise<UseExecuteResetPasswordResult> => {
         
         try {
             const response = await resetPw(resetPwData);
 
             return response.data;
         } catch (error) {
-            const axiosError = error as AxiosError;
+            const axiosError =error as AxiosError<ErrorResponse>;
 
             return {
                 success: false,
-                status: axiosError.response?.status
+                code: axiosError.response?.data?.code ?? "UNKNOWN_ERROR",
+                message: axiosError.response?.data?.message ?? "네트워크 연결이 불안정합니다. 인터넷 상태를 확인해 주세요."
             };
         }
     }
