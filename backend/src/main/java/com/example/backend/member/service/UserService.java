@@ -14,6 +14,7 @@ import com.example.backend.member.exception.MemberException;
 import com.example.backend.member.repository.UserRepository;
 import com.example.backend.team.entity.Team;
 import com.example.backend.teamMember.entity.TeamMember;
+import com.example.backend.teamMember.entity.TeamStatus;
 import com.example.backend.teamMember.repository.TeamMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -286,7 +287,7 @@ public class UserService {// 4. 클래스 선언
 
         // 4. 내가 ACCEPTED(수락)인 모임 목록 가져오기 (TeamMemberRepository 재사용)
         List<TeamMember> acceptedMembers = teamMemberRepository
-                .findByUserIdAndStatus(user.getId(), "ACCEPTED");
+                .findByUserIdAndStatus(user.getId(), TeamStatus.ACCEPTED);
 
         // 5. 각 TeamMember마다 Team, memberCount 조회해서 TeamInfo로 변환
         List<MyPageResponse.TeamInfo> teams = acceptedMembers.stream()
@@ -294,13 +295,13 @@ public class UserService {// 4. 클래스 선언
                     Team team = teamMember.getTeam();
 
                     long memberCount = teamMemberRepository
-                            .countByTeamIdAndStatus(team.getId(), "ACCEPTED");
+                            .countByTeamIdAndStatus(team.getId(), TeamStatus.ACCEPTED);
 
                     return MyPageResponse.TeamInfo.builder()
                             .teamId(team.getId())
                             .name(team.getName())
                             .memberCount(memberCount)
-                            .role(teamMember.getRole())
+                            .role(teamMember.getRole().name())
                             .build();
                 })
                 .collect(Collectors.toList());

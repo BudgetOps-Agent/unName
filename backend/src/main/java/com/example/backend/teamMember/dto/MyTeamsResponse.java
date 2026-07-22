@@ -50,7 +50,7 @@ public class MyTeamsResponse {
                     .id(team.getId())
                     .name(team.getName())
                     .memberCount(memberCount)
-                    .role(teamMember.getRole())
+                    .role(teamMember.getRole().name())
                     .usedBudget(usedBudget)
                     .totalBudget(totalBudget)
                     .percentage(percentage)
