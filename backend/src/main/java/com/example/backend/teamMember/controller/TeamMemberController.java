@@ -52,4 +52,42 @@ public class TeamMemberController {
         MyTeamsResponse response = teamMemberService.getMyTeams();
         return ResponseEntity.ok(response);
     }
+
+    // 모임 멤버 목록 조회 API (API-038)
+    // teamId로 그 모임에 속한 멤버들을 role 우선순위 → 가입일 순으로 정렬해서 보여줌 (위에서부터 가입일 가장 빠른순)
+    @GetMapping("/api/teams/{teamId}/members") // 다른 메서드들처럼 전체 경로 직접 씀 (클래스 매핑 없어서)
+    public ResponseEntity<TeamMemberListResponse> getTeamMembers(
+            @PathVariable("teamId") Long teamId) {
+        TeamMemberListResponse response = teamMemberService.getTeamMembers(teamId);
+        return ResponseEntity.ok(response);
+    }
+
+    // 관리자 권한 위임 API (API-039)
+    // 현재 관리자가 다른 멤버에게 관리자 권한을 넘김 (기존 관리자는 MEMBER로 강등)
+    @PatchMapping("/api/teams/{teamId}/transfer-admin")
+    public ResponseEntity<TransferAdminResponse> transferAdmin(
+            @PathVariable("teamId") Long teamId,
+            @RequestBody @Valid TransferAdminRequest request) {
+        TransferAdminResponse response = teamMemberService.transferAdmin(teamId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    // 멤버 권한 변경 API (API-040)
+    // 관리자가 특정 멤버의 role을 변경 (ACCOUNTANT ↔ MEMBER, ADMIN으로는 불가)
+    @PatchMapping("/api/members/{memberId}/role")
+    public ResponseEntity<ChangeRoleResponse> changeRole(
+            @PathVariable("memberId") Long memberId,
+            @RequestBody @Valid ChangeRoleRequest request) {
+        ChangeRoleResponse response = teamMemberService.changeRole(memberId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    // 멤버 추방 API (API-041)
+    // 관리자가 특정 멤버를 모임에서 강제 탈퇴시킴 (관리자 본인은 추방 불가)
+    @DeleteMapping("/api/members/{memberId}")
+    public ResponseEntity<RemoveMemberResponse> removeMember(
+            @PathVariable("memberId") Long memberId) {
+        RemoveMemberResponse response = teamMemberService.removeMember(memberId);
+        return ResponseEntity.ok(response);
+    }
 }
