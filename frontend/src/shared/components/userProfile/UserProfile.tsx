@@ -31,6 +31,14 @@ const formatData = (isoString: string) => {
     return isoString.slice(0, 10);
 }
 
+const formatPhone = (phone: string) => {
+    if (!phone) return "";
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length === 10) return digits.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+    if (digits.length === 11) return digits.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+    return phone;
+}
+
 const UserProfile = ({ user, isLoading = false }: UserProfileProps) => {
     if (isLoading || !user) {
         return (
@@ -76,7 +84,7 @@ const UserProfile = ({ user, isLoading = false }: UserProfileProps) => {
                 </div>
                 <div className={styles.infoBox}>
                     <span>전화번호</span>
-                    <p>{user.phone}</p>
+                    <p>{formatPhone(user.phone)}</p>
                 </div>
                 <div className={styles.infoBox}>
                     <span>가입일</span>
