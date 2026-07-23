@@ -46,7 +46,7 @@ const noticelist = [
 
 const ROLE_LABEL: Record<string, string> = {
     ADMIN: "관리자",
-    ACCOUNTANT: "회계담당자",
+    ACCOUNTANT: "총무",
     MEMBER: "멤버",
 } 
 
