@@ -1,3 +1,14 @@
+.myPageContainer {
+    display: flex;
+    max-width: 480px;
+    margin: 0 auto;
+    flex-direction: column;
+}
+
+.backLink {
+    text-align: left;
+}
+
 .profileCard {
     margin-top: 4px;
 }

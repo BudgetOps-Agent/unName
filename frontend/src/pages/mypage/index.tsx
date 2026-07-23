@@ -30,8 +30,8 @@ const Mypage = () => {
     
     }
     return (
-        <>
-            <Link href={from ? `/teams/${from}/dashboard` : "/teams"} className="link-back"><span>대시보드</span></Link>
+        <div className={styles.myPageContainer}>
+            <Link href={from ? `/teams/${from}/dashboard` : "/teams"} className={`link-back ${styles.backLink}`}><span>대시보드</span></Link>
             {error ? (
                 <Card className={styles.errorCard}>
                     <div className={styles.errorContainer}>
@@ -56,7 +56,7 @@ const Mypage = () => {
                 <Image src="/logout-red.svg" alt="로그아웃" width={16} height={16} />
                 <p>로그아웃</p>
             </button>
-        </>
+        </div>
     )
 }
 
