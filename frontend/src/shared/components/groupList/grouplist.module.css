@@ -36,20 +36,3 @@
     font-size: 12px;
     font-weight: 600;
 }
-
-.roleBadge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2px 10px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #6A7282;
-    background-color: var(--gray-4);
-}
-
-.manager {
-    color: var(--blue-9);
-    background-color: var(--blue-2);
-}
