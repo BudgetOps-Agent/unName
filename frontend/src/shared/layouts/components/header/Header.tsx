@@ -187,7 +187,7 @@ const Header = () => {
                         {
                             menu: "마이페이지",
                             classname: "mypage",
-                            href: `/mypage?from=${teamId ?? ''}`,
+                            href: `/mypage?from=${effectiveTeamId ?? ''}`,
                             icon: "/header/mypage.svg",
                         },
                         {
