@@ -3,6 +3,7 @@ import styles from "./Input.module.css"
 
 interface InputProps {
     id: string;
+    className?:string;
     label: string;
     type: string;
     value: string;
@@ -24,13 +25,15 @@ const Input = ({
     onChange,
     onFocus,
     error,
-    ref
+    ref,
+    className
 }: InputProps) => {
     return (
         <div className={styles["input-wrap"]}>
             <label htmlFor={id}>{label}</label>
             <input
                 id={id}
+                className={className}
                 type={type}
                 value={value}
                 placeholder={placeholder}
