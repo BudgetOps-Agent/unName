@@ -62,6 +62,35 @@ public enum TeamMemberErrorCode {
     ALREADY_PROCESSED(
             HttpStatus.CONFLICT,
             "이미 처리된 초대입니다."
+    ),
+
+    // 권한 위임 대상 멤버를 못 찾을 때 (API-039)
+    MEMBER_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "대상 멤버를 찾을 수 없습니다."
+    ),
+
+    // 관리자 권한을 자기 자신에게 위임하려고 할 때 (API-039)
+    CANNOT_TRANSFER_TO_SELF(
+            HttpStatus.BAD_REQUEST,
+            "자기 자신에게는 권한을 위임할 수 없습니다."
+    ),
+
+    // 권한 변경 시 ADMIN으로는 못 바꾸게 (API-040)
+    CANNOT_CHANGE_TO_ADMIN(
+            HttpStatus.BAD_REQUEST,
+            "관리자 권한은 권한 위임으로만 넘길 수 있습니다."
+    ),
+
+    CANNOT_CHANGE_ADMIN(
+            HttpStatus.BAD_REQUEST,
+            "관리자의 권한은 변경할 수 없습니다."
+    ),
+
+    // 관리자는 추방 못 하게 (API-041) - 관리자는 최소 1명 있어야 하므로
+    CANNOT_REMOVE_ADMIN(
+            HttpStatus.BAD_REQUEST,
+            "관리자는 추방할 수 없습니다."
     );
 
     private final HttpStatus status;

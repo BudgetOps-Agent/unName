@@ -29,8 +29,13 @@ public class TeamMember {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // String → TeamRole Enum으로 변경
+    // EnumType.STRING으로 저장하면 DB에는 그대로 "ADMIN", "ACCOUNTANT", "MEMBER" 문자열로 저장됨
+    // (숫자로 저장하는 EnumType.ORDINAL은 순서 바뀌면 데이터 꼬여서 위험하니까 STRING 씀)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role; // 모임 내 역할 (ADMIN/ACCOUNTANT/MEMBER)
+    private TeamRole role; // 모임 내 역할 (ADMIN/ACCOUNTANT/MEMBER)
+
 
     @Column
     private LocalDateTime joinedAt; // 가입 시간 (수락 전엔 NULL값)
@@ -38,11 +43,12 @@ public class TeamMember {
     @Column(nullable = false)
     private LocalDateTime invitedAt; // 초대 받은 시간
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status; // 초대 상태 (PENDING/ACCEPTED/REJECTED) 대기,수락,거절
+    private TeamStatus status; // 초대 상태 (PENDING/ACCEPTED/REJECTED) 대기,수락,거절
 
     @Builder
-    public TeamMember(Team team, User user, String role, String status) {
+    public TeamMember(Team team, User user, TeamRole role, TeamStatus status) {
         this.team = team;
         this.user = user;
         this.role = role;
@@ -52,12 +58,17 @@ public class TeamMember {
 
     // 초대 수락 메서드
     public void accept() {
-        this.status = "ACCEPTED";
+        this.status = TeamStatus.ACCEPTED;
         this.joinedAt = LocalDateTime.now();
     }
 
     // 초대 거절 메서드
     public void reject() {
-        this.status = "REJECTED";
+        this.status = TeamStatus.REJECTED;
+    }
+
+    // 역할 변경 메서드 (권한 위임, 권한 변경 때 씀)
+    public void changeRole(TeamRole role) {
+        this.role = role;
     }
 }

@@ -11,6 +11,8 @@ import com.example.backend.team.dto.CreateTeamResponse;
 import com.example.backend.team.entity.Team;
 import com.example.backend.team.repository.TeamRepository;
 import com.example.backend.teamMember.entity.TeamMember;
+import com.example.backend.teamMember.entity.TeamRole;
+import com.example.backend.teamMember.entity.TeamStatus;
 import com.example.backend.teamMember.repository.TeamMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -64,9 +66,12 @@ public class TeamService {
         TeamMember adminMember = TeamMember.builder()
                 .team(team)
                 .user(admin)
-                .role("ADMIN")
-                .status("ACCEPTED")
+                .role(TeamRole.ADMIN)
+                .status(TeamStatus.ACCEPTED)
                 .build();
+        // accept() 호출해서 joinedAt(가입 시간)도 같이 채워줌
+        // (@Builder 생성자는 joinedAt을 안 채우기 때문에, 이거 안 하면 모임장만 joined_at이 NULL로 남음)
+        adminMember.accept();
         teamMemberRepository.save(adminMember);
 
         // budgets row 생성

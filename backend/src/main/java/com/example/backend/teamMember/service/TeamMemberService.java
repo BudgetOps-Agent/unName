@@ -10,6 +10,8 @@ import com.example.backend.team.entity.Team;
 import com.example.backend.team.repository.TeamRepository;
 import com.example.backend.teamMember.dto.*;
 import com.example.backend.teamMember.entity.TeamMember;
+import com.example.backend.teamMember.entity.TeamRole;
+import com.example.backend.teamMember.entity.TeamStatus;
 import com.example.backend.teamMember.exception.TeamMemberErrorCode;
 import com.example.backend.teamMember.exception.TeamMemberException;
 import com.example.backend.teamMember.repository.TeamMemberRepository;
@@ -49,10 +51,11 @@ public class TeamMemberService {
         TeamMember inviterMember = teamMemberRepository.findByTeamIdAndUserId(teamId, inviter.getId())
                 .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
 
-        if (!inviterMember.getRole().equals("ADMIN")) {
+        // role이 이제 문자열이 아니라 TeamRole이라는 정해진 값(Enum)이라서
+        // 문자열 비교(equals) 대신 그냥 같은지 다른지(!=)로 비교하기 위해서 썼다
+        if (inviterMember.getRole() != TeamRole.ADMIN) {
             throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN);
         }
-
         // 3. 모임 조회
         // (정상 흐름에서는 항상 존재하지만, 삭제된 모임이거나 잘못된 teamId로
         //  직접 요청이 들어올 수도 있으니 방어 코드로 확인 → 404로 응답)
@@ -69,11 +72,13 @@ public class TeamMemberService {
         }
 
         // 6. TeamMember 생성 (PENDING 상태로 저장) user는 기본유저
+        // role에 "MEMBER"라는 글자를 직접 쓰는 대신
+        // 미리 정해둔 TeamRole.MEMBER 값을 넣어줌 (오타 날 걱정 없음)
         TeamMember teamMember = TeamMember.builder()
                 .team(team)
                 .user(invitee)
-                .role("MEMBER")
-                .status("PENDING")
+                .role(TeamRole.MEMBER)
+                .status(TeamStatus.PENDING)
                 .build();
 
         // 7. DB 저장
@@ -111,7 +116,7 @@ public class TeamMemberService {
         }
 
         // 5. PENDING 상태인지 확인 → 이미 처리됐으면 409
-        if (!teamMember.getStatus().equals("PENDING")) {
+        if (!teamMember.getStatus().equals(TeamStatus.PENDING)) {
             throw new TeamMemberException(TeamMemberErrorCode.ALREADY_PROCESSED);
         }
 
@@ -149,7 +154,7 @@ public class TeamMemberService {
         }
 
         // 5. PENDING 상태인지 확인 → 이미 처리됐으면 409
-        if (!teamMember.getStatus().equals("PENDING")) {
+        if (!teamMember.getStatus().equals(TeamStatus.PENDING)) {
             throw new TeamMemberException(TeamMemberErrorCode.ALREADY_PROCESSED);
         }
 
@@ -179,7 +184,7 @@ public class TeamMemberService {
 
         // 2. 내 모임중에 ACCEPTED(수락)상태인 모임 목록 (team_members) 가져오기
         List<TeamMember> acceptedMembers = teamMemberRepository
-                .findByUserIdAndStatus(user.getId(), "ACCEPTED");
+                .findByUserIdAndStatus(user.getId(), TeamStatus.ACCEPTED);
 
         // 3. 각 TeamMember마다 Team, Budget, memberCount 조회해서 TeamInfo로 바꿈
         List<MyTeamsResponse.TeamInfo> teams = acceptedMembers.stream()
@@ -192,7 +197,7 @@ public class TeamMemberService {
                             .orElseThrow(() -> new RuntimeException("예산 정보를 찾을 수 없습니다."));
 
                     long memberCount = teamMemberRepository
-                            .countByTeamIdAndStatus(team.getId(), "ACCEPTED");
+                            .countByTeamIdAndStatus(team.getId(), TeamStatus.ACCEPTED);
 
                     return MyTeamsResponse.TeamInfo.of(teamMember, team, budget, memberCount);
                 })
@@ -200,7 +205,7 @@ public class TeamMemberService {
 
         // 4. 내 모임중에 PENDING(대기)상태인 초대 목록 가져오기
         List<TeamMember> pendingMembers = teamMemberRepository
-                .findByUserIdAndStatus(user.getId(), "PENDING");
+                .findByUserIdAndStatus(user.getId(), TeamStatus.PENDING);
 
         List<MyTeamsResponse.PendingInfo> pending = pendingMembers.stream()
                 .map(MyTeamsResponse.PendingInfo::of)
@@ -211,6 +216,180 @@ public class TeamMemberService {
                 .success(true)
                 .teams(teams)
                 .pending(pending)
+                .build();
+    }
+
+    // 모임 멤버 목록 조회 (API-038)
+    @Transactional(readOnly = true)
+    public TeamMemberListResponse getTeamMembers(Long teamId) {
+
+        // 1. 토큰에서 로그인한 사람 이메일 꺼내기
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        // 2. 이메일로 요청자 조회
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 3. 요청자가 이 모임 소속인지 확인 (남의 모임 멤버 목록 못 보게 막음)
+        teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        // 4. 정렬된 멤버 목록 조회 (role 우선순위 → 가입일 순, Repository 쿼리에서 이미 정렬됨)
+        List<TeamMember> members = teamMemberRepository.findMembersByTeamId(teamId);
+
+        // 5. TeamMember → MemberInfo(DTO)로 변환
+        List<TeamMemberListResponse.MemberInfo> memberInfos = members.stream()
+                .map(tm -> TeamMemberListResponse.MemberInfo.builder()
+                        .id(tm.getId())              // team_members PK (권한변경/강퇴 시 씀)
+                        .name(tm.getUser().getName())
+                        .email(tm.getUser().getEmail())
+                        .role(tm.getRole().name())   // TeamRole Enum → String 변환
+                        .build())
+                .collect(Collectors.toList());
+
+        // 6. 응답 반환
+        return TeamMemberListResponse.builder()
+                .success(true)
+                .members(memberInfos)
+                .build();
+    }
+
+    // 관리자 권한 위임 (API-039)
+    @Transactional
+    public TransferAdminResponse transferAdmin(Long teamId, TransferAdminRequest request) {
+
+        // 1. 토큰에서 로그인한 사람(현재 관리자) 이메일 꺼내기
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        // 2. 이메일로 요청자 조회
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 3. 요청자가 이 팀의 ADMIN인지 확인 (소속 아니면 404, ADMIN 아니면 403)
+        TeamMember currentAdmin = teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        if (currentAdmin.getRole() != TeamRole.ADMIN) {
+            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN);
+        }
+
+        // 4. 새 관리자로 만들 멤버 조회 → 없으면 404
+        TeamMember newAdmin = teamMemberRepository.findById(request.getNewMemberId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.MEMBER_NOT_FOUND));
+
+        // 5. 그 멤버가 진짜 이 팀 소속인지 확인 (다른 팀 멤버 id로 장난치는 것 방지)
+        if (!newAdmin.getTeam().getId().equals(teamId)) {
+            throw new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER);
+        }
+
+        // 6. 자기 자신한테 위임하는 경우 방지 (선택적 검증)
+        if (newAdmin.getId().equals(currentAdmin.getId())) {
+            throw new TeamMemberException(TeamMemberErrorCode.CANNOT_TRANSFER_TO_SELF);
+        }
+
+        // 7. 권한 교체 (기존 관리자 → MEMBER, 새 멤버 → ADMIN)
+        currentAdmin.changeRole(TeamRole.MEMBER);
+        newAdmin.changeRole(TeamRole.ADMIN);
+
+        // 8. 응답 반환
+        return TransferAdminResponse.builder()
+                .success(true)
+                .message("관리자 권한을 위임했습니다.")
+                .build();
+    }
+
+    // 멤버 권한 변경 (API-040)
+    @Transactional
+    public ChangeRoleResponse changeRole(Long memberId, ChangeRoleRequest request) {
+
+        // 1. 토큰에서 로그인한 사람(요청자) 이메일 꺼내기
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        // 2. 요청자 조회
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 3. 변경 대상 멤버 조회 → 없으면 404
+        TeamMember target = teamMemberRepository.findById(memberId)
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.MEMBER_NOT_FOUND));
+
+        // 4. 요청자가 이 팀(대상 멤버가 속한 팀)의 ADMIN인지 확인
+        Long teamId = target.getTeam().getId();
+        TeamMember requesterMember = teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        if (requesterMember.getRole() != TeamRole.ADMIN) {
+            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN);
+        }
+
+        // 5. ADMIN으로는 변경 못 함 (그건 권한위임 API-039에서만)
+        if (request.getRole() == TeamRole.ADMIN) {
+            throw new TeamMemberException(TeamMemberErrorCode.CANNOT_CHANGE_TO_ADMIN);
+        }
+
+        // 6. 대상이 ADMIN이면 변경 불가 (관리자 자신의 권한은 여기서 못 바꿈)
+        if (target.getRole() == TeamRole.ADMIN) {
+            throw new TeamMemberException(TeamMemberErrorCode.CANNOT_CHANGE_ADMIN);
+        }
+
+        // 7. 역할 변경 (changeRole은 권한위임 때 만든 메서드 재사용)
+        target.changeRole(request.getRole());
+
+        // 8. 응답 반환
+        return ChangeRoleResponse.builder()
+                .success(true)
+                .member(ChangeRoleResponse.MemberInfo.builder()
+                        .id(target.getId())
+                        .name(target.getUser().getName())
+                        .role(target.getRole().name())
+                        .build())
+                .build();
+    }
+
+    // 멤버 추방 (API-041)
+    @Transactional
+    public RemoveMemberResponse removeMember(Long memberId) {
+
+        // 1. 토큰에서 로그인한 사람(요청자) 이메일 꺼내기
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        // 2. 요청자 조회
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 3. 추방 대상 멤버 조회 → 없으면 404
+        TeamMember target = teamMemberRepository.findById(memberId)
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.MEMBER_NOT_FOUND));
+
+        // 4. 요청자가 이 팀(대상이 속한 팀)의 ADMIN인지 확인
+        Long teamId = target.getTeam().getId();
+        TeamMember requesterMember = teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        if (requesterMember.getRole() != TeamRole.ADMIN) {
+            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN);
+        }
+
+        // 5. 관리자(ADMIN)는 추방 못 함 (자기 자신 포함, 관리자 없는 모임 방지)
+        if (target.getRole() == TeamRole.ADMIN) {
+            throw new TeamMemberException(TeamMemberErrorCode.CANNOT_REMOVE_ADMIN);
+        }
+
+        // 6. 멤버 삭제 (team_members에서 해당 레코드 완전 삭제 = hard delete)
+        teamMemberRepository.delete(target);
+
+        // 7. 응답 반환
+        return RemoveMemberResponse.builder()
+                .success(true)
+                .message("멤버를 추방했습니다.")
                 .build();
     }
 }
