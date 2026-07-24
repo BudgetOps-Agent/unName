@@ -8,7 +8,7 @@
     width: 100%;
     border-radius: 16px;
     box-sizing: border-box;
-    text-align: center
+    text-align: center;
 }
 .btn-lg {
     padding: 14px;
@@ -22,7 +22,7 @@
     background: var(--blue-9);
 }
 .btn-primary:disabled {
-    color: var(--gray-5);
+    color: var(--gray-6);
     background: var(--gray-4);
 }
 .btn-secondary {
@@ -43,4 +43,16 @@
 }
 .btn-tertiary:hover {
     background-color: #1B6EF3;
+}
+.btn-tertiary:disabled {
+    color: var(--gray-8);
+    background: var(--gray-3);
+    box-shadow: none;
+}
+.btn-ghost {
+    color: var(--gray-8);
+    background: var(--gray-3);
+}
+.btn-ghost:hover {
+    background: var(--gray-4);
 }
