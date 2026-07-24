@@ -47,9 +47,9 @@ export default function Sidebar({}) {
                     <Link
                         key={menu.path}
                         href={menu.path}
-                        className={`menu ${pathname === menu.path ? "active" : ""} ${isOpen ? "" : "closed"}`}
+                        className={`menu ${pathname.includes(menu.path) ? "active" : ""} ${isOpen ? "" : "closed"}`}
                     >
-                        <Image src={pathname === menu.path ? menu.activeIcon : menu.icon} alt={`${menu} 로고 아이콘`} width={18} height={18}/>
+                        <Image src={pathname.includes(menu.path) ? menu.activeIcon : menu.icon} alt={`${menu} 로고 아이콘`} width={18} height={18}/>
                         {showText && <span>{menu.text}</span>}
                     </Link>
                 ))}
