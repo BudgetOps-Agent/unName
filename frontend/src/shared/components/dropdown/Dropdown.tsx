@@ -26,10 +26,14 @@ const Dropdown = ({
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const openDropdown = () => {
+    const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
 
         console.log('Dropdown open state:', !isDropdownOpen);
+    };
+
+    const closeDropdown = () => {
+        setIsDropdownOpen(false);
     };
 
     useEffect(() => {
@@ -54,7 +58,7 @@ const Dropdown = ({
                 type="button"
                 id={id}
                 className={`${className}-btn ${iconOnly ? `${className}-btn-icon` : ''}`}
-                onClick={openDropdown}
+                onClick={toggleDropdown}
                 disabled={disabled}
 
             >
@@ -70,12 +74,12 @@ const Dropdown = ({
                     {headerContent && <div className="dropdown-header">{headerContent}</div>}
 
                     {items && renderItem && (
-                        <div className="dropdown-items">
+                        <div className="dropdown-items" onClick={closeDropdown}>
                             {items.map((item, index) => renderItem(item, index))}
                         </div>
                     )}
 
-                    {footerContent && <div className="dropdown-footer">{footerContent}</div>}
+                    {footerContent && <div className="dropdown-footer" onClick={closeDropdown}>{footerContent}</div>}
                 </div>
             )}
         </div>

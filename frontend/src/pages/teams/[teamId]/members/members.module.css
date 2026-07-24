@@ -1,8 +1,6 @@
 .membersContainer {
     display: flex;
     flex-direction: column;
-    max-width: 860px;
-    margin: 0 auto;
     gap: 20px;
 }
 
