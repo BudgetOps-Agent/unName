@@ -2,8 +2,11 @@ import { useState, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import styles from './expenses.module.css';
 import Link from 'next/link';
+import { Card } from '@/shared/components/card/Card';
+import Button from '@/shared/components/button/Button';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import ExpenseList from '../../components/ExpenseList/ExpenseList';
+import { useExpenses, ExpenseCounts } from '../../hooks/useExpenses';
 
 const filterBtn = [
     { id: 1, text: '전체' },
@@ -12,21 +15,20 @@ const filterBtn = [
     { id: 4, text: '반려' },
 ];
 
-const expenses = [
-    { id: 1, title: '정기 회의 다과비', status: '승인', name: '박지호', expense: 45000, escalation: false, createdAt: '2025-01-15' },
-    { id: 2, title: 'AWS 서버 운영비', status: '승인', name: '김민준', expense: 180000, escalation: false, createdAt: '2025-01-18' },
-    { id: 3, title: '해커톤 참가비', status: '대기', name: '이서연', expense: 300000, escalation: false, createdAt: '2025-01-22' },
-    { id: 4, title: '외부 강사 강연료', status: '대기', name: '박지호', expense: 500000, escalation: true, createdAt: '2025-01-23' },
-    { id: 5, title: '팀 회식비', status: '반려', name: '최수아', expense: 150000, escalation: false, createdAt: '2025-01-20' },
-    { id: 6, title: '노션 팀 플랜', status: '승인', name: '김민준', expense: 48000, escalation: false, createdAt: '2025-01-10' },
-    { id: 7, title: '포스터 인쇄비', status: '승인', name: '정다은', expense: 70000, escalation: false, createdAt: '2025-01-08' },
-];
+const COUNT_KEY: Record<string, keyof ExpenseCounts> = {
+    '전체': 'all',
+    '대기': 'pending',
+    '승인': 'approved',
+    '반려': 'rejected',
+};
 
 const Expenses = () => {
 
     const router = useRouter();
     const { teamId } = router.query;
     const validTeamId = typeof teamId === 'string' ? teamId : undefined;
+
+    const { expenses, counts, isLoading, error, refetch } = useExpenses(validTeamId);
 
     const [searchKeyword, setSearchKeyword] = useState<string>("");
     const [currentFilter, setCurrentFilter] = useState<string>("전체");
@@ -37,58 +39,77 @@ const Expenses = () => {
 
     const filteredExpenses = useMemo(() => {
         return expenses.filter((expense) => {
-            const matchesFilter = currentFilter === '전체' || expense.status === currentFilter;
+            const matchesFilter =
+                currentFilter === '전체' ? true
+                : currentFilter === '대기' ? (expense.status === 'SUBMITTED' || expense.status === 'ESCALATED')
+                : currentFilter === '승인' ? expense.status === 'APPROVED'
+                : currentFilter === '반려' ? expense.status === 'REJECTED'
+                : true;
 
             const lowercaseKeyword = searchKeyword.toLowerCase();
             const matchesSearch =
                 expense.title.toLowerCase().includes(lowercaseKeyword) ||
-                expense.name.toLowerCase().includes(lowercaseKeyword);
+                expense.requesterName.toLowerCase().includes(lowercaseKeyword);
 
             return matchesFilter && matchesSearch;
         })
-    }, [searchKeyword, currentFilter]);
+    }, [expenses, searchKeyword, currentFilter]);
 
     return (
         <div className={styles.expensesContainer}>
             <div className={styles.expensesHeader}>
                 <div className={styles.headerLeft}>
                     <p className={styles.title}>지출 내역</p>
-                    <p className={styles.subTitle}>총 {expenses.length}건이에요</p>
+                    <p className={styles.subTitle}>총 {counts.all}건이에요</p>
                 </div>
 
                 <Link className={styles.requestBtn} href={`/teams/${validTeamId}/expenses/new`}>+ 지출 요청</Link>
 
             </div>
 
-            <SearchBar value={searchKeyword} onChange={setSearchKeyword} />
+            {error ? (
+                <Card className={styles.errorCard}>
+                    <div className={styles.errorContainer}>
+                        <p className={styles.errorTextTitle}>⚠️ 지출 내역을 불러오지 못했습니다</p>
+                        <p className={styles.errorTextSub}>{error}</p>
+                        <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
+                    </div>
+                </Card>
+            ) : (
+                <>
+                    <SearchBar value={searchKeyword} onChange={setSearchKeyword} />
 
-            <div className={styles.filterSection}>
-                {filterBtn.map((item) => {
-                    const statusCount = item.text === '전체'
-                        ? expenses.length
-                        : expenses.filter(expense => expense.status === item.text).length;
+                    <div className={styles.filterSection}>
+                        {filterBtn.map((item) => {
+                            const isActive = currentFilter === item.text;
 
-                    const isActive = currentFilter === item.text;
+                            return (
+                                <div key={item.id}>
+                                    <button
+                                        className={`${styles.filterBtn} ${isActive ? styles.active : ""}`}
+                                        onClick={() => handleFilterChange(item.text)}
+                                    >
+                                        <span className={styles.filterBtnText}>
+                                            <p className={styles.btnTitle}>{item.text}</p>
+                                            <p className={styles.btnCount}>
+                                                {counts[COUNT_KEY[item.text]]}
+                                            </p>
+                                        </span>
+                                    </button>
+                                </div>
+                            )
+                        })}
+                    </div>
 
-                    return (
-                        <div key={item.id}>
-                            <button
-                                className={`${styles.filterBtn} ${isActive ? styles.active : ""}`}
-                                onClick={() => handleFilterChange(item.text)}
-                            >
-                                <span className={styles.filterBtnText}>
-                                    <p className={styles.btnTitle}>{item.text}</p>
-                                    <p className={styles.btnCount}>
-                                        {item.text === '전체' ? expenses.length : statusCount}
-                                    </p>
-                                </span>
-                            </button>
-                            </div>
-                    )
-                })}
-            </div>
-
-            <ExpenseList expenses={filteredExpenses} />
+                    {isLoading ? (
+                        <p className={styles.empty}>불러오는 중이에요...</p>
+                    ) : filteredExpenses.length === 0 ? (
+                        <p className={styles.empty}>표시할 지출 내역이 없어요.</p>
+                    ) : (
+                        <ExpenseList expenses={filteredExpenses} />
+                    )}
+                </>
+            )}
         </div>
     )
 }

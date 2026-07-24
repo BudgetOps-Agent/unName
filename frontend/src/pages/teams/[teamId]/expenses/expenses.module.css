@@ -84,3 +84,43 @@
     font-size: 12px;
     font-weight: 600;
 }
+
+.empty {
+    padding: 24px 0;
+    color: var(--gray-6);
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.errorCard {
+    margin-top: 4px;
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 350px;
+    gap: 12px;
+}
+
+.errorTextTitle {
+    color: var(--gray-9);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.errorTextSub {
+    color: var(--gray-7);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.errorBtn {
+    max-width: 120px;
+    padding: 6px 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
