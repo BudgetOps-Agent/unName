@@ -1,5 +1,6 @@
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { useState, useEffect } from 'react';
+import { getTeamMembers } from '../api/teamApi';
 import { Member, UseTeamMembersResult } from '@/types/member';
 
 export const useTeamMembers = (teamId: string | undefined) => {
@@ -20,7 +21,7 @@ export const useTeamMembers = (teamId: string | undefined) => {
             setIsLoading(true);
             setError(null);
 
-            const response = await axios.get<Member[]>(`/api/teams/${teamId}/members`);
+            const response = await getTeamMembers(teamId);
             
             setMembers(response.data);
 
