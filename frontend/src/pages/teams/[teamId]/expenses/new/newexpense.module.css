@@ -1,0 +1,217 @@
+.newExpenseContainer {
+    display: flex;
+    flex-direction: column;
+    max-width: 860px;
+    margin: 0 auto;
+    gap: 16px;
+}
+
+.backLink {
+    text-align: left;
+}
+
+.pageTitle {
+    color: var(--gray-9);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.formCard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.titleInput {
+    outline: none;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.label {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.optional {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.required {
+    color: var(--red-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.formGroup .titleInput::placeholder {
+    color: var(--gray-6);
+    font-weight: 600;
+}
+
+.formGroup .titleInput:focus {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.amountInputWrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    box-sizing: border-box;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.amountInputWrap:focus-within {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.amountInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: var(--gray-9);
+    outline: none;
+}
+
+.amountInput::placeholder {
+    color: var(--gray-6);
+    font-weight: 600;
+}
+
+.amountUnit {
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.categoryList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.categoryList .categoryBtn {
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    padding: 6px 14px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.categoryList .categoryBtnActive {
+    color: var(--white);
+    background: var(--blue-8);
+    box-shadow:
+        0px 4px 6px -1px rgba(190, 219, 255, 0.6),
+        0px 2px 4px -2px rgba(190, 219, 255, 0.6);
+}
+
+.categoryList .categoryBtnActive:hover {
+    background: var(--blue-8);
+}
+
+.dateInput {
+    outline: none;
+    font-weight: 600;
+}
+
+.formGroup .dateInput:focus {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.textarea:focus {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.textarea::placeholder {
+    color: var(--gray-6);
+    font-weight: 600;
+}
+
+.helperText {
+    color: var(--orange-1);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    border: 1.6px dashed var(--gray-5);
+    border-radius: 16px;
+    background: var(--gray-3);
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dropzone:hover {
+    border-color: rgba(49, 130, 246, 0.4);
+    background: rgba(235, 243, 254, 0.3);
+}
+
+.receiptInput {
+    display: none;
+}
+
+.uploadIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 4px;
+    border-radius: 16px;
+    background: var(--white);
+    color: var(--gray-7);
+    font-size: 16px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+                0 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.dropzoneTitle {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.dropzoneSub {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
