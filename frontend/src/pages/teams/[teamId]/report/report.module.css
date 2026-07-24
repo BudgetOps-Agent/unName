@@ -48,7 +48,6 @@
 .summarySection {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    max-width: 860px;
     width: 100%;
     gap: 12px;
 }
