@@ -14,7 +14,7 @@ const Mypage = () => {
 
     const router = useRouter();
     const { from } = router.query;
-    const clearAuth = useAuthStore((state) => state.logout);
+    const clearAuth = useAuthStore((state) => state.clearAuth);
 
     const { user, teams, isLoading, error, refetch } = useMyPage();
 
@@ -31,7 +31,7 @@ const Mypage = () => {
     }
     return (
         <div className={styles.myPageContainer}>
-            <Link href={from ? `/teams/${from}/dashboard` : "/teams"} className={`link-back ${styles.backLink}`}><span>대시보드</span></Link>
+            <Link href={from ? `/teams/${from}/dashboard` : "/teams"} className={`link-back ${styles.backLink}`}><span>{from ? "대시보드" : "내 모임"}</span></Link>
             {error ? (
                 <Card className={styles.errorCard}>
                     <div className={styles.errorContainer}>
@@ -40,6 +40,8 @@ const Mypage = () => {
                         <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
                     </div>
                 </Card>
+            ) : teams.length === 0 ? (
+                    <Card className={styles.grouplistCard} noPadding={true} noData="가입한 팀이 없어요" />
             ) : (
                 <>
                     <Card className={styles.profileCard}>

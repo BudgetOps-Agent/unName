@@ -5,16 +5,17 @@ import Link from 'next/link';
 interface CardProps {
     className?: string;
     noPadding?: boolean;
-    children: React.ReactNode;
+    children?: React.ReactNode;
     title?: string;
     desc?: string;
     count?: React.ReactNode;          
     headerRight?: React.ReactNode; 
     href?: string;
     linkText?: string;
+    noData?: string;
 }
 
-export const Card = ({ className, noPadding, children, title, desc, count, headerRight, href, linkText }: CardProps) => {
+export const Card = ({ className, noPadding, children, title, desc, count, headerRight, href, linkText, noData }: CardProps) => {
   return (
     <div className={`${styles.card} ${className} ${noPadding ? styles.noPadding : ''}`}>
         {(title || headerRight) && (
@@ -30,6 +31,10 @@ export const Card = ({ className, noPadding, children, title, desc, count, heade
                       <Link href={href} className="link">{linkText}</Link>
                 )}
             </div>
+        )}
+
+        {noData && (
+              <p className={styles.empty}>{noData}</p>
         )}
         {children}
     </div>

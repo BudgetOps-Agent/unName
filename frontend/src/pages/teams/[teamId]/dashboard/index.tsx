@@ -41,7 +41,7 @@ const donutData = [
   { name: '디자인', value: 70000 },
 ];
 
-const dashboard = () => {
+const Dashboard = () => {
 
     const totalBudget = 5000000;
     const usedBudget = 2293000;
@@ -129,4 +129,4 @@ const dashboard = () => {
   )
 }
 
-export default dashboard
+export default Dashboard 

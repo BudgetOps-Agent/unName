@@ -71,10 +71,8 @@ const UserProfile = ({ user, isLoading = false }: UserProfileProps) => {
     return (
         <div className={styles.profileContainer}>
             <div className={styles.profileHeader}>
-                <div>
-                    <p className={styles.name}>{user.name}</p>
-                    <Badge text={ROLE_LABEL[user.role]} style={ROLE_BADGE_STYLE[user.role]} />
-                </div>
+                <p className={styles.name}>{user.name}</p>
+                <Badge text={ROLE_LABEL[user.role]} style={ROLE_BADGE_STYLE[user.role]} />
             </div>
 
             <div className={styles.userInfo}>

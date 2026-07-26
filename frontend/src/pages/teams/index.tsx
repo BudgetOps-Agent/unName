@@ -46,9 +46,7 @@ const Teams = () => {
                 ) : error ? (
                     <Card><p className={styles.error}>{error}</p></Card>
                 ) : inviteInfo.length === 0 ? (
-                    <Card>
-                        <p className={styles.empty}>받은 초대가 없어요. 새로운 초대를 기다려보세요!</p>
-                    </Card>
+                    <Card noData="받은 초대가 없어요. 새로운 초대를 기다려보세요!" />
                 ) : (
                     inviteInfo.map((invitation) => (
                         <InviteCard 
