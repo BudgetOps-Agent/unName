@@ -12,6 +12,13 @@ interface Group {
     usedBudget: number;
 }
 
+interface InviteInfo {
+    id: number;
+    teamName: string;
+    inviteAt: string;
+    inviterName: string;
+}
+
 const ROLE_LABEL: Record<string, string> = {
     ADMIN: "관리자",
     ACCOUNTANT: "총무",
@@ -21,6 +28,7 @@ const ROLE_LABEL: Record<string, string> = {
 const useMyTeams = () => {
 
     const [groupInfo, setGroupInfo] = useState<Group[]>([]);
+    const [inviteInfo, setInviteInfo] = useState<InviteInfo[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -41,6 +49,7 @@ const useMyTeams = () => {
             }));
 
             setGroupInfo(mapped);
+            setInviteInfo(response.data.pending);
 
             return {
                 success: true,
@@ -52,6 +61,7 @@ const useMyTeams = () => {
 
             console.error("내 모임 목록 조회 실패: ", errMsg);
             setGroupInfo([]);
+            setInviteInfo([]);
             setError(errMsg);
 
             return {
@@ -68,6 +78,6 @@ const useMyTeams = () => {
         fetchMyTeams();
     }, [fetchMyTeams]);
 
-    return { groupInfo, isLoading, error, refetch: fetchMyTeams };
+    return { groupInfo, inviteInfo, isLoading, error, refetch: fetchMyTeams };
 }
 export default useMyTeams

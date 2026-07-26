@@ -5,7 +5,7 @@ import SignupForm from "../components/signupForm";
 
 const Signup = () => {
     return (
-        <Card>
+        <Card className="card">
             <Link href="/auth/signin" className="link-back"><span>로그인 페이지로 돌아가기</span></Link>
             <h2 className="form-title">회원가입</h2>
             <SignupForm />

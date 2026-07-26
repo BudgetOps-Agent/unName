@@ -8,39 +8,7 @@ import { Badge } from "@/shared/components/badge/Badge";
 import MemberList from "../../components/MemberList/MemberList";
 import MemberSkeleton from '../../components/MemberList/MemberSkeleton';
 import InvitationCard from "../../components/MemberManageCard/InvitationCard";
-
-// const memberlist = [
-//     {
-//         id: 1,
-//         name: "김민준",
-//         role: "관리자",
-//         email: "minjun.kim@hyu.ac.kr"
-//     },
-//     {
-//         id: 2,
-//         name: "이서연",
-//         role: "총무",
-//         email: "seoyeon.lee@hyu.ac.kr"
-//     },
-//     {
-//         id: 3,
-//         name: "박지호",
-//         role: "멤버",
-//         email: "jiho.park@hyu.ac.kr"
-//     },
-//     {
-//         id: 4,
-//         name: "최수아",
-//         role: "멤버",
-//         email: "sua.choi@hyu.ac.kr"
-//     },
-//     {
-//         id: 5,
-//         name: "정다은",
-//         role: "멤버",
-//         email: "daeun.jung@hyu.ac.kr"
-//     },
-// ]
+import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
 
 const rolelist = [
     {
@@ -78,27 +46,14 @@ const Members = () => {
     const closeInviteModal = () => setIsInviteModalOpen(false);
 
     return (
-        <div className={styles.membersContainer}>
-            <div className={styles.membersHeader}>
-                <div className={styles.headerLeft}>
-                    <p className={styles.title}>멤버</p>
-                    <p className={styles.subTitle}>총 {members.length}명이에요</p>
+        <>
+            <ContentTitle title="멤버" subTitle={`총 ${members.length}명이에요`} onClick={openInviteModal} btnText="초대하기" />
+
+            {isInviteModalOpen && (
+                <div className={styles.modalOverlay}>
+                    <InvitationCard onClick={closeInviteModal} />
                 </div>
-
-                <Button 
-                    className={styles.inviteBtn}
-                    text="+ 초대하기"
-                    style="tertiary"
-                    onClick={openInviteModal}
-                />
-
-                {isInviteModalOpen && (
-                    <div className={styles.modalOverlay}>
-                        <InvitationCard onClick={closeInviteModal} />
-                    </div>
-                )}
-
-            </div>
+            )}
 
             <Card className={styles.membersCard} noPadding={true}>
                 {isPageLoading ? (
@@ -120,12 +75,12 @@ const Members = () => {
                 <div className={styles.guideContent}>
                     {rolelist.map((role) => (
                         <div className={styles.roleItem} key={role.id}>
-                            <Badge 
-                                text={role.role} 
+                            <Badge
+                                text={role.role}
                                 style={
                                     role.role === '관리자' ? 'blue'
-                                    : role.role === '총무' ? 'purple'
-                                    : 'gray'
+                                        : role.role === '총무' ? 'purple'
+                                            : 'gray'
                                 }
                             />
                             <p className={styles.roleContent}>{role.content}</p>
@@ -133,7 +88,7 @@ const Members = () => {
                     ))}
                 </div>
             </Card>
-        </div>
+        </>
     )
 }
 

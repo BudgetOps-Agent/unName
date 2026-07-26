@@ -32,6 +32,12 @@
     font-weight: 600;
 }
 
+.cardError {
+    color: var(--red-6);
+    font-size: 14px;
+    text-align: center;
+}
+
 .btnSection {
     display: flex;
     padding-top: 16px;

@@ -13,7 +13,7 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        if(originalRequest.url?.includes("/api/user/login") || originalRequest.url?.includes("/api/user/reissue")) {
+      if (originalRequest.url?.includes("/api/user/login") || originalRequest.url?.includes("/api/user/reissue") || originalRequest.url?.includes("/api/user/logout")) {
             throw error;
         }
 

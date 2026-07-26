@@ -5,6 +5,11 @@ export interface Member {
     role: string;
 }
 
+export interface ResponseTeamMembers {
+    success: boolean;
+    members: Member[];
+}
+
 export interface UseTeamMembersResult {
     success: boolean;
     status?: number;

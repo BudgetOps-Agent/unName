@@ -4,6 +4,8 @@ import MainBarChart from "@/shared/layouts/components/dashboard/MainBarChart";
 import CategoryDonutChart from "@/shared/layouts/components/dashboard/CategoryDonutChart";
 import { Card } from "@/shared/components/card/Card";
 import Image from "next/image";
+import ContentTitle from "@/shared/components/contentTitle/ContentTitle";
+import { useRouter } from "next/router";
 
 const requestItems = [
   {
@@ -41,36 +43,25 @@ const donutData = [
 
 const dashboard = () => {
 
-  const totalBudget = 5000000;
-  const usedBudget = 2293000;
-  const pendingBudget = 800000;
-  const remainBudget = totalBudget - (usedBudget + pendingBudget);
+    const totalBudget = 5000000;
+    const usedBudget = 2293000;
+    const pendingBudget = 800000;
+    const remainBudget = totalBudget - (usedBudget + pendingBudget);
 
-  const requestCount = requestItems.length;
+    const requestCount = requestItems.length;
+
+    const router = useRouter();
+    const { teamId } = router.query;
 
   return (
-    <div className="dashboard-container">
-        <div className="content-title">
-            <div className="title">
-                <p>대시보드</p>
-                <span>2025년 1월</span>
-            </div>
-            <Link href="/expenses/new" className="expenses-btn">
-                <span>+</span>
-                <span>지출 요청</span>
-            </Link>
-        </div>
-        
-        <Card>
-            <div className="card-title">
-                <p className="title">이번 달 예산</p>
-                <span className="desc">{`총 ${totalBudget.toLocaleString()}원`}</span>
-            </div>
+    <>
+        <ContentTitle title="대시보드" subTitle={`2025년 1월`} href={`/expenses/new`} btnText="지출 요청" />
 
+          <Card title="이번 달 예산" headerRight={`총 ${totalBudget.toLocaleString()}원`}>
             <div className="budget-progress-section">
                 <div className="progress-content">
-                <p>{`${usedBudget.toLocaleString()}원`}</p>
-                <span>사용됨</span>
+                    <p>{`${usedBudget.toLocaleString()}원`}</p>
+                    <span>사용됨</span>
                 </div>
                 <div className="progress-bar">
                     <ProgressBar total={totalBudget} used={usedBudget} />
@@ -79,30 +70,27 @@ const dashboard = () => {
 
             <div className="budget-status-section">
                 <div className="budget-status used-budget">
-                <span>사용됨</span>
-                <p>{`${usedBudget.toLocaleString()}원`}</p>
+                    <span>사용됨</span>
+                    <p>{`${usedBudget.toLocaleString()}원`}</p>
                 </div>
 
                 <div className="budget-status pending-budget">
-                <span>대기 중</span>
-                <p>{`${pendingBudget.toLocaleString()}원`}</p>
+                    <span>대기 중</span>
+                    <p>{`${pendingBudget.toLocaleString()}원`}</p>
                 </div>
 
                 <div className="budget-status remain-budget">
-                <span>남은 예산</span>
-                <p>{`${remainBudget.toLocaleString()}원`}</p>
+                    <span>남은 예산</span>
+                    <p>{`${remainBudget.toLocaleString()}원`}</p>
                 </div>
             </div>
         </Card>
 
         <div className="cards">
-            <Card>
-              <div className="card-title">
-                  <p className="title">이번 달 예산</p>
-              </div>
+            <Card title="월별 지출">
                 <MainBarChart data={barData} />
             </Card>
-            
+
             <Card>
                 <div className="card-title">
                     <p className="title">카테고리 분포</p>
@@ -111,42 +99,33 @@ const dashboard = () => {
             </Card>
         </div>
 
-        <Card>
-            <div className="card-title ">
-                <div className="title-left">
-                  <p className="title">승인이 필요해요</p>
-                  <span className="count">{requestCount}</span>
-                </div>
-                
-                <Link href="/expenses" className="link">전체 보기</Link>
-            </div>
-
+        <Card title="승인이 필요해요" count={`${requestCount}`} href={`/teams/${teamId}/expenses`} linkText="전체보기">
             <div className="request-list-items">
                 {requestItems.map((request) => (
-                <Link 
-                    key={request.id}
-                    href={`/expenses/${request.id}`}
-                    className="request-item"
-                >
-                    <span className="request-item-icon">
-                        <Image  src="/sidebar/expenses-active.svg" alt="" width={18} height={18} />
-                    </span>
+                    <Link
+                        key={request.id}
+                        href={`/expenses/${request.id}`}
+                        className="request-item"
+                    >
+                        <span className="request-item-icon">
+                            <Image src="/sidebar/expenses-active.svg" alt="" width={18} height={18} />
+                        </span>
 
-                    <div className="request-item-content">
-                        <div className="request-item-title">
-                            <p className="title">{request.title}</p>
-                            <span className={`${request.level === '높음' ? 'danger' : ''}`}>{request.level}</span>
-                        </div>
+                        <div className="request-item-content">
+                            <div className="request-item-title">
+                                <p className="title">{request.title}</p>
+                                <span className={`${request.level === '높음' ? 'danger' : ''}`}>{request.level}</span>
+                            </div>
 
-                        <div className="request-item-detail">
-                            {`${request.memberName} · ${request.expense.toLocaleString()}원`}
+                            <div className="request-item-detail">
+                                {`${request.memberName} · ${request.expense.toLocaleString()}원`}
+                            </div>
                         </div>
-                    </div>
-                </Link>
+                    </Link>
                 ))}
             </div>
         </Card>
-    </div>
+    </>
   )
 }
 

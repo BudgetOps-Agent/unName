@@ -16,3 +16,13 @@ export interface ResponseMyTeams {
         inviterName: string;
     }[];
 }
+
+export interface AcceptInviteResponse {
+    success: boolean;
+    message: string;
+}
+
+export interface RejectInviteResponse {
+  success: boolean;
+  message: string;
+}

@@ -2,6 +2,7 @@ import styles from './report.module.css';
 import Button from '@/shared/components/button/Button';
 import SummaryCard from '../../components/SummaryCard/SummaryCard';
 import ExpenseDetailTable from '../../components/ExpenseDetailTable/ExpenseDetailTable';
+import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
 
 const expenses = [
     { id: 1, item: '정기 회의 다과비', category: '회의', requester: '박지호', date: '2025-01-15', amount: 45000 },
@@ -12,28 +13,21 @@ const expenses = [
 
 const Report = () => {
     return (
-        <div className={styles.reportContainer}>
-            <div className={styles.reportHeader}>
-                <div className={styles.headerLeft}>
-                    <p className={styles.title}>정산 리포트</p>
-                    <p className={styles.subTitle}>승인된 지출만 포함돼요</p>
-                </div>
-
-                <div className={styles.headerBtnSection}>
-                    <Button 
-                        className={styles.downloadBtn}
-                        text='PDF'
-                        iconLeft={<img src="/download.svg" alt="다운로드" />}
-                        style='secondary'
-                    />
-                    <Button 
-                        className={styles.downloadBtn}
-                        text='CSV'
-                        iconLeft={<img src="/download.svg" alt="다운로드" />}
-                        style='secondary'
-                    />
-                </div>
-            </div>
+        <>
+            <ContentTitle title="정산 리포트" subTitle="승인된 지출만 포함돼요">
+                <Button
+                    className={styles.downloadBtn}
+                    text='PDF'
+                    iconLeft={<img src="/download.svg" alt="다운로드" />}
+                    style='secondary'
+                />
+                <Button
+                    className={styles.downloadBtn}
+                    text='CSV'
+                    iconLeft={<img src="/download.svg" alt="다운로드" />}
+                    style='secondary'
+                />
+            </ContentTitle>
 
             <div className={styles.summarySection}>
                 <SummaryCard title='총 지출' content='343,000원' description='4건 승인됨' style='blue' />
@@ -42,7 +36,7 @@ const Report = () => {
             </div>
 
             <ExpenseDetailTable expenses={expenses} />
-        </div>
+        </>
     )
 }
 

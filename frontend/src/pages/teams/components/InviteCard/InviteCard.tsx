@@ -2,44 +2,72 @@ import styles from './invitecard.module.css';
 import { Card } from '@/shared/components/card/Card';
 import { Badge } from '@/shared/components/badge/Badge';
 import Button from '@/shared/components/button/Button';
+import { useState } from 'react';
+import Skeleton from '@/shared/components/skeleton/Skeleton';
 
 interface Invitation {
     id: number;
-    name: string;
-    inviter: string;
+    teamName: string;
+    inviteAt: string;
+    inviterName: string;
 }
 
 interface InviteCardProps {
-    invitation: Invitation;
+    invitation?: Invitation;   
+    isLoading?: boolean;       
+    isPending?: boolean;  
+    errorMsg?: string | null | undefined;
+    onAccept?: () => void;
+    onReject?: () => void;
 }
 
-const InviteCard = ({ invitation }: InviteCardProps) => {
-    const { name, inviter} = invitation;
-    
+const InviteCard = ({ invitation, isLoading = false, isPending = false, errorMsg, onAccept, onReject }: InviteCardProps) => {
+
+    if (isLoading || !invitation) {
+        return(
+            <Card className={styles.invitationCard} noPadding={true}>
+                <div className={styles.cardContainer}>
+                    <div>
+                        <Skeleton width={120} height={16} delay={0} />
+                        <Skeleton width={70} height={12} delay={0.1} />
+                    </div>
+
+                    <div className={styles.btnSection}>
+                        <Skeleton height={8} radius={999} delay={0.4} />
+                    </div>
+                </div>
+            </Card>
+        )
+    }
+
+    const { teamName, inviterName } = invitation;
+
     return (
         <Card className={styles.invitationCard} noPadding={true}>
             <div className={styles.cardContainer}>
                 <div>
-                    <p className={styles.name}>{name}</p>
+                    <p className={styles.name}>{teamName}</p>
                     <p className={styles.subTitle}>
-                        <span className={styles.inviter}>{inviter}</span>
+                        <span className={styles.inviter}>{inviterName}</span>
                         님이 초대했어요
                     </p>
+                    {errorMsg && <p className={styles.cardError}>{errorMsg}</p>}
                 </div>
                 
                 <div className={styles.btnSection}>
-                    {/* 초대 삭제 api 연결 */}
                     <Button
                         className={styles.rejectBtn}
                         text='거절' 
                         style='secondary' 
+                        onClick={onReject}
+                        disabled={isPending}
                     />
-                    {/* 초대 수락 api 연결 */}
                     <Button 
                         className={styles.acceptBtn}
                         text='수락'
                         style='tertiary'
-                        href={`/teams/${invitation.id}/dashboard`}
+                        onClick={onAccept}
+                        disabled={isPending}
                     />
                 </div>
             </div>

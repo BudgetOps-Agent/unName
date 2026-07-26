@@ -10,21 +10,24 @@
 .layout:has(.sidebar-container.closed) .main-area main {
     padding-left: 140px;
 }
-
-.main-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
+.layout .header-container {
+    padding-left: 240px;
 }
-
-.main-area main {
+.layout .main-area main {
     justify-content: center;
     background-color: #F6F7FB;
     min-height: 100vh;
-    transition: all .3s;
     padding: 84px 72px 32px 292px;
 }
-.header-container {
-    padding-left: 240px;
+.layout .main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;    
+    transition: width .3s;
+}
+.main-area .container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }

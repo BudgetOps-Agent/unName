@@ -23,11 +23,11 @@ export const useTeamMembers = (teamId: string | undefined) => {
 
             const response = await getTeamMembers(teamId);
             
-            setMembers(response.data);
+            setMembers(response.data.members);
 
             return {
                 success: true,
-                data: response.data
+                data: response.data.members
             };
 
         } catch (error) {

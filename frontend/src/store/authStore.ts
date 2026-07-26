@@ -1,12 +1,15 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { ResponseSignin } from "@/types/auth";
+import { ResponseSignin } from "@/types/auth"; 
+import { logout as logoutApi } from '@/pages/auth/api/authApi';
+
 
 interface AuthState {
     isLoggedIn: boolean;
     user: ResponseSignin | null;
     login: (userData: ResponseSignin) => void;
-    logout: () => void;
+    logout: () => Promise<void>;
+    clearAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -20,9 +23,13 @@ export const useAuthStore = create<AuthState>()(
                 user: userData
             }),
             
-            logout: () => set({
-                isLoggedIn: false,
-                user: null
+            logout: async () => {
+              await logoutApi();
+            },
+
+            clearAuth: () => set({
+              isLoggedIn: false,
+              user: null
             }),
         }),
         {

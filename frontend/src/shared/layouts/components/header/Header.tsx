@@ -54,7 +54,7 @@ const Header = () => {
 
     const router = useRouter();
     const user = useAuthStore((state) => state.user);
-    const clearAuth = useAuthStore((state) => state.logout);
+    const clearAuth = useAuthStore((state) => state.clearAuth);
 
     const pendingCount = noticelist.filter((item) => item.status === 'pending').length;
 
@@ -120,6 +120,8 @@ const Header = () => {
                     iconOnly={false}
                     iconRight={<img src="/header/vector.svg" alt="vector" />}
                     items={myTeams}
+                    value={effectiveTeamId}
+                    getItemValue={(item) => item.teamId}
                     renderItem={(item, index) => (
                         <Link 
                             key={index}

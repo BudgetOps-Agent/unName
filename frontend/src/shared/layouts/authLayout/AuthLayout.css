@@ -39,12 +39,28 @@
 .auth-layout .card .links {
     margin: 20px 0;
 }
+
 @media screen and (max-width: 768px) {
-    .auth-layout main {
-        width: 100%;
+    .auth-layout {
+        background: var(--white);
+        padding: 0;
+        align-items: center;
+        justify-content: flex-start; 
     }
     .auth-layout:has(.fixed.buttons) {
         padding-bottom: 100px;
+        box-sizing: border-box;
+    }
+    .auth-layout-center {
+        justify-content: center; 
+    }
+    .auth-layout .logo {
+        display: none;
+    }
+    .auth-layout .card {
+        box-shadow: none;
+        min-width: 100%;
+        width: 100%;
         box-sizing: border-box;
     }
     .auth-layout .card .link-back {
@@ -68,8 +84,6 @@
         white-space: nowrap;
         border: 0;
     }
-        
-    /* buttons */
     .buttons.fixed {
         position: fixed;
         bottom: 0;

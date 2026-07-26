@@ -7,6 +7,7 @@ import Button from '@/shared/components/button/Button';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import ExpenseList from '../../components/ExpenseList/ExpenseList';
 import { useExpenses, ExpenseCounts } from '../../hooks/useExpenses';
+import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
 
 const filterBtn = [
     { id: 1, text: '전체' },
@@ -56,16 +57,8 @@ const Expenses = () => {
     }, [expenses, searchKeyword, currentFilter]);
 
     return (
-        <div className={styles.expensesContainer}>
-            <div className={styles.expensesHeader}>
-                <div className={styles.headerLeft}>
-                    <p className={styles.title}>지출 내역</p>
-                    <p className={styles.subTitle}>총 {counts.all}건이에요</p>
-                </div>
-
-                <Link className={styles.requestBtn} href={`/teams/${validTeamId}/expenses/new`}>+ 지출 요청</Link>
-
-            </div>
+        <>
+            <ContentTitle title="지출 내역" subTitle={`총 ${counts.all}건이에요`} href={`/teams/${validTeamId}/expenses/new`} btnText="지출 요청" />
 
             {error ? (
                 <Card className={styles.errorCard}>
@@ -110,7 +103,7 @@ const Expenses = () => {
                     )}
                 </>
             )}
-        </div>
+        </>
     )
 }
 

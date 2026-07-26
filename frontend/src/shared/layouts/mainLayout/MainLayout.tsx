@@ -13,7 +13,9 @@ export default function MainLayout({ children }: Props) {
             <Sidebar />
             <div className="main-area">
                 <main>
-                    { children }
+                    <div className="container">
+                        {children}
+                    </div>
                 </main>
             </div>
         </div>

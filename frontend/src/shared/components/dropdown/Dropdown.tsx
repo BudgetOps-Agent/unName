@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
+import styles from "./Dropdown.module.css";
 
 interface DropdownProps {
-    // 버튼 속성
     id?: string;
     className?: string;
     text: React.ReactNode;
@@ -10,17 +10,16 @@ interface DropdownProps {
     iconLeft?: React.ReactNode;
     iconRight?: React.ReactNode;
     iconOnly?: boolean;
-    // 헤더 영역
     headerContent?: React.ReactNode;
-    // 메인 콘텐츠 영역
     items?: any[];
     renderItem?: (item: any, index: number) => React.ReactNode;
-    // 푸터 영역
+    value?: string | number | string[];
+    getItemValue?: (item: any) => string | number;
     footerContent?: React.ReactNode;
 }
 
 const Dropdown = ({
-    id, className, text, blind, disabled, iconLeft, iconRight, iconOnly, headerContent, items, renderItem, footerContent
+    id, className, text, blind, disabled, iconLeft, iconRight, iconOnly, headerContent, items, renderItem, value, getItemValue, footerContent
 }: DropdownProps) => {
 
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -28,8 +27,6 @@ const Dropdown = ({
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
-
-        console.log('Dropdown open state:', !isDropdownOpen);
     };
 
     const closeDropdown = () => {
@@ -37,7 +34,7 @@ const Dropdown = ({
     };
 
     useEffect(() => {
-        const handleOutsideClick = (e:MouseEvent) => {
+        const handleOutsideClick = (e: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
                 setIsDropdownOpen(false);
             }
@@ -52,20 +49,19 @@ const Dropdown = ({
         };
     }, [isDropdownOpen]);
 
+    const dropdownValue = Array.isArray(value) ? value[0] : value;
+
     return (
-        <div className= {`dropdown ${className ?? ''}`} ref={dropdownRef}>
-            <button 
+        <div className={`dropdown ${className ?? ''}`} ref={dropdownRef}>
+            <button
                 type="button"
                 id={id}
                 className={`${className}-btn ${iconOnly ? `${className}-btn-icon` : ''}`}
                 onClick={toggleDropdown}
                 disabled={disabled}
-
             >
                 {iconLeft && <span className={`${className}-icon-left`}>{iconLeft}</span>}
-                
                 <span className={`${className}-btn-text ${blind || iconOnly ? 'blind' : ''}`}>{text}</span>
-                
                 {iconRight && <span className={`${className}-icon-right ${isDropdownOpen ? 'rotate' : ''}`}>{iconRight}</span>}
             </button>
 
@@ -75,7 +71,17 @@ const Dropdown = ({
 
                     {items && renderItem && (
                         <div className="dropdown-items" onClick={closeDropdown}>
-                            {items.map((item, index) => renderItem(item, index))}
+                            {items.map((item, index) => {
+                                const isSelected = dropdownValue !== undefined && getItemValue
+                                    ? String(getItemValue(item)) === String(dropdownValue)
+                                    : false;
+
+                                return (
+                                    <div key={index} className={isSelected ? styles.active : undefined}>
+                                        {renderItem(item, index)}
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
 
