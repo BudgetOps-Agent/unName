@@ -54,7 +54,6 @@ public class TeamService {
                 .name(request.getName())
                 .teamType(request.getTeamType())
                 .description(request.getDescription())
-                .initialBudget(request.getInitialBudget())
                 .admin(admin)
                 .build();
 
@@ -77,7 +76,7 @@ public class TeamService {
         // budgets row 생성
         Budget budget = Budget.builder()
                 .team(team)
-                .remainingBudget(team.getInitialBudget()) // 처음엔 초기예산 그대로
+                .totalBudget(request.getInitialBudget())
                 .usedBudget(0L) // 사용한 건 0
                 .build();
         budgetRepository.save(budget);
@@ -85,7 +84,7 @@ public class TeamService {
         // Response 반환 (성공하면 반환할것들 만들어서 json 객체로 만들어서 반환)
         return CreateTeamResponse.builder()
                 .success(true)
-                .team(CreateTeamResponse.TeamInfo.fromEntity(team))
+                .team(CreateTeamResponse.TeamInfo.fromEntity(team, budget))
                 .build();
 
 

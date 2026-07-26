@@ -184,7 +184,7 @@ public class TeamMemberService {
 
         // 2. 내 모임중에 ACCEPTED(수락)상태인 모임 목록 (team_members) 가져오기
         List<TeamMember> acceptedMembers = teamMemberRepository
-                .findByUserIdAndStatus(user.getId(), TeamStatus.ACCEPTED);
+                .findByUserIdAndStatusOrderByJoinedAtDesc(user.getId(), TeamStatus.ACCEPTED);
 
         // 3. 각 TeamMember마다 Team, Budget, memberCount 조회해서 TeamInfo로 바꿈
         List<MyTeamsResponse.TeamInfo> teams = acceptedMembers.stream()
@@ -205,7 +205,7 @@ public class TeamMemberService {
 
         // 4. 내 모임중에 PENDING(대기)상태인 초대 목록 가져오기
         List<TeamMember> pendingMembers = teamMemberRepository
-                .findByUserIdAndStatus(user.getId(), TeamStatus.PENDING);
+                .findByUserIdAndStatusOrderByJoinedAtDesc(user.getId(), TeamStatus.PENDING);
 
         List<MyTeamsResponse.PendingInfo> pending = pendingMembers.stream()
                 .map(MyTeamsResponse.PendingInfo::of)

@@ -18,8 +18,8 @@ public class Budget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "remaining_budget", nullable = false)
-    private Long remainingBudget; // 현재 남은 예산
+    @Column(name = "total_budget", nullable = false)
+    private Long totalBudget;
 
     @Column(name = "used_budget", nullable = false)
     private Long usedBudget; // 사용한 예산
@@ -29,20 +29,20 @@ public class Budget {
 
     // teams 테이블 외래키 (일대일 - 한 모임당 예산 정보 하나)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id", nullable = false)
+    @JoinColumn(name = "team_id", nullable = false, unique = true)
     private Team team;
 
     @Builder
-    public Budget(Long remainingBudget, Long usedBudget, Team team) {
-        this.remainingBudget = remainingBudget;
+    public Budget(Long totalBudget, Long usedBudget, Team team) {
+        this.totalBudget = totalBudget;
         this.usedBudget = usedBudget;
         this.team = team;
         this.updatedAt = LocalDateTime.now(); // 생성 시점 시간 찍기
     }
 
     // 나중에 예산 변경(지출 승인 등)할 때 쓸 메서드  이때도 updatedAt 같이 갱신
-    public void updateBudget(Long remainingBudget, Long usedBudget) {
-        this.remainingBudget = remainingBudget;
+    public void updateBudget(Long totalBudget, Long usedBudget) {
+        this.totalBudget = totalBudget;
         this.usedBudget = usedBudget;
         this.updatedAt = LocalDateTime.now();
     }

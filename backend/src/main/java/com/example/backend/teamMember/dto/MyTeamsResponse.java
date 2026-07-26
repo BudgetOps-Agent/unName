@@ -38,8 +38,7 @@ public class MyTeamsResponse {
 
             long usedBudget = budget.getUsedBudget(); // budgets 테이블에서 사용 예산 꺼내기
 
-            // 총 예산은 컬럼으로 안 만들고 매번 계산 (남은 예산 + 사용한 예산 = 총 예산)
-            long totalBudget = budget.getRemainingBudget() + budget.getUsedBudget();
+            long totalBudget = budget.getTotalBudget();
 
             // 사용률(%) 계산: 사용예산 / 총예산 * 100
             // 총예산이 0이면 나누기 에러(ArithmeticException) 나니까 그 전에 0으로 처리해서 방지

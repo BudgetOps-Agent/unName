@@ -16,7 +16,7 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
     // 특정 유저의 모임/초대 목록 조회
     // status = "ACCEPTED" → 내 모임 목록
     // status = "PENDING" → 내 모임에서 받은 초대 목록
-    List<TeamMember> findByUserIdAndStatus(Long userId, TeamStatus status);
+    List<TeamMember> findByUserIdAndStatusOrderByJoinedAtDesc(Long userId, TeamStatus status);
 
     // 특정 팀의 특정 유저 조회 (관리자인지 조회하기 위해서)
     Optional<TeamMember> findByTeamIdAndUserId(Long teamId, Long userId);

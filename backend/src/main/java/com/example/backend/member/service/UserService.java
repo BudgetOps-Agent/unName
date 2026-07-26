@@ -272,7 +272,7 @@ public class UserService {// 4. 클래스 선언
     // @Transactional(readOnly = true)로 세션 유지 (API-009 getMyTeams()랑 같은 이유)
     @Transactional(readOnly = true)
     public MyPageResponse getMyPage() {
-
+        
         // 1. JWT 토큰에서 현재 로그인한 사람 이메일 꺼내기
         String email = SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -287,7 +287,7 @@ public class UserService {// 4. 클래스 선언
 
         // 4. 내가 ACCEPTED(수락)인 모임 목록 가져오기 (TeamMemberRepository 재사용)
         List<TeamMember> acceptedMembers = teamMemberRepository
-                .findByUserIdAndStatus(user.getId(), TeamStatus.ACCEPTED);
+                .findByUserIdAndStatusOrderByJoinedAtDesc(user.getId(), TeamStatus.ACCEPTED);
 
         // 5. 각 TeamMember마다 Team, memberCount 조회해서 TeamInfo로 변환
         List<MyPageResponse.TeamInfo> teams = acceptedMembers.stream()
@@ -314,7 +314,6 @@ public class UserService {// 4. 클래스 선언
                 .build();
     }
 }
-
 /**
  * UserService 역할 : 회원 관련 비즈니스 로직을 처리한다.
  *

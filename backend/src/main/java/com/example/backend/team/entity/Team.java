@@ -25,9 +25,6 @@ public class Team {
     private String description;
 
     @Column(nullable = false)
-    private Long initialBudget; // 초기 예산
-
-    @Column(nullable = false)
     private Integer maxMembers = 20; // 모임 최대인원 일단 20명으로 해놓기로 해서 20명으로 해놓음
 
     @Enumerated(EnumType.STRING)
@@ -50,10 +47,9 @@ public class Team {
     private LocalDateTime updatedAt; // 모임 수정 시간
 
     @Builder
-    public Team(String name, String description,TeamType teamType, Long initialBudget, User admin) {
+    public Team(String name, String description,TeamType teamType, User admin) {
         this.name = name;
         this.description = description;
-        this.initialBudget = initialBudget;
         this.teamType = teamType;
         this.maxMembers = 20;
         this.admin = admin;
