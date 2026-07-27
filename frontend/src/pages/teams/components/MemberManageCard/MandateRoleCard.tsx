@@ -41,7 +41,7 @@ const MandateRoleCard = ({ teamId, members, onClick, onSuccess }: MandateRoleCar
     }
 
     return (
-        <Card className='smallCard'>
+        <Card small>
             <p className={styles.title}>관리자 권한 위임</p>
             <span className={styles.subTitle}>관리자 권한을 다른 멤버에게 넘겨요. 이후 본인은 일반 멤버가 돼요.</span>
 

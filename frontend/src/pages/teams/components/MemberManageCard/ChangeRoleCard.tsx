@@ -37,7 +37,7 @@ const ChangeRoleCard = ({ memberId, onClick, onSuccess }: ChangeRoleCardProps) =
     }
 
     return (
-        <Card className='smallCard'>
+        <Card small>
             <p className={styles.title}>권한 변경</p>
             <span className={styles.subTitle}>변경할 역할을 선택해 주세요</span>
 

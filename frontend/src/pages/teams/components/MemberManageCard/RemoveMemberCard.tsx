@@ -29,7 +29,7 @@ const RemoveMemberCard = ({ memberId, onClick, onSuccess }: InvitationCardProps)
     }
 
     return (
-        <Card className='smallCard'>
+        <Card small>
             <p className={styles.title}>멤버를 강퇴할까요?</p>
             <span className={styles.subTitle}>강퇴된 멤버는 더 이상 모임에 접근할 수 없어요</span>
 

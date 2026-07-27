@@ -37,7 +37,7 @@ const InvitationCard = ({ teamId, onClick, onSuccess }: InvitationCardProps) => 
     }
 
     return (
-        <Card className='smallCard'>
+        <Card small>
             <p className={styles.title}>멤버 초대</p>
             <span className={styles.subTitle}>이메일로 초대 링크를 보내드려요</span>
             
