@@ -26,3 +26,27 @@ export interface RejectInviteResponse {
   success: boolean;
   message: string;
 }
+
+export interface InviteMemberResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface TransferAdminResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface RemoveMemberResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface ChangeRoleResponse {
+  success: boolean;
+  member: {
+    id: number;
+    name: string;
+    role: string;
+  };
+}
