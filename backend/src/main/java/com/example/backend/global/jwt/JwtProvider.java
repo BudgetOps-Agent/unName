@@ -67,6 +67,12 @@ public class JwtProvider {
                 .getPayload();  // 분해된 토큰에서 데이터만 가져오기
     }
 
+    public long getRemainingExpiration(String token) {
+        Date expiration = getClaims(token).getExpiration();
+        long remaining = expiration.getTime() - System.currentTimeMillis();
+        return Math.max(remaining, 0);
+    }
+
     // SecretKey 생성
     private SecretKey getSecretKey() { // 프로포티즈에서 가져온 문자열 비밀키
         return Keys.hmacShaKeyFor(secretKey.getBytes()); // getBytes() 문자열을 바이트로 변환

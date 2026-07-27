@@ -532,8 +532,8 @@ public class UserController {// 4. 클래스 선언
             )
     })
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse httpResponse) {
-        userService.logout();
+    public ResponseEntity<Void> logout(HttpServletResponse httpResponse, @CookieValue(value = "accessToken", required = false) String accessToken) {
+        userService.logout(accessToken);
 
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)

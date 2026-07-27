@@ -9,6 +9,8 @@ import com.example.backend.member.repository.UserRepository;
 import com.example.backend.team.dto.CreateTeamRequest;
 import com.example.backend.team.dto.CreateTeamResponse;
 import com.example.backend.team.entity.Team;
+import com.example.backend.team.exception.TeamErrorCode;
+import com.example.backend.team.exception.TeamException;
 import com.example.backend.team.repository.TeamRepository;
 import com.example.backend.teamMember.entity.TeamMember;
 import com.example.backend.teamMember.entity.TeamRole;
@@ -46,7 +48,7 @@ public class TeamService {
 
         // 모임 이름 중복 확인 (이미 존재하는 모임 이름이 있을 수 있기 때문에 teams DB에 접근해서 중복 확인)
         if (teamRepository.existsByName(request.getName())) {
-            throw new RuntimeException("이미 존재하는 모임 이름입니다.");
+            throw new TeamException(TeamErrorCode.DUPLICATE_TEAM_NAME);
         }
 
         // Team 엔티티 생성 (아직 모임 최대 인원 안정해져서 기본 값으로 20명으로 최대인원 되어있어서 자동으로 됨)

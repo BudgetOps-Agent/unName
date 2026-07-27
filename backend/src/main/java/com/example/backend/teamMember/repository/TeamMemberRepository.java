@@ -21,9 +21,6 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
     // 특정 팀의 특정 유저 조회 (관리자인지 조회하기 위해서)
     Optional<TeamMember> findByTeamIdAndUserId(Long teamId, Long userId);
 
-    // 이미 초대됐는지 확인 (중복 초대 방지)
-    boolean existsByTeamIdAndUserId(Long teamId, Long userId);
-
     // 특정 팀의 인원 수 세기 (ACCEPTED 상태만) - my-teams에서 memberCount 계산할 때 씀
     long countByTeamIdAndStatus(Long teamId, TeamStatus status);
 

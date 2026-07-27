@@ -2,6 +2,7 @@ package com.example.backend.global.security;
 
 import com.example.backend.global.jwt.JwtAuthenticationFilter;
 import com.example.backend.global.jwt.JwtProvider;
+import com.example.backend.global.jwt.TokenBlacklistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ public class SecurityConfig {
 
     // JWT 토큰 검증에 사용할 JwtProvider 주입
     private final JwtProvider jwtProvider;
+    private final TokenBlacklistRepository tokenBlacklistRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -47,7 +49,7 @@ public class SecurityConfig {
                 )
                 // JWT 필터를 Spring Security 필터 앞에 등록
                 // 요청이 들어올 때마다 JWT 토큰 검증
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, tokenBlacklistRepository),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -21,6 +21,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // OncePerRe
 
     // 토큰 검증에 사용할 JwtProvider 주입
     private final JwtProvider jwtProvider;
+    private final TokenBlacklistRepository tokenBlacklistRepository;
 
     @Override // 실제로 필터가 실행될 때 호출되는 메서드
     protected void doFilterInternal(HttpServletRequest request,
@@ -33,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // OncePerRe
         String token = resolveToken(request);
 
         // 토큰이 있고 유효하면 인증 처리
-        if (token != null && jwtProvider.validateToken(token)) {
+        if (token != null && jwtProvider.validateToken(token) && !tokenBlacklistRepository.isBlacklisted(token)) {
 
             // 토큰에서 이메일, 권한 꺼내기
             String email = jwtProvider.getEmail(token);

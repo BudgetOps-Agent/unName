@@ -1,6 +1,8 @@
 package com.example.backend.teamMember.service;
 
 import com.example.backend.budget.entity.Budget;
+import com.example.backend.budget.exception.BudgetErrorCode;
+import com.example.backend.budget.exception.BudgetException;
 import com.example.backend.budget.repository.BudgetRepository;
 import com.example.backend.member.entity.User;
 import com.example.backend.member.exception.MemberErrorCode;
@@ -67,22 +69,27 @@ public class TeamMemberService {
                 .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
 
         // 5. 이미 초대됐거나 이미 멤버인지 확인 (중복 초대 방지) → 409로 응답
-        if (teamMemberRepository.existsByTeamIdAndUserId(teamId, invitee.getId())) {
-            throw new TeamMemberException(TeamMemberErrorCode.ALREADY_INVITED);
-        }
-
-        // 6. TeamMember 생성 (PENDING 상태로 저장) user는 기본유저
-        // role에 "MEMBER"라는 글자를 직접 쓰는 대신
-        // 미리 정해둔 TeamRole.MEMBER 값을 넣어줌 (오타 날 걱정 없음)
-        TeamMember teamMember = TeamMember.builder()
-                .team(team)
-                .user(invitee)
-                .role(TeamRole.MEMBER)
-                .status(TeamStatus.PENDING)
-                .build();
-
-        // 7. DB 저장
-        teamMemberRepository.save(teamMember);
+        teamMemberRepository.findByTeamIdAndUserId(teamId, invitee.getId())
+                .ifPresentOrElse(
+                        existingMember -> {
+                            if(existingMember.getStatus() != TeamStatus.REJECTED) {
+                                throw new TeamMemberException(TeamMemberErrorCode.ALREADY_INVITED);
+                            }
+                            existingMember.reinvite();
+                            teamMemberRepository.save(existingMember);
+                        },
+                        () -> {
+                            // 6. TeamMember 생성 (PENDING 상태로 저장) user는 기본유저
+                            TeamMember teamMember = TeamMember.builder()
+                                    .team(team)
+                                    .user(invitee)
+                                    .role(TeamRole.MEMBER)
+                                    .status(TeamStatus.PENDING)
+                                    .build();
+                            // 7. DB 저장
+                            teamMemberRepository.save(teamMember);
+                        }
+                );
 
         // 8. 응답 반환 (성공 여부와 성공 메세지 담아서 반환)
         return InviteMemberResponse.builder()
@@ -194,7 +201,7 @@ public class TeamMemberService {
                     // 예산 정보는 team_members.role/status랑 다른 영역이라
                     // TeamMemberErrorCode에는 안 넣고 일단 RuntimeException 그대로 둠 (나중에 필요하면 분리)
                     Budget budget = budgetRepository.findByTeamId(team.getId())
-                            .orElseThrow(() -> new RuntimeException("예산 정보를 찾을 수 없습니다."));
+                            .orElseThrow(() -> new BudgetException(BudgetErrorCode.BUDGET_NOT_FOUND));
 
                     long memberCount = teamMemberRepository
                             .countByTeamIdAndStatus(team.getId(), TeamStatus.ACCEPTED);

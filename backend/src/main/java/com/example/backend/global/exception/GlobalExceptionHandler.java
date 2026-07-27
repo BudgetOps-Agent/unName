@@ -1,7 +1,9 @@
 // 예외를 잡아서 프론트가 보기 좋은 JSON으로 바꿔주는 곳
 package com.example.backend.global.exception;
 
+import com.example.backend.budget.exception.BudgetException;
 import com.example.backend.member.exception.MemberException;
+import com.example.backend.team.exception.TeamException;
 import com.example.backend.teamMember.exception.TeamMemberException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -99,6 +101,56 @@ public class GlobalExceptionHandler {
                         ErrorResponse.builder()
                                 .success(false)
                                 .message(message)
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(TeamException.class)
+    public ResponseEntity<ErrorResponse> handleTeamException(
+            TeamException e
+    ) {
+
+        log.warn(
+                "Team Exception : {}",
+                e.getMessage()
+        );
+
+        return ResponseEntity
+                .status(
+                        e.getErrorCode().getStatus()
+                )
+                .body(
+                        ErrorResponse.builder()
+                                .success(false)
+                                .code(e.getErrorCode().name())
+                                .message(
+                                        e.getErrorCode().getMessage()
+                                )
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(BudgetException.class)
+    public ResponseEntity<ErrorResponse> handleBudgetException(
+            BudgetException e
+    ) {
+
+        log.warn(
+                "Budget Exception : {}",
+                e.getMessage()
+        );
+
+        return ResponseEntity
+                .status(
+                        e.getErrorCode().getStatus()
+                )
+                .body(
+                        ErrorResponse.builder()
+                                .success(false)
+                                .code(e.getErrorCode().name())
+                                .message(
+                                        e.getErrorCode().getMessage()
+                                )
                                 .build()
                 );
     }

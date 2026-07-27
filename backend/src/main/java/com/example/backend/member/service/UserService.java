@@ -6,6 +6,7 @@ package com.example.backend.member.service;
 // 2. import
 import com.example.backend.global.jwt.JwtProvider;
 import com.example.backend.global.jwt.RefreshTokenRepository;
+import com.example.backend.global.jwt.TokenBlacklistRepository;
 import com.example.backend.member.dto.*;
 import com.example.backend.member.entity.User;
 import com.example.backend.member.entity.UserStatus;
@@ -47,6 +48,7 @@ public class UserService {// 4. 클래스 선언
     // 마이페이지에서 모임 조회할때 사용
     private final TeamMemberRepository teamMemberRepository;
 
+    private final TokenBlacklistRepository tokenBlacklistRepository;
 
     // 7. 회원가입 메서드
     // signup()
@@ -162,7 +164,9 @@ public class UserService {// 4. 클래스 선언
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
 
-        if (!refreshTokenRepository.find(email).equals(refreshToken)) {
+        String savedToken = refreshTokenRepository.find(email);
+
+        if (savedToken == null || !savedToken.equals(refreshToken)) {
             refreshTokenRepository.delete(email);
             throw new MemberException(MemberErrorCode.REUSED_REFRESH_TOKEN);
         }
@@ -258,12 +262,16 @@ public class UserService {// 4. 클래스 선언
                 .build();
     }
 
-    public void logout() {
+    public void logout(String accessToken) {
         String email = SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getName();
 
         refreshTokenRepository.delete(email);
+
+        if (accessToken != null) {
+            tokenBlacklistRepository.add(accessToken, jwtProvider.getRemainingExpiration(accessToken));
+        }
     }
 
     // 마이페이지 조회 (API-013)

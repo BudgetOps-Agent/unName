@@ -10,7 +10,13 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "team_members")
+@Table(
+        name = "team_members",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_team_member",
+                columnNames = {"team_id", "user_id"}
+        )
+)
 @Getter
 @NoArgsConstructor
 public class TeamMember {
@@ -35,7 +41,6 @@ public class TeamMember {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TeamRole role; // 모임 내 역할 (ADMIN/ACCOUNTANT/MEMBER)
-
 
     @Column
     private LocalDateTime joinedAt; // 가입 시간 (수락 전엔 NULL값)
@@ -70,5 +75,11 @@ public class TeamMember {
     // 역할 변경 메서드 (권한 위임, 권한 변경 때 씀)
     public void changeRole(TeamRole role) {
         this.role = role;
+    }
+
+    public void reinvite() {
+        this.status = TeamStatus.PENDING;
+        this.joinedAt = null;
+        this.invitedAt = LocalDateTime.now();
     }
 }
