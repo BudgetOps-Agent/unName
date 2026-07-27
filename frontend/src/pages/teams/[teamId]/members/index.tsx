@@ -51,7 +51,7 @@ const Members = () => {
 
             {isInviteModalOpen && (
                 <div className={styles.modalOverlay}>
-                    <InvitationCard onClick={closeInviteModal} />
+                    <InvitationCard teamId={validTeamId} onClick={closeInviteModal} onSuccess={closeInviteModal} />
                 </div>
             )}
 
@@ -65,7 +65,7 @@ const Members = () => {
                         <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
                     </div>
                 ) : (
-                    <MemberList members={members} />
+                    <MemberList teamId={validTeamId} members={members} refetch={refetch} />
                 )}
             </Card>
 
