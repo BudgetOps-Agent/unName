@@ -16,27 +16,10 @@
     font-weight: 700;
 }
 
-.roleBtnContainer {
-    display: flex;
-    padding-top: 8px;
-    gap: 8px;
-}
-
 .changeRoleBtnContainer, .mandateRoleBtnContainer {
     display: flex;
     flex-direction: column;
     gap: 8px;
-}
-
-.roleBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 0;
-}
-
-.roleBtnContainer .roleBtn {
-    background-color: var(--gray-3);
 }
 
 .changeRoleBtn {
@@ -72,10 +55,8 @@
     text-align: left;
 }
 
-.roleBtnContainer .roleBtn:hover,
 .changeRoleBtnContainer .changeRoleBtn:hover,
 .mandateRoleBtnContainer .mandateRoleBtn:hover,
-.roleBtn.active,
 .changeRoleBtn.active,
 .mandateRoleBtn.active {
     background-color: var(--blue-2);
