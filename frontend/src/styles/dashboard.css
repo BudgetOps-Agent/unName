@@ -1,47 +1,3 @@
-.dashboard-container {
-    display: flex;
-    gap: 20px;
-    flex-direction: column;
-    width: 100%;
-    height: auto;
-    box-sizing: border-box;
-}
-
-.dashboard-container .content-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.content-title .title p{
-    color: var(--gray-9);
-    font-size: 20px;
-    font-weight: bold;
-    line-height: 28px;
-}
-
-.content-title .title span {
-    color: var(--gray-6);
-    font-size: 14px;
-    line-height: 20px;
-}
-
-.expenses-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 109px;
-    height: 40px;
-    padding: 14px 16px;
-    border-radius: 16px;
-    gap: 6px;
-    background-color: var(--blue-8);
-    color: var(--white);
-    font-size: 14px;
-    font-weight: 600;
-    box-sizing: border-box;
-}
-
 .progress-bar {
     padding-bottom: 16px;
 }
@@ -73,7 +29,7 @@
 }
 
 .budget-status {
-    width: 260px;
+    width: calc(100% / 3);
 }
 
 .budget-status span {
@@ -103,7 +59,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 300px;
+    width: 100%;
     height: 141px;
     gap: 32px;
 }
@@ -116,7 +72,7 @@
 .donut-legend-right {
     display: flex;
     flex-direction: column;
-    width: 200px;
+    width: 50%;
     height: 125px;
 }
 
@@ -196,4 +152,17 @@
     color: var(--gray-6);
     font-size: 12px;
     font-weight: 600;
+}
+
+@media screen and (max-width: 768px) {
+    .budget-status-section {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .budget-status  {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 }

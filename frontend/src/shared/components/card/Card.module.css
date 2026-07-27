@@ -4,6 +4,7 @@
     border-radius: 24px;
     background: #FFF;
     box-shadow: 0 2px 20px 0 rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
 }
 
 .smallCard {
@@ -87,4 +88,11 @@
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+@media screen and (max-width: 768px) {
+    .card {
+        min-width: 100%;
+        width :100%;
+    }
 }

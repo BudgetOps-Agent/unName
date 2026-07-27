@@ -14,10 +14,12 @@
     padding-left: 240px;
 }
 .layout .main-area main {
+    display: flex;
     justify-content: center;
+    min-height: 100vh;
     background-color: #F6F7FB;
-    min-height: calc(100vh - 117px);
     padding: 84px 72px 32px 292px;
+    box-sizing: border-box;
 }
 .layout .main-area {
     flex: 1;
@@ -30,4 +32,25 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media screen and (max-width: 768px) {
+    
+    .layout:has(.sidebar-container.closed) .main-area main {
+        padding-left: 40px;
+    }
+    .layout .main-area main {
+        width: 100%;
+        height: auto;
+        padding: 88px 40px 40px;
+    }
+    .layout .header-container {
+        padding-left: 0;
+    }
+    .main-area .container {
+        width: 100%;
+        
+    }
 }

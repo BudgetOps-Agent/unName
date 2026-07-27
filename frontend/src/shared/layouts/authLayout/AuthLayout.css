@@ -54,6 +54,9 @@
     .auth-layout-center {
         justify-content: center; 
     }
+    .auth-layout main {
+        width: 100%;
+    }
     .auth-layout .logo {
         display: none;
     }

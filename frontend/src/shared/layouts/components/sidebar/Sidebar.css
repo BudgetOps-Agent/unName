@@ -87,3 +87,16 @@
 .rotate {
     transform: rotate(180deg);
 }
+
+@media screen and (max-width: 768px) {
+    .budget-status-section {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .budget-status  {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

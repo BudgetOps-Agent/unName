@@ -12,7 +12,7 @@ interface MainBarChartProps {
 
 export default function MainBarChart({ data }: MainBarChartProps) {
     return (
-        <div style={{ width: 380, height: 166 }}>
+        <div style={{ width: `100%`, height: 166 }}>
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data}>
 
