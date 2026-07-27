@@ -12,7 +12,7 @@ export interface ResponseMyTeams {
     pending: {
         id: number;
         teamName: string;
-        inviteAt: string;
+        invitedAt: string;
         inviterName: string;
     }[];
 }
