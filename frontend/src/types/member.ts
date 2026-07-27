@@ -2,7 +2,7 @@ export interface Member {
     id: number;
     name: string;
     email: string;
-    role: string;
+    role: 'ADMIN' | 'ACCOUNTANT' | 'MEMBER';
 }
 
 export interface ResponseTeamMembers {

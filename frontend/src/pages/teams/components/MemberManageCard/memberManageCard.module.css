@@ -10,14 +10,6 @@
     font-weight: 600;
 }
 
-.emailSection {
-    padding-top: 20px;
-}
-
-.roleSection {
-    padding-top: 16px;
-}
-
 .roleTitle {
     color: var(--gray-9);
     font-size: 14px;
@@ -80,10 +72,13 @@
     box-sizing: border-box;
 }
 
-.ButtonSection {
+.ButtonSection, .removeBtnSection {
     display: flex;
-    padding-top: 20px;
     gap: 8px;
+}
+
+.ButtonSection {
+    padding-top: 20px;
 }
 
 .buttonSectionBtn {
@@ -104,18 +99,18 @@
     background-color: #1B6EF3;
 }
 
-.mandateBtn {
+.ButtonSection .mandateBtn {
     background-color: var(--yellow-5);
 }
 
-.mandateBtn:hover {
+.ButtonSection .mandateBtn:hover {
     background-color: var(--yellow-6);
 }
 
-.removeBtn {
+.removeBtnSection .removeBtn {
     background-color: var(--red-5);
 }
 
-.removeBtn:hover {
+.removeBtnSection .removeBtn:hover {
     background-color: var(--red-8);
 }

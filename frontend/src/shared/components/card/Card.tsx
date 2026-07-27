@@ -5,19 +5,20 @@ import Link from 'next/link';
 interface CardProps {
     className?: string;
     noPadding?: boolean;
+    small?: boolean;
     children?: React.ReactNode;
     title?: string;
     desc?: string;
-    count?: React.ReactNode;          
-    headerRight?: React.ReactNode; 
+    count?: React.ReactNode;
+    headerRight?: React.ReactNode;
     href?: string;
     linkText?: string;
     noData?: string;
 }
 
-export const Card = ({ className, noPadding, children, title, desc, count, headerRight, href, linkText, noData }: CardProps) => {
+export const Card = ({ className, noPadding, small, children, title, desc, count, headerRight, href, linkText, noData }: CardProps) => {
   return (
-    <div className={`${styles.card} ${className} ${noPadding ? styles.noPadding : ''}`}>
+    <div className={`${styles.card} ${className ?? ''} ${noPadding ? styles.noPadding : ''} ${small ? styles.smallCard : ''}`}>
         {(title || headerRight) && (
             <div className="card-title">
                 <div className="title-left">
