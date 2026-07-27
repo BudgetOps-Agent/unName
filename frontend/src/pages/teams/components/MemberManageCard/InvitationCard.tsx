@@ -5,17 +5,21 @@ import Button from '@/shared/components/button/Button';
 import Input from '@/shared/components/input/Input';
 import { Badge } from '@/shared/components/badge/Badge';
 import { validateEmailFormat } from '@/pages/auth/utils/signupValidator';
+import useInviteMember from '../../hooks/useInviteMember';
 
 interface InvitationCardProps {
+    teamId: string | undefined;
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+    onSuccess?: () => void
 }
 
-const InvitationCard = ({ onClick }: InvitationCardProps) => {
+const InvitationCard = ({ teamId, onClick, onSuccess }: InvitationCardProps) => {
 
     const [email, setEmail] = useState<string>('');
     const [role, setRole] = useState<string>('');
+    const { isSubmitting, submitInvite } = useInviteMember(teamId);
 
-    const handleSubmit = (e: SubmitEvent) => {
+    const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
 
         if (!validateEmailFormat(email)) {
@@ -23,15 +27,21 @@ const InvitationCard = ({ onClick }: InvitationCardProps) => {
             return;
         }
 
-        console.log(email, role);
+        const result = await submitInvite(email);
+
+        alert(result.message);
+
+        if (result.success) {
+            onSuccess?.();
+        }
     }
 
     return (
-        <Card style='smallCard'>
+        <Card className='smallCard'>
+            <p className={styles.title}>멤버 초대</p>
+            <span className={styles.subTitle}>이메일로 초대 링크를 보내드려요</span>
+            
             <form onSubmit={handleSubmit}>
-                <p className={styles.title}>멤버 초대</p>
-                <span className={styles.subTitle}>이메일로 초대 링크를 보내드려요</span>
-                
                 <div className={styles.emailSection}>
                     <Input
                         id="email"
@@ -75,8 +85,9 @@ const InvitationCard = ({ onClick }: InvitationCardProps) => {
                     <Button
                         className={`${styles.buttonSectionBtn} ${styles.inviteBtn}`}
                         type="submit"
-                        text="초대 보내기"
+                        text={isSubmitting ? "보내는 중..." : "초대 보내기"}
                         style="tertiary"
+                        disabled={isSubmitting}
                     />
                 </div>
             </form>
