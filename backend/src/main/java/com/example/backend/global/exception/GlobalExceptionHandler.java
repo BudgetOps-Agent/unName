@@ -2,6 +2,7 @@
 package com.example.backend.global.exception;
 
 import com.example.backend.budget.exception.BudgetException;
+import com.example.backend.expense.exception.ExpenseException;
 import com.example.backend.member.exception.MemberException;
 import com.example.backend.team.exception.TeamException;
 import com.example.backend.teamMember.exception.TeamMemberException;
@@ -76,6 +77,7 @@ public class GlobalExceptionHandler {
                 .body(
                         ErrorResponse.builder()
                                 .success(false)
+                                .code(e.getErrorCode().name())
                                 .message(
                                         e.getErrorCode().getMessage()
                                 )
@@ -137,6 +139,32 @@ public class GlobalExceptionHandler {
 
         log.warn(
                 "Budget Exception : {}",
+                e.getMessage()
+        );
+
+        return ResponseEntity
+                .status(
+                        e.getErrorCode().getStatus()
+                )
+                .body(
+                        ErrorResponse.builder()
+                                .success(false)
+                                .code(e.getErrorCode().name())
+                                .message(
+                                        e.getErrorCode().getMessage()
+                                )
+                                .build()
+                );
+    }
+
+    // 지출 관련 예외 처리 (지출 못 찾음 404, 작성자 아님 403, 수정 불가 400 등)
+    @ExceptionHandler(ExpenseException.class)
+    public ResponseEntity<ErrorResponse> handleExpenseException(
+            ExpenseException e
+    ) {
+
+        log.warn(
+                "Expense Exception : {}",
                 e.getMessage()
         );
 
