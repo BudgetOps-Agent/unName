@@ -1,0 +1,11 @@
+.detailContainer {
+    display: flex;
+    flex-direction: column;
+    width: 860px;
+    margin: 0 auto;
+    gap: 16px;
+}
+
+.backLink {
+    text-align: left;
+}
