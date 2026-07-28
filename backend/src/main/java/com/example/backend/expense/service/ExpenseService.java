@@ -136,8 +136,9 @@ public class ExpenseService {
         Budget budget = budgetRepository.findByTeamId(teamId)
                 .orElseThrow(() -> new RuntimeException("예산 정보를 찾을 수 없습니다."));
 
+        Long totalBudget = budget.getTotalBudget();
         Long usedBudget = budget.getUsedBudget();
-        Long totalBudget = budget.getRemainingBudget() + budget.getUsedBudget();
+        Long remainingBudget = totalBudget - usedBudget;
 
         // 총 예산이 0이면 나누기 에러(ArithmeticException) 나니까 0으로 처리
         int usagePercentage = totalBudget == 0 ? 0 : (int) ((usedBudget * 100) / totalBudget);
@@ -162,7 +163,7 @@ public class ExpenseService {
                         .approvedCount(approvedExpenses.size())
                         .totalBudget(totalBudget)
                         .usedBudget(usedBudget)
-                        .remainingBudget(budget.getRemainingBudget())
+                        .remainingBudget(remainingBudget)
                         .usagePercentage(usagePercentage)
                         .expenses(expenseInfos)
                         .build())

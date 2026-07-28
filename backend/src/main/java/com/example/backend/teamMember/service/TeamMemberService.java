@@ -56,8 +56,9 @@ public class TeamMemberService {
         // role이 이제 문자열이 아니라 TeamRole이라는 정해진 값(Enum)이라서
         // 문자열 비교(equals) 대신 그냥 같은지 다른지(!=)로 비교하기 위해서 썼다
         if (inviterMember.getRole() != TeamRole.ADMIN) {
-            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN);
+            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN_FOR_INVITE);
         }
+
         // 3. 모임 조회
         // (정상 흐름에서는 항상 존재하지만, 삭제된 모임이거나 잘못된 teamId로
         //  직접 요청이 들어올 수도 있으니 방어 코드로 확인 → 404로 응답)
@@ -281,7 +282,7 @@ public class TeamMemberService {
                 .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
 
         if (currentAdmin.getRole() != TeamRole.ADMIN) {
-            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN);
+            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN_FOR_TRANSFER);
         }
 
         // 4. 새 관리자로 만들 멤버 조회 → 없으면 404
@@ -332,7 +333,7 @@ public class TeamMemberService {
                 .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
 
         if (requesterMember.getRole() != TeamRole.ADMIN) {
-            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN);
+            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN_FOR_CHANGE_ROLE);
         }
 
         // 5. ADMIN으로는 변경 못 함 (그건 권한위임 API-039에서만)
@@ -382,7 +383,7 @@ public class TeamMemberService {
                 .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
 
         if (requesterMember.getRole() != TeamRole.ADMIN) {
-            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN);
+            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN_FOR_REMOVE);
         }
 
         // 5. 관리자(ADMIN)는 추방 못 함 (자기 자신 포함, 관리자 없는 모임 방지)

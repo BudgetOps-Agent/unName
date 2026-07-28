@@ -11,6 +11,7 @@ import com.example.backend.member.exception.MemberErrorCode;
 import com.example.backend.member.exception.MemberException;
 import com.example.backend.member.repository.UserRepository;
 //import com.example.backend.teamMember.entity.TeamStatus;
+import com.example.backend.teamMember.entity.TeamStatus;
 import com.example.backend.teamMember.exception.TeamMemberErrorCode;
 import com.example.backend.teamMember.exception.TeamMemberException;
 import com.example.backend.teamMember.repository.TeamMemberRepository;
@@ -54,13 +55,15 @@ public class DashboardService {
         Budget budget = budgetRepository.findByTeamId(teamId)
                 .orElseThrow(() -> new RuntimeException("예산 정보를 찾을 수 없습니다."));
 
+        Long totalBudget = budget.getTotalBudget();
         Long usedBudget = budget.getUsedBudget();
-        Long remainingBudget = budget.getRemainingBudget();
-        Long totalBudget = usedBudget + remainingBudget;
-        int usagePercentage = totalBudget == 0 ? 0 : (int) ((usedBudget * 100) / totalBudget);
+        Long remainingBudget = totalBudget - usedBudget;
+
+        int usagePercentage =
+                totalBudget == 0 ? 0 : (int) ((usedBudget * 100) / totalBudget);
 
         // 5. 모임 인원 수 (ACCEPTED 멤버)
-        long memberCount = teamMemberRepository.countByTeamIdAndStatus(teamId,"ACCEPTED");
+        long memberCount = teamMemberRepository.countByTeamIdAndStatus(teamId, TeamStatus.ACCEPTED);
 
         // 6. 승인 대기 건수 (SUBMITTED + ESCALATED)
         List<ExpenseStatus> pendingStatuses = List.of(ExpenseStatus.SUBMITTED, ExpenseStatus.ESCALATED);
