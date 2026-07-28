@@ -54,26 +54,6 @@ const InvitationCard = ({ teamId, onClick, onSuccess }: InvitationCardProps) => 
                     />
                 </div>
 
-                <div className={styles.roleSection}>
-                    <span className={styles.roleTitle}>역할</span>
-
-                    <div className={styles.roleBtnContainer}>
-                        <Button 
-                            className={`${styles.roleBtn} ${role === '총무' ? styles.active : ''}`}
-                            iconOnly={true}
-                            iconLeft={<Badge className={styles.roleBadge} text='총무' style='purple' />}
-                            onClick={() => setRole('총무')}
-                            style='secondary'
-                        />
-                        <Button 
-                            className={`${styles.roleBtn} ${role === '멤버' ? styles.active : ''}`}
-                            iconOnly={true}
-                            iconLeft={<Badge className={styles.roleBadge} text='멤버' style='gray' />}
-                            onClick={() => setRole('멤버')}
-                            style='secondary' 
-                        />
-                    </div>
-                </div>
 
                 <div className={styles.ButtonSection}>
                     <Button

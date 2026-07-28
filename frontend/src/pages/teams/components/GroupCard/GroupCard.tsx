@@ -12,6 +12,7 @@ interface Group {
     role: string;
     budget: number;
     usedBudget: number;
+    percentage: number;
 }
 
 interface GroupCardProps {
@@ -51,11 +52,7 @@ const GroupCard = ({ group, isLoading = false }: GroupCardProps) => {
         );
     }
 
-    const { id, name, member, role, budget, usedBudget } = group;
-    
-    const budgetUsageRate = budget > 0
-        ? Math.round((usedBudget / budget) * 100)
-        : 0;
+    const { id, name, member, role, budget, usedBudget, percentage } = group;
 
     return (
         <Card className={styles.groupCard}>
@@ -79,7 +76,7 @@ const GroupCard = ({ group, isLoading = false }: GroupCardProps) => {
                 <div className={styles.progressSection}>
                     <div className={styles.progressHeader}>
                         <p>예산 사용률</p>
-                        <p style={{ color: '#191F28', fontWeight: 'bold' }}>{budgetUsageRate}%</p>
+                        <p style={{ color: '#191F28', fontWeight: 'bold' }}>{percentage}%</p>
                     </div>
 
                     <ProgressBar total={budget} used={usedBudget} />
