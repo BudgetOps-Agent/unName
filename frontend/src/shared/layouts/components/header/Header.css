@@ -8,6 +8,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
     width: 100%;
     height: 60px;
     background: var(--white);
@@ -16,6 +17,7 @@
     box-sizing: border-box;
     transition: all .3s;
     box-sizing: border-box;
+    z-index: 1000;
 }
 
 .dropdown {
@@ -46,7 +48,7 @@
 }
 
 .grouplist-btn-text {
-    max-width: 250px;
+    max-width: 100%;
 }
 
 .grouplist-icon-right {
@@ -366,4 +368,27 @@ strong {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+}
+
+
+@media screen and (max-width: 768px) {
+    .header-left {
+        width: 60%;
+    }
+    .header-right {
+        width: 40%;
+        justify-content: end;
+    }
+    .grouplist-btn {
+        max-width: 100%;
+    }
+    .header-right .user{
+        max-width: calc(100% - 36px);
+    }
+    .user-btn {
+        max-width: 100%;
+    }
+    .user-btn-text {
+        max-width: 100%;
+    }
 }
