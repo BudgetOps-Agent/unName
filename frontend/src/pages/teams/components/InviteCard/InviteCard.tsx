@@ -8,7 +8,7 @@ import Skeleton from '@/shared/components/skeleton/Skeleton';
 interface Invitation {
     id: number;
     teamName: string;
-    inviteAt: string;
+    invitedAt: string;
     inviterName: string;
 }
 

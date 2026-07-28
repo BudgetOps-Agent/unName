@@ -81,9 +81,7 @@ const Teams = () => {
                 ) : error ? (
                     <Card><p className={styles.error}>{error}</p></Card>
                 ) : groupInfo.length === 0 ? (
-                    <Card>
-                        <p className={styles.empty}>아직 속한 모임이 없어요. 새 모임을 만들어보세요.</p>
-                    </Card>
+                    <Card noData="아직 속한 모임이 없어요. 새 모임을 만들어보세요." />
                 ) : (
                     groupInfo.map((group) => (
                         <GroupCard key={group.id} group={group} />

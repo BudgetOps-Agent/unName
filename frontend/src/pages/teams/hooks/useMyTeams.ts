@@ -3,19 +3,20 @@ import { getMyTeams } from "../api/teamApi";
 import { AxiosError } from "axios";
 import { ErrorResponse } from "@/types/auth";
 
-interface Group {
+interface GroupInfo {
     id: number;
     name: string;
     member: number;
     role: string;
     budget: number;
     usedBudget: number;
+    percentage: number;
 }
 
 interface InviteInfo {
     id: number;
     teamName: string;
-    inviteAt: string;
+    invitedAt: string;
     inviterName: string;
 }
 
@@ -27,7 +28,7 @@ const ROLE_LABEL: Record<string, string> = {
 
 const useMyTeams = () => {
 
-    const [groupInfo, setGroupInfo] = useState<Group[]>([]);
+    const [groupInfo, setGroupInfo] = useState<GroupInfo[]>([]);
     const [inviteInfo, setInviteInfo] = useState<InviteInfo[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -46,6 +47,7 @@ const useMyTeams = () => {
                 role: ROLE_LABEL[team.role] ?? team.role,
                 budget: team.totalBudget,
                 usedBudget: team.usedBudget,
+                percentage: team.percentage,
             }));
 
             setGroupInfo(mapped);
