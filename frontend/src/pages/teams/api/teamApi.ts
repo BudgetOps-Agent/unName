@@ -1,6 +1,6 @@
 import api from "@/shared/api/api";
 import { AcceptInviteResponse, RejectInviteResponse, InviteMemberResponse, TransferAdminResponse, RemoveMemberResponse, ChangeRoleResponse, ResponseMyTeams } from "@/types/team";
-import { ResponseExpenses } from "@/types/expense";
+import { ResponseExpenses, ExpenseCreateResponse } from "@/types/expense";
 import { Member, ResponseTeamMembers } from "@/types/member";
 import { AxiosResponse } from "axios";
 
@@ -38,4 +38,10 @@ export const removeMember = (memberId: number): Promise<AxiosResponse<RemoveMemb
 
 export const changeRole = (memberId: number, role: 'ACCOUNTANT' | 'MEMBER'): Promise<AxiosResponse<ChangeRoleResponse>> => {
   return api.patch<ChangeRoleResponse>(`/api/members/${memberId}/role`, { role });
+}
+
+export const createExpense = (teamId: string, formData: FormData): Promise<AxiosResponse<ExpenseCreateResponse>> => {
+  return api.post<ExpenseCreateResponse>(`/api/teams/${teamId}/expenses`, formData, {
+    headers: { 'Content-Type': undefined },
+  });
 }
