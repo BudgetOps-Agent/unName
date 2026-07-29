@@ -1,6 +1,8 @@
 package com.example.backend.expense.repository;
 
 import com.example.backend.expense.entity.Expense;
+import com.example.backend.expense.entity.ExpenseStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -16,11 +18,19 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     // Ai 가 애매해서 에스컬레이션으로 넘기면 거기에도 승인대기, 에스컬레이션 이렇게 뜨니깐 이렇게 함
     // 승인 탭 -> List.of("APPROVED")만 넘기면 승인만 조회 됨
     // 반려 탭 -> List.of("REJECTED")만 넘기면 반려만 조회 됨
-    List<Expense> findByTeamIdAndStatusIn(Long teamId, List<String> statuses);
+    List<Expense> findByTeamIdAndStatusIn(Long teamId, List<ExpenseStatus> statuses);
 
     // 상태별 개수 세기 - 탭에 표시할 카운트(전체/대기/승인/반려) 계산할 때 씀
     // 상태별 개수 셀때 마다 findByTeamIdAndStatusIn() 바로 위에 있는 이 메서드를 사용하면
     // 전체 목록을 가져와서 .size()해서 조회하는거라 비효율적인거 같고 불필요한것들이 같이 조회 될 수도 있어서 이 메서드 씀(안쓰는 데이터까지 가져와서 보여주고 계산함)
     // DB한테만 이거 몇개인지 알려줘 하는 메서드 "SELECT COUNT(*) WHERE team_id = ? AND status IN (...)"
-    long countByTeamIdAndStatusIn(Long teamId, List<String> statuses);
+    long countByTeamIdAndStatusIn(Long teamId, List<ExpenseStatus> statuses);
+
+    // 정산 리포트용 (API-050) - 승인된 지출을 승인일 최신순으로 조회
+    List<Expense> findByTeamIdAndStatusOrderByApprovedAtDesc(Long teamId, ExpenseStatus status);
+
+    // 대시보드 미리보기용 (API-023) - 승인 대기(SUBMITTED+ESCALATED) 지출을 최신순으로 조회
+    // Pageable로 개수 제한 (상위 N개만)
+    List<Expense> findByTeamIdAndStatusInOrderByCreatedAtDesc(
+            Long teamId, List<ExpenseStatus> statuses, Pageable pageable);
 }

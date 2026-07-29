@@ -91,6 +91,26 @@ public enum TeamMemberErrorCode {
     CANNOT_REMOVE_ADMIN(
             HttpStatus.BAD_REQUEST,
             "관리자는 추방할 수 없습니다."
+    ),
+
+    NOT_ADMIN_FOR_INVITE(
+            HttpStatus.FORBIDDEN,
+            "관리자만 초대할 수 있습니다."
+    ),
+
+    NOT_ADMIN_FOR_TRANSFER(
+            HttpStatus.FORBIDDEN,
+            "관리자만 권한을 위임할 수 있습니다."
+    ),
+
+    NOT_ADMIN_FOR_CHANGE_ROLE(
+            HttpStatus.FORBIDDEN,
+            "관리자만 권한을 변경할 수 있습니다."
+    ),
+
+    NOT_ADMIN_FOR_REMOVE(
+            HttpStatus.FORBIDDEN,
+            "관리자만 멤버를 강퇴할 수 있습니다."
     );
 
     private final HttpStatus status;

@@ -42,7 +42,7 @@ public class ExpenseListResponse {
                     .id(expense.getId())
                     .title(expense.getTitle())
                     .amount(expense.getAmount())
-                    .status(expense.getStatus())
+                    .status(expense.getStatus().name())
                     .requesterName(expense.getUser().getName()) // User 엔티티 타고 들어가서 이름 꺼내기
                     .date(expense.getCreatedAt().toString())
                     .build();

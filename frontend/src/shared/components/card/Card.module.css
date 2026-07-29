@@ -90,7 +90,16 @@
     gap: 8px;
 }
 
+:global(.card-title .title-right) {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
 @media screen and (max-width: 768px) {
+    :global(.cards) {
+        flex-direction: column;
+    }
     .card {
         min-width: 100%;
         width :100%;

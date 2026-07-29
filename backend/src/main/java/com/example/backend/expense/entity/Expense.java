@@ -37,8 +37,9 @@ public class Expense {
     @Column(nullable = false)
     private String title; // 지출 제목
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String category; // 지출 카테고리 (회의/IT인프라/행사/교육/식비/디자인/기타)
+    private ExpenseCategory category; // 지출 카테고리 (회의/IT_인프라/행사/교육/식비/디자인/기타)
 
     @Column(nullable = false)
     private Long amount; // 지출 금액
@@ -49,12 +50,14 @@ public class Expense {
     @Column(name = "receipt_url", length = 500)
     private String receiptUrl; // 영수증 파일 경로
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status; // 처리 상태 (SUBMITTED/ESCALATED/APPROVED/REJECTED)
-                            // 처리 상태 (대기/에스컬레이션/승인/거절)
+    private ExpenseStatus status; // 처리 상태 (대기/에스컬레이션/승인/반려) // 처리 상태 (SUBMITTED/ESCALATED/APPROVED/REJECTED)
 
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "processed_by")
-    private String processedBy; // 최종 처리 주체 (AI/HUMAN)
+    private ProcessedBy processedBy; // 최종 처리 주체 (AI/HUMAN)
 
     @Column(name = "reject_reason", length = 500)
     private String rejectReason; // 반려 사유
@@ -65,6 +68,13 @@ public class Expense {
     @Column(nullable = false)
     private Integer version = 0; // 동시 승인 방지용 버전 (여러 명이 동시에 승인 못 하게 방지 체크)
 
+    // AI 심사 연동용 (API-045에서 사용, 지금은 값 없이 NULL)
+    @Column(name = "ai_job_id", length = 36)
+    private String aiJobId; // Agent Server에 보낸 최신 심사 작업 ID (콜백 매칭용)
+
+    @Column(name = "ai_dispatched_at")
+    private LocalDateTime aiDispatchedAt; // 최신 심사 요청 보낸 시각 (타임아웃 판단용)
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt; // 지출 등록 시간
 
@@ -72,7 +82,7 @@ public class Expense {
     private LocalDateTime updatedAt; // 수정 시간
 
     @Builder
-    public Expense(Team team, User user, String title, String category,
+    public Expense(Team team, User user, String title, ExpenseCategory category,
                    Long amount, String description, String receiptUrl) {
         this.team = team;
         this.user = user;
@@ -81,7 +91,7 @@ public class Expense {
         this.amount = amount;
         this.description = description;
         this.receiptUrl = receiptUrl;
-        this.status = "SUBMITTED"; // 지출 등록하면 기본값은 항상 SUBMITTED (승인 대기)
+        this.status = ExpenseStatus.SUBMITTED; // 지출 등록하면 기본값은 항상 SUBMITTED (승인 대기)
         this.version = 0;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();

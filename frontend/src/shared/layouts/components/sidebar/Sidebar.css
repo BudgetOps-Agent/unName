@@ -37,6 +37,7 @@
 .menu-section {
     padding: 12px 8px 16px;
     gap: 2px;
+    height: 100%;
 }
 
 .menu {
@@ -89,14 +90,39 @@
 }
 
 @media screen and (max-width: 768px) {
-    .budget-status-section {
-        flex-direction: column;
-        gap: 10px;
+    .sidebar-container  {
+        width: 100vw;
+        box-sizing: border-box;
+        border-right: none;
     }
-    .budget-status  {
+    .sidebar-container .logo-section {
+        border-bottom: none;
+    }
+    .sidebar-container .sidebar-toggle {
+        right: 0;
+    }
+    .sidebar-container .menu-section  {
+        position: absolute;
+        top: 60px;
+        left: 0%;
+        transition: left 0.5s ease; 
         width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        height: calc(100% - 60px);
+        box-sizing: border-box;
+        overflow: auto;
+        background: var(--white);
+    }
+    .sidebar-container .menu-section .menu {
+        width: 100%;
+    }
+    
+    .sidebar-container.closed  {
+        background: none;
+    }
+    .sidebar-container.closed .sidebar-toggle {
+        left: 5px;
+    }
+    .sidebar-container.closed .menu-section  {
+        left: -100%;
     }
 }

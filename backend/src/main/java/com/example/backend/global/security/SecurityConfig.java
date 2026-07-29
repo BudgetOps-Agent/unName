@@ -39,6 +39,7 @@ public class SecurityConfig {
                                 "/api/user/verify-user",    // 유저 정보 확인
                                 "/api/user/reset-password", // 비밀번호 재설정
                                 "/api/user/reissue",
+                                "/api/files/**",            // 영수증 조회(jpg,png,pdf)
                                 "/swagger-ui/**",           // 스웨거 접속
                                 "/swagger-ui.html",         // 스웨거 접속
                                 "/v3/api-docs/**"           // api-docs

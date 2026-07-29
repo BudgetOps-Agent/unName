@@ -23,10 +23,10 @@ export const Card = ({ className, noPadding, small, children, title, desc, count
             <div className="card-title">
                 <div className="title-left">
                     {title && <p className="title">{title}</p>}
-                    {desc && <span className="desc">{desc}</span>}
+                    {desc && <span className="desc">[TEST-123]{desc}</span>}
                     {count !== undefined && <span className="count">{count}</span>}
                 </div>
-                {headerRight}
+                  <div className="title-right">{headerRight}</div>
 
                 {href && (
                       <Link href={href} className="link">{linkText}</Link>

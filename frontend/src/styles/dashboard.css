@@ -155,6 +155,9 @@
 }
 
 @media screen and (max-width: 768px) {
+    .progress-content {
+        flex-direction: column
+    }
     .budget-status-section {
         flex-direction: column;
         gap: 10px;
