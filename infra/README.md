@@ -141,23 +141,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8081
 )
 ```
 
----
-
-## 6. 트러블슈팅 기록
-
-| 증상 | 원인 | 해결 |
-|---|---|---|
-| `EPERM: operation not permitted, rename ...` | 두 프론트 인스턴스가 같은 `.next` 캐시 폴더를 공유해서 충돌 | `NEXT_DIST_DIR` 환경변수로 인스턴스별 캐시 폴더 분리 |
-| `nginx: unknown directive "癤퓑orker_processes"` | PowerShell `-Encoding UTF8`이 BOM을 붙여서 저장, nginx가 BOM을 못 읽음 | `[System.IO.File]::WriteAllText(경로, 내용, UTF8Encoding($false))`로 BOM 없이 저장 |
-| 회원가입 시 "네트워크 연결 확인" | `.env.local`이 백엔드(8080)로 직접 요청하도록 되어있어 CORS 차단 | `NEXT_PUBLIC_API_URL`을 nginx 주소(8081)로 변경 + `CorsConfig`에 각 포트 등록 |
-| `ws://localhost:8081/_next/webpack-hmr` 404 | nginx가 `/_next` 경로에 대한 라우팅 규칙이 없어 Hot Reload 웹소켓 연결 실패 | 기능에는 영향 없음 (수동 새로고침으로 대체). 완전히 해결하려면 페이지별 `basePath` 분리 필요 |
-| `.\nginx-conf.ps1` 실행 시 "nginx가 설치되어 있지 않습니다" 반복 | `nginx.exe`만 있고 `conf`, `logs` 등 나머지 설치 폴더가 없는 상태(불완전 설치) | 스크립트가 nginx 공식 zip을 자동 다운로드하도록 처리 (`conf\mime.types` 존재 여부로 정상 설치 판별) |
-| `java` 명령어가 PowerShell에서 인식 안 됨 | JDK 경로가 시스템 PATH에 등록되어 있지 않음 (IntelliJ 내장 JDK만 사용 중) | 커맨드라인으로 백엔드를 직접 실행하는 대신, IntelliJ Run 버튼으로 실행하는 방식으로 결정 |
-| 터미널마다 경로 문법이 달라 계속 에러 (`\` vs `/`, `Remove-Item` vs `rmdir`, 한글 경로 깨짐 등) | cmd / PowerShell / WSL / Git Bash를 번갈아 사용 | **PowerShell로 통일**. `.ps1` 스크립트는 PowerShell에서만 직접 실행 가능 (cmd에서 실행하려면 `powershell -File 경로.ps1` 필요) |
-
----
-
-## 7. 백엔드 분리는 하지 않은 이유
+## 6. 백엔드 분리는 하지 않은 이유
 
 처음에는 지출 등록 API(`/api/teams/{teamId}/expenses`)만 별도 백엔드 인스턴스(8082)로 분리하는 방향도 검토했으나(nginx 정규식 라우팅으로 구현 가능), 아래 이유로 **백엔드는 1개로 유지**하기로 했습니다.
 
