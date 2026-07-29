@@ -22,8 +22,8 @@ jobs:
           ssh -i ~/.ssh/deploy_key "${{ secrets.GCP_USER }}@${{ secrets.GCP_HOST }}" << 'EOF'
             set -e
             cd ~/unName
-            git fetch origin main
-            git reset --hard origin/main
+            git fetch origin dev
+            git reset --hard origin/dev
 
             cd backend
             chmod +x gradlew
