@@ -5,13 +5,19 @@ import styles from './newexpense.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
 import Input from '@/shared/components/input/Input';
+import useCreateExpense from '../../../hooks/useCreateExpense';
 
 const categories = ['회의', 'IT/인프라', '행사', '교육', '식비', '디자인', '기타'];
+
+const CATEGORY_VALUE: Record<string, string> = {
+    'IT/인프라': 'IT_인프라',
+};
 
 const NewExpense = () => {
 
     const router = useRouter();
     const { teamId } = router.query;
+    const validTeamId = typeof teamId === 'string' ? teamId : undefined;
 
     const [title, setTitle] = useState('');
     const [amount, setAmount] = useState('');
@@ -19,6 +25,8 @@ const NewExpense = () => {
     const [date, setDate] = useState('');
     const [description, setDescription] = useState('');
     const [receipt, setReceipt] = useState<File | null>(null);
+
+    const { isSubmitting, submitExpense } = useCreateExpense(validTeamId);
 
     const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
         setAmount(e.target.value.replace(/[^0-9]/g, ''));
@@ -29,6 +37,24 @@ const NewExpense = () => {
     };
 
     const isFormValid = title.trim() !== '' && amount !== '' && category !== null && date !== '' && receipt !== null;
+
+    const handleSubmit = async () => {
+        if (!category || !receipt) return;
+
+        const result = await submitExpense({
+            title,
+            amount,
+            category: CATEGORY_VALUE[category] ?? category,
+            description,
+            receipt,
+        });
+
+        if (result.success) {
+            router.push(`/teams/${validTeamId}/expenses`);
+        } else {
+            alert(result.message);
+        }
+    };
 
     return (
         <div className={styles.newExpenseContainer}>
@@ -58,7 +84,7 @@ const NewExpense = () => {
                             className={styles.amountInput}
                             placeholder="0"
                             inputMode="numeric"
-                            value={amount}
+                            value={amount ? Number(amount).toLocaleString() : ''}
                             onChange={handleAmountChange}
                         />
                         <span className={styles.amountUnit}>원</span>
@@ -84,7 +110,7 @@ const NewExpense = () => {
                     <Input
                         id="date"
                         className={styles.dateInput}
-                        label="날짜"
+                        label="지출 발생일"
                         type="date"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
@@ -132,7 +158,13 @@ const NewExpense = () => {
                 </div>
             </Card>
 
-            <Button text="요청하기" style="tertiary" size="lg" disabled={!isFormValid} />
+            <Button
+                text={isSubmitting ? "요청하는 중..." : "요청하기"}
+                style="tertiary"
+                size="lg"
+                disabled={!isFormValid || isSubmitting}
+                onClick={handleSubmit}
+            />
         </div>
     )
 }
