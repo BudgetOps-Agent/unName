@@ -5,6 +5,23 @@ export interface ExpenseCreateResponse {
     createdAt: string;
 }
 
+export interface ExpenseDetailResponse {
+    success: boolean;
+    expense: {
+        id: number;
+        title: string;
+        amount: number;
+        category: string;
+        description: string | null;
+        receiptFileUrl: string | null;
+        status: 'SUBMITTED' | 'ESCALATED' | 'APPROVED' | 'REJECTED';
+        requesterName: string;
+        createdAt: string;
+        approvedAt: string | null;
+        rejectReason: string | null;
+    };
+}
+
 export interface ResponseExpenses {
     success: boolean;
     counts: {
