@@ -4,28 +4,39 @@
     gap: 8px;
 }
 
-.headerIcon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--purple-2);
-    font-size: 14px;
-}
-
 .title {
     color: var(--gray-9);
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
 }
 
 .subTitle {
-    margin-top: 4px;
-    margin-left: 40px;
     color: var(--gray-6);
-    font-size: 13px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.escalationNotice {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background-color: #FFF7ED;
+    border: 0.8px solid var(--orange-3);
+    box-sizing: border-box;
+}
+
+.escalationTitle {
+    color: var(--red-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.escalationText {
+    color: #F54900;
+    font-size: 12px;
     font-weight: 600;
 }
 
@@ -60,13 +71,9 @@
     font-weight: 700;
 }
 
-.reviewerIcon {
-    font-size: 15px;
-}
-
 .opinion {
-    color: var(--gray-8);
-    font-size: 13px;
+    color: var(--gray-7);
+    font-size: 12px;
     font-weight: 600;
 }
 
@@ -74,8 +81,12 @@
     padding-top: 8px;
     border-top: 0.8px solid rgba(0, 0, 0, 0.06);
     color: var(--gray-6);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
+}
+
+.reasonTitle {
+    color: var(--gray-8);
 }
 
 .summaryRow {
@@ -100,16 +111,12 @@
 
 .summaryLabel {
     color: var(--gray-6);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
 }
 
 .summaryValue {
     color: var(--gray-9);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
-}
-
-.green {
-    color: var(--green-3);
 }

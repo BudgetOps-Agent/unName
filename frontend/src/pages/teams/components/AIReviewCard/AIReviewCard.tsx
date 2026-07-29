@@ -6,15 +6,19 @@ type ReviewVerdict = 'PASS' | 'FAIL' | 'HOLD';
 
 interface Reviewer {
     id: number;
-    icon: string;
     verdict: ReviewVerdict;
     opinion: string;
     reason: string;
 }
 
+type ProcessType = 'AUTO' | 'ESCALATED';
+
+type FinalVerdict = 'SUBMITTED' | 'ESCALATED' | 'APPROVED' | 'REJECTED';
+
 interface AIReviewCardProps {
     reviewers: Reviewer[];
-    finalVerdict: string;
+    finalVerdict: FinalVerdict;
+    processType: ProcessType;
     processor: string;
     category: string;
 }
@@ -25,41 +29,85 @@ const VERDICT_LABEL: Record<ReviewVerdict, string> = {
     HOLD: '보류',
 };
 
-const VERDICT_BADGE_STYLE: Record<ReviewVerdict, 'green' | 'red' | 'yellow'> = {
+const VERDICT_BADGE_STYLE: Record<ReviewVerdict, 'green' | 'red' | 'orange'> = {
     PASS: 'green',
     FAIL: 'red',
-    HOLD: 'yellow',
+    HOLD: 'orange',
+};
+
+const VERDICT_ICON: Record<ReviewVerdict, string> = {
+    PASS: '/pass-icon.svg',
+    FAIL: '/fail-icon.svg',
+    HOLD: '/hold-icon.svg',
+};
+
+const PROCESS_LABEL: Record<ProcessType, string> = {
+    AUTO: 'AI 자동처리',
+    ESCALATED: '⚠ 에스컬레이션',
+};
+
+const PROCESS_BADGE_STYLE: Record<ProcessType, 'purple' | 'orange'> = {
+    AUTO: 'purple',
+    ESCALATED: 'orange',
+};
+
+const FINAL_VERDICT_LABEL: Record<FinalVerdict, string> = {
+    SUBMITTED: 'AI 검토중',
+    ESCALATED: '에스컬레이션',
+    APPROVED: 'AI 승인',
+    REJECTED: 'AI 반려',
+};
+
+const FINAL_VERDICT_BADGE_STYLE: Record<FinalVerdict, 'blue' | 'orange' | 'green' | 'red'> = {
+    SUBMITTED: 'blue',
+    ESCALATED: 'orange',
+    APPROVED: 'green',
+    REJECTED: 'red',
 };
 
 const REVIEWER_NAMES = ['회칙 심사관', '예산 심사관', '이상탐지 심사관'];
 
-const AIReviewCard = ({ reviewers, finalVerdict, processor, category }: AIReviewCardProps) => {
+const AIReviewCard = ({ reviewers, finalVerdict, processType, processor, category }: AIReviewCardProps) => {
+
     return (
         <Card className={styles.reviewCard}>
             <div className={styles.header}>
-                <span className={styles.headerIcon}>✨</span>
                 <p className={styles.title}>AI 심사 결과</p>
-                <Badge text="AI 자동처리" style="purple" />
+                <Badge
+                    text={PROCESS_LABEL[processType]}
+                    style={PROCESS_BADGE_STYLE[processType]}
+                    size='sm'
+                />
             </div>
             <p className={styles.subTitle}>심사관별 소견 및 판정 근거예요</p>
+
+            {processType === 'ESCALATED' && (
+                <div className={styles.escalationNotice}>
+                    <p className={styles.escalationTitle}>관리자 직접 확인이 필요해요</p>
+                    <p className={styles.escalationText}>AI가 자동 처리를 보류하고 관리자·총무의 검토를 요청했어요. 불일치 항목을 확인 후 직접 승인 또는 반려해 주세요.</p>
+                </div>
+            )}
 
             <div className={styles.reviewerList}>
                 {reviewers.map((reviewer, index) => (
                     <div key={reviewer.id} className={styles.reviewerBox}>
                         <div className={styles.reviewerHeader}>
                             <span className={styles.reviewerName}>
-                                <span className={styles.reviewerIcon}>{reviewer.icon}</span>
                                 {REVIEWER_NAMES[index]}
                             </span>
                             <Badge
-                                text={`✓ ${VERDICT_LABEL[reviewer.verdict]}`}
+                                icon={<img src={VERDICT_ICON[reviewer.verdict]} alt="" width={12} height={12} />}
+                                text={VERDICT_LABEL[reviewer.verdict]}
                                 style={VERDICT_BADGE_STYLE[reviewer.verdict]}
                             />
                         </div>
 
                         <p className={styles.opinion}>{reviewer.opinion}</p>
 
-                        <p className={styles.reason}>{`판정 근거 · ${reviewer.reason}`}</p>
+                        <p className={styles.reason}>
+                            <span className={styles.reasonTitle}>판정 근거</span>
+                            <span>{` · ${reviewer.reason}`}</span>
+                        </p>
                     </div>
                 ))}
             </div>
@@ -67,7 +115,7 @@ const AIReviewCard = ({ reviewers, finalVerdict, processor, category }: AIReview
             <div className={styles.summaryRow}>
                 <div className={styles.summaryBox}>
                     <span className={styles.summaryLabel}>AI 최종 판정</span>
-                    <p className={`${styles.summaryValue} ${styles.green}`}>{finalVerdict}</p>
+                    <Badge text={FINAL_VERDICT_LABEL[finalVerdict]} style={FINAL_VERDICT_BADGE_STYLE[finalVerdict]} />
                 </div>
                 <div className={styles.summaryBox}>
                     <span className={styles.summaryLabel}>처리 주체</span>
