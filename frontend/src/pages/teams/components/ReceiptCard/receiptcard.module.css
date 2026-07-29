@@ -6,7 +6,7 @@
 
 .receiptTitle {
     color: var(--gray-9);
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
 }
 
@@ -26,9 +26,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    border-radius: 16px;
     background: var(--white);
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
                 0 1px 2px -1px rgba(0, 0, 0, 0.1);

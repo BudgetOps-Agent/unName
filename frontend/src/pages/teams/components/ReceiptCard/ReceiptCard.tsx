@@ -17,7 +17,7 @@ const ReceiptCard = ({ receiptUrl }: ReceiptCardProps) => {
             ) : (
                 <div className={styles.receiptEmpty}>
                     <span className={styles.receiptEmptyIcon}>
-                        <img src="/file.svg" alt="영수증 없음" />
+                        <img src="/receipt.svg" alt="영수증 없음" />
                     </span>
                     <p className={styles.receiptEmptyText}>첨부된 영수증이 없어요</p>
                 </div>
