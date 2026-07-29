@@ -25,7 +25,7 @@ const ReceiptCard = ({ receiptUrl }: ReceiptCardProps) => {
 
             {receiptUrl && (
                 <a href={receiptUrl} download className={styles.downloadLink}>
-                    <img src="/download.svg" alt="다운로드" />
+                    <img src="/download-blue.svg" alt="다운로드" />
                     파일 내려받기
                 </a>
             )}
