@@ -1,17 +1,20 @@
 [
   {
     "name": "expenses-frontend",
-    "path": "/expenses",
-    "port": 3002
+    "path": "^/teams/[^/]+/expenses",
+    "port": 3002,
+    "regex": true
   },
   {
     "name": "backend-api",
     "path": "/api/",
-    "port": 8080
+    "port": 8080,
+    "regex": false
   },
   {
     "name": "frontend",
     "path": "/",
-    "port": 3001
+    "port": 3001,
+    "regex": false
   }
 ]
