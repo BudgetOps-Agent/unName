@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/shared/components/card/Card";
-import "./signup.module.css";
+import "./Signup.module.css";
 import SignupForm from "../components/signupForm";
 
 const Signup = () => {
