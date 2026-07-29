@@ -2,6 +2,7 @@ import api from "@/shared/api/api";
 import { AcceptInviteResponse, RejectInviteResponse, InviteMemberResponse, TransferAdminResponse, RemoveMemberResponse, ChangeRoleResponse, ResponseMyTeams } from "@/types/team";
 import { ResponseExpenses, ExpenseCreateResponse, ExpenseDetailResponse } from "@/types/expense";
 import { Member, ResponseTeamMembers } from "@/types/member";
+import { DashboardResponse } from "@/types/dashboard";
 import { AxiosResponse } from "axios";
 
 export const getMyTeams = (): Promise<AxiosResponse<ResponseMyTeams>> => {
@@ -48,4 +49,8 @@ export const createExpense = (teamId: string, formData: FormData): Promise<Axios
 
 export const getExpenseDetail = (expenseId: string): Promise<AxiosResponse<ExpenseDetailResponse>> => {
   return api.get<ExpenseDetailResponse>(`/api/expenses/${expenseId}`);
+}
+
+export const getDashboard = (teamId: string): Promise<AxiosResponse<DashboardResponse>> => {
+  return api.get<DashboardResponse>(`/api/teams/${teamId}/dashboard`);
 }
