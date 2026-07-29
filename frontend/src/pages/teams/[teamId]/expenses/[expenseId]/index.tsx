@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import styles from './expensedetail.module.css';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { Card } from '@/shared/components/card/Card';
+import Button from '@/shared/components/button/Button';
 import ExpenseInfoCard from '../../../components/ExpenseInfoCard/ExpenseInfoCard';
 import ReceiptCard from '../../../components/ReceiptCard/ReceiptCard';
 import AIReviewCard from '../../../components/AIReviewCard/AIReviewCard';
@@ -8,21 +11,18 @@ import AIReviewCard from '../../../components/AIReviewCard/AIReviewCard';
 const aiReviewers = [
     {
         id: 1,
-        icon: '📄',
-        verdict: 'PASS' as const,
+        verdict: 'HOLD' as const,
         opinion: '회칙 제3조 회의비 항목에 해당하며 지출 한도 내에 있어요.',
         reason: '회의비 월 한도 100,000원 중 45,000원 사용 (45%)',
     },
     {
         id: 2,
-        icon: '💰',
-        verdict: 'PASS' as const,
+        verdict: 'FAIL' as const,
         opinion: '회의비 카테고리 잔여 예산이 충분해요.',
         reason: '회의비 잔여 455,000원, 요청액 45,000원 (9.9%)',
     },
     {
         id: 3,
-        icon: '🔍',
         verdict: 'PASS' as const,
         opinion: '정상적인 지출 패턴이에요.',
         reason: '유사 지출 대비 금액·빈도 모두 정상 범위',
@@ -30,8 +30,7 @@ const aiReviewers = [
 ];
 
 const expense = {
-    status: '승인됨',
-    statusStyle: 'green' as const,
+    status: '대기',
     title: '정기 회의 다과비',
     category: '회의',
     date: '2025-01-15',
@@ -47,6 +46,9 @@ const ExpenseDetail = () => {
 
     const receiptUrl: string | null = null;
 
+    const [isRejecting, setIsRejecting] = useState(false);
+    const [rejectReason, setRejectReason] = useState('');
+
     return (
         <div className={styles.detailContainer}>
             <Link href={`/teams/${teamId}/expenses`} className={`link-back ${styles.backLink}`}>
@@ -59,10 +61,53 @@ const ExpenseDetail = () => {
 
             <AIReviewCard
                 reviewers={aiReviewers}
-                finalVerdict="AI 승인"
+                finalVerdict="APPROVED"
+                processType="ESCALATED"
                 processor="AI 에이전트"
                 category="회의비"
             />
+
+            {expense.status === '대기' && (
+                isRejecting ? (
+                    <Card className={styles.rejectCard}>
+                        <p className={styles.rejectLabel}>반려 사유를 알려 주세요</p>
+                        <textarea
+                            className={styles.rejectTextarea}
+                            placeholder="요청자에게 전달할 사유를 적어 주세요"
+                            value={rejectReason}
+                            onChange={(e) => setRejectReason(e.target.value)}
+                        />
+                        <div className={styles.actionButtons}>
+                            <Button
+                                className={styles.cancelBtn}
+                                text="취소"
+                                style="secondary"
+                                onClick={() => setIsRejecting(false)}
+                            />
+                            <Button
+                                className={styles.confirmRejectBtn}
+                                text="반려하기"
+                                style="tertiary"
+                                disabled={!rejectReason.trim()}
+                            />
+                        </div>
+                    </Card>
+                ) : (
+                    <div className={styles.actionButtons}>
+                        <Button
+                            className={styles.rejectToggleBtn}
+                            text="반려"
+                            style="ghost"
+                            onClick={() => setIsRejecting(true)}
+                        />
+                        <Button
+                            className={styles.approveBtn}
+                            text="승인하기"
+                            style="tertiary"
+                        />
+                    </div>
+                )
+            )}
         </div>
     )
 }
