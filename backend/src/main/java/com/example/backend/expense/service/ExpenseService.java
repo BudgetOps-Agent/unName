@@ -2,13 +2,14 @@ package com.example.backend.expense.service;
 
 import com.example.backend.budget.entity.Budget;
 import com.example.backend.budget.repository.BudgetRepository;
-import com.example.backend.expense.dto.ExpenseListResponse;
+import com.example.backend.expense.dto.*;
 import com.example.backend.expense.entity.Expense;
 import com.example.backend.expense.entity.ExpenseStatus;
+import com.example.backend.expense.exception.ExpenseErrorCode;
+import com.example.backend.expense.exception.ExpenseException;
 import com.example.backend.expense.repository.ExpenseRepository;
 import com.example.backend.member.repository.UserRepository;
 import com.example.backend.teamMember.repository.TeamMemberRepository;
-import com.example.backend.expense.dto.ReportResponse;
 import com.example.backend.member.entity.User;
 import com.example.backend.member.exception.MemberErrorCode;
 import com.example.backend.member.exception.MemberException;
@@ -20,8 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 // ===== 아래 import 추가 (API-016) =====
-import com.example.backend.expense.dto.ExpenseCreateRequest;
-import com.example.backend.expense.dto.ExpenseCreateResponse;
 import com.example.backend.global.file.FileStorageService;
 import com.example.backend.team.entity.Team;
 import com.example.backend.team.repository.TeamRepository;
@@ -222,5 +221,19 @@ public class ExpenseService {
 
         // 8. 저장된 Expense → 응답 DTO로 변환해서 return
         return ExpenseCreateResponse.fromEntity(saved);
+    }
+
+    // 지출 상세 조회 (API-017)
+    // 지출 한 건의 상세 정보를 조회. 작성자 이름(LAZY)을 꺼내니까 @Transactional(readOnly) 필요
+    @Transactional(readOnly = true)
+    public ExpenseDetailResponse getExpenseDetail(Long expenseId) {
+
+        // 1. 지출 조회 (없으면 404)
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new ExpenseException(ExpenseErrorCode.EXPENSE_NOT_FOUND));
+
+        // 2. 엔티티 → 상세 응답 DTO로 변환해서 반환
+        //    (receiptUrl → receiptFileUrl 변환, 요청자 이름 등은 fromEntity 안에서 처리)
+        return ExpenseDetailResponse.fromEntity(expense);
     }
 }

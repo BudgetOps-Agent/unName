@@ -1,15 +1,12 @@
 package com.example.backend.expense.controller;
 
-import com.example.backend.expense.dto.ExpenseListResponse;
-import com.example.backend.expense.dto.ReportResponse;
+import com.example.backend.expense.dto.*;
 import com.example.backend.expense.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 // ===== import 추가 (API-016) =====
-import com.example.backend.expense.dto.ExpenseCreateRequest;
-import com.example.backend.expense.dto.ExpenseCreateResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -69,5 +66,16 @@ public class ExpenseController {
         // 201 CREATED 상태로 응답 (명세: 등록 성공 = 201)
         // Service가 준 response 객체를 Spring이 자동으로 JSON 변환해서 프론트로 보냄
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    // 지출 상세 조회 (API-017)
+    // GET /api/expenses/{expenseId}
+    // 지출 한 건의 상세 정보 조회 (영수증 URL, 승인/반려 이력 포함)
+    @GetMapping("/api/expenses/{expenseId}")
+    public ResponseEntity<ExpenseDetailResponse> getExpenseDetail(
+            @PathVariable("expenseId") Long expenseId
+    ) {
+        ExpenseDetailResponse response = expenseService.getExpenseDetail(expenseId);
+        return ResponseEntity.ok(response); // 200 OK
     }
 }

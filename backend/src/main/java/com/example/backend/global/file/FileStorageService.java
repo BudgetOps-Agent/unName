@@ -1,9 +1,12 @@
 package com.example.backend.global.file;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -82,5 +85,26 @@ public class FileStorageService {
         }
         // 마지막 점 뒤부터 끝까지가 확장자 (예: "my.file.jpg"면 맨 뒤 "jpg"만)
         return filename.substring(filename.lastIndexOf(".") + 1);
+    }
+
+    // 저장된 파일을 읽어서 Resource(파일 자원)로 반환
+    // 파일 제공 통로(FileController)에서 이걸 불러서 프론트로 내려줌
+    public Resource loadAsResource(String fileName) {
+        try {
+            // uploads 폴더 밑에서 해당 파일 경로 찾기
+            Path filePath = Paths.get(uploadDir).resolve(fileName);
+
+            // 파일을 URL 자원으로 변환
+            Resource resource = new UrlResource(filePath.toUri());
+
+            // 파일이 실제로 존재하고 읽을 수 있으면 반환
+            if (resource.exists() && resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("파일을 찾을 수 없습니다: " + fileName);
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("파일 경로가 잘못되었습니다: " + fileName, e);
+        }
     }
 }
