@@ -96,4 +96,16 @@ public class Expense {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+
+    // 지출 반려 처리 (API-020)
+    // 반려 시 상태/사유/처리자/처리시각을 한 번에 바꿈
+    // Service에서 이 메서드를 호출하면 JPA 변경감지(dirty checking)로 자동 UPDATE 됨
+    public void reject(User approvedBy, String rejectReason) {
+        this.status = ExpenseStatus.REJECTED;   // 상태를 반려로
+        this.rejectReason = rejectReason;        // 반려 사유 저장
+        this.approvedBy = approvedBy;            // 처리한 사람(반려한 관리자/총무)
+        this.processedBy = ProcessedBy.HUMAN;    // 사람이 처리했다는 표시
+        this.approvedAt = LocalDateTime.now();   // 처리 확정 시각
+        this.updatedAt = LocalDateTime.now();    // 수정 시각 갱신
+    }
 }
