@@ -1,0 +1,33 @@
+# OS
+.DS_Store
+__MACOSX/
+
+# Logs
+*.log
+logs/
+tunnel.log
+
+# Java / Gradle
+.gradle/
+build/
+backend-spring-api/build/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+frontend-admin/node_modules/
+frontend-admin/.next/
+frontend-mobile-view/node_modules/
+frontend-mobile-view/.next/
+frontend-mobile-action/node_modules/
+frontend-mobile-action/.next/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Docker local
+docker-data/
+
