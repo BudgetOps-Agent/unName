@@ -5,24 +5,22 @@ import CategoryDonutChart from "@/shared/layouts/components/dashboard/CategoryDo
 import { Card } from "@/shared/components/card/Card";
 import Image from "next/image";
 import ContentTitle from "@/shared/components/contentTitle/ContentTitle";
+import Button from "@/shared/components/button/Button";
+import { Badge } from "@/shared/components/badge/Badge";
 import { useRouter } from "next/router";
+import useDashboard from "../../hooks/useDashboard";
 
-const requestItems = [
-  {
-    id: 1,
-    title: "해커톤 참가비",
-    level: "주의",
-    memberName: "이서연",
-    expense: 300000,
-  },
-  {
-    id: 2,
-    title: "외부 강사 강연료",
-    level: "높음",
-    memberName: "박지호",
-    expense: 500000,
-  },
-];
+type PendingStatus = 'SUBMITTED' | 'ESCALATED';
+
+const STATUS_LABEL: Record<PendingStatus, string> = {
+    SUBMITTED: '대기',
+    ESCALATED: '⚠ 에스컬',
+}
+
+const formatDate = (isoString: string) => {
+    if (!isoString) return "";
+    return isoString.slice(0, 10);
+}
 
 const barData = [
   { name: '9월', amount: 320000 },
@@ -43,47 +41,54 @@ const donutData = [
 
 const Dashboard = () => {
 
-    const totalBudget = 5000000;
-    const usedBudget = 2293000;
-    const pendingBudget = 800000;
-    const remainBudget = totalBudget - (usedBudget + pendingBudget);
-
-    const requestCount = requestItems.length;
-
     const router = useRouter();
     const { teamId } = router.query;
+    const validTeamId = typeof teamId === 'string' ? teamId : undefined;
+
+    const { dashboard, isLoading, error, refetch } = useDashboard(validTeamId);
 
   return (
     <>
         <ContentTitle title="대시보드" subTitle={`2025년 1월`} href={`/expenses/new`} btnText="지출 요청" />
 
-          <Card title="이번 달 예산" headerRight={`총 ${totalBudget.toLocaleString()}원`}>
-            <div className="budget-progress-section">
-                <div className="progress-content">
-                    <p>{`${usedBudget.toLocaleString()}원`}</p>
-                    <span>사용됨</span>
+          <Card title="이번 달 예산" headerRight={dashboard ? `총 ${dashboard.totalBudget.toLocaleString()}원` : undefined}>
+            {isLoading ? (
+                <p>불러오는 중이에요...</p>
+            ) : error ? (
+                <div className="budget-error">
+                    <p>{error}</p>
+                    <Button text="다시 시도" onClick={() => refetch()} style="tertiary" />
                 </div>
-                <div className="progress-bar">
-                    <ProgressBar total={totalBudget} used={usedBudget} />
-                </div>
-            </div>
+            ) : dashboard && (
+                <>
+                    <div className="budget-progress-section">
+                        <div className="progress-content">
+                            <p>{`${dashboard.usedBudget.toLocaleString()}원`}</p>
+                            <span>사용됨</span>
+                        </div>
+                        <div className="progress-bar">
+                            <ProgressBar total={dashboard.totalBudget} used={dashboard.usedBudget} />
+                        </div>
+                    </div>
 
-            <div className="budget-status-section">
-                <div className="budget-status used-budget">
-                    <span>사용됨</span>
-                    <p>{`${usedBudget.toLocaleString()}원`}</p>
-                </div>
+                    <div className="budget-status-section">
+                        <div className="budget-status used-budget">
+                            <span>사용됨</span>
+                            <p>{`${dashboard.usedBudget.toLocaleString()}원`}</p>
+                        </div>
 
-                <div className="budget-status pending-budget">
-                    <span>대기 중</span>
-                    <p>{`${pendingBudget.toLocaleString()}원`}</p>
-                </div>
+                        <div className="budget-status pending-budget">
+                            <span>대기 중</span>
+                            <p>{`${dashboard.pendingAmount.toLocaleString()}원`}</p>
+                        </div>
 
-                <div className="budget-status remain-budget">
-                    <span>남은 예산</span>
-                    <p>{`${remainBudget.toLocaleString()}원`}</p>
-                </div>
-            </div>
+                        <div className="budget-status remain-budget">
+                            <span>남은 예산</span>
+                            <p>{`${dashboard.remainingBudget.toLocaleString()}원`}</p>
+                        </div>
+                    </div>
+                </>
+            )}
         </Card>
 
         <div className="cards">
@@ -99,12 +104,12 @@ const Dashboard = () => {
             </Card>
         </div>
 
-        <Card title="승인이 필요해요" count={`${requestCount}`} href={`/teams/${teamId}/expenses`} linkText="전체보기">
+        <Card title="승인이 필요해요" count={`${dashboard?.pendingApprovalCount ?? 0}`} href={`/teams/${teamId}/expenses`} linkText="전체보기">
             <div className="request-list-items">
-                {requestItems.map((request) => (
+                {dashboard?.recentExpenses.map((request) => (
                     <Link
                         key={request.id}
-                        href={`/expenses/${request.id}`}
+                        href={`/teams/${teamId}/expenses/${request.id}`}
                         className="request-item"
                     >
                         <span className="request-item-icon">
@@ -114,11 +119,14 @@ const Dashboard = () => {
                         <div className="request-item-content">
                             <div className="request-item-title">
                                 <p className="title">{request.title}</p>
-                                <span className={`${request.level === '높음' ? 'danger' : ''}`}>{request.level}</span>
+                                <Badge text={STATUS_LABEL.SUBMITTED} style="yellow" />
+                                {request.status === 'ESCALATED' && (
+                                    <Badge text={STATUS_LABEL.ESCALATED} style="orange" size="sm" />
+                                )}
                             </div>
 
                             <div className="request-item-detail">
-                                {`${request.memberName} · ${request.expense.toLocaleString()}원`}
+                                {`${formatDate(request.date)} · ${request.amount.toLocaleString()}원`}
                             </div>
                         </div>
                     </Link>

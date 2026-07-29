@@ -2,6 +2,19 @@
     padding-bottom: 16px;
 }
 
+.budget-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px 0;
+}
+
+.budget-error button {
+    max-width: 120px;
+}
+
 .progress-content {
     display: flex;
     align-items: flex-end;
@@ -120,32 +133,16 @@
 }
 
 .request-item-title {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
+
 .request-item-title .title {
     color: var(--gray-9);
     font-size: 14px;
     font-weight: 700;
     line-height: 20px;
-}
-.request-item-title span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2px 10px;
-    width: 43px;
-    height: 20px;
-    border-radius: 16px;
-    background-color: var(--gray-2);
-    color: var(--orange-1);
-    font-size: 12px;
-}
-
-.request-item-title .danger {
-    background-color: #FEF2F2;
-    color: var(--red-7);
 }
 
 .request-item-detail {
