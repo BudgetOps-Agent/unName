@@ -41,7 +41,6 @@
 }
 
 body {
-  border: 1px solid red;
   min-height: 100vh;
   line-height: 1.5;
   text-rendering: optimizeSpeed;
