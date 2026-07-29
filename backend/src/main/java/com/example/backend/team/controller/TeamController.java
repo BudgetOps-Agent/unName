@@ -3,14 +3,22 @@ package com.example.backend.team.controller;
 import com.example.backend.team.dto.CreateTeamRequest;
 import com.example.backend.team.dto.CreateTeamResponse;
 import com.example.backend.team.service.TeamService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Team", description = "모임(팀) 관련 API")
 @RestController // JSON 반환하는 REST API 컨트롤러
 @RequestMapping("/api/teams") // 기본 URL 경로
 @RequiredArgsConstructor // final 필드 생성자 자동 생성
@@ -18,7 +26,30 @@ public class TeamController {
 
     // Service 주입
     private final TeamService teamService;
-
+    @Operation(
+            summary = "모임 생성",
+            description = "새로운 모임(팀)을 생성합니다. 이미 존재하는 모임 이름인 경우 409 에러가 발생합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "모임 생성 성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = CreateTeamResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "요청 값 검증 실패 (필수 값 누락 등)",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "이미 존재하는 모임 이름입니다.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
+            )
+    })
     // 모임 생성 API
     // @RequestBody JSON 객체로 변환
     // @Valid 검증 (빈칸인지 등등)
