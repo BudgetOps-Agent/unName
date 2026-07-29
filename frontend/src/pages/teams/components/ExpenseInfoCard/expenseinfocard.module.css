@@ -1,0 +1,58 @@
+.infoHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 24px 24px 20px;
+}
+
+.headerLeft, .expenseDesc {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.amount {
+    color: var(--gray-9);
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.title {
+    margin-top: 16px;
+    color: var(--gray-9);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.meta {
+    margin-top: 4px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.infoBody {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 24px 24px;
+    border-top: 0.8px solid rgba(0, 0, 0, 0.06);
+    gap: 16px;
+}
+
+.infoRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.infoLabel {
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.infoValue {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
