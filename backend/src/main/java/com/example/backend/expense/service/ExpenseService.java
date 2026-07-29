@@ -292,4 +292,70 @@ public class ExpenseService {
         // 8. 응답 반환
         return ExpenseRejectResponse.fromEntity(expense);
     }
+
+    // 지출 승인 (API-019)
+    // 관리자/총무가 지출을 승인. expenses + budgets + expenses_reviews 세 테이블을 한 트랜잭션으로 처리
+    // 승인 시 예산(usedBudget)에 지출 금액이 반영되므로, 반려(020)보다 예산 처리가 추가됨
+    @Transactional
+    public ExpenseApproveResponse approveExpense(Long expenseId) {
+
+        // 1. 로그인한 사람 이메일 꺼내기
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        // 2. 요청자 조회 (없으면 404)
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 3. 승인할 지출 조회 (없으면 404)
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new ExpenseException(ExpenseErrorCode.EXPENSE_NOT_FOUND));
+
+        // 4. 요청자가 이 지출의 팀에서 승인 권한이 있는지 확인 (ADMIN 또는 ACCOUNTANT)
+        Long teamId = expense.getTeam().getId();
+        TeamMember teamMember = teamMemberRepository
+                .findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        TeamRole role = teamMember.getRole();
+        if (role != TeamRole.ADMIN && role != TeamRole.ACCOUNTANT) {
+            throw new ExpenseException(ExpenseErrorCode.NOT_AUTHORIZED_TO_APPROVE);
+        }
+
+        // 5. 이미 처리된 건(APPROVED/REJECTED)이면 막기
+        if (expense.getStatus() == ExpenseStatus.APPROVED
+                || expense.getStatus() == ExpenseStatus.REJECTED) {
+            throw new ExpenseException(ExpenseErrorCode.ALREADY_PROCESSED);
+        }
+
+        // 6. 예산 조회 (팀당 1개)
+        Budget budget = budgetRepository.findByTeamId(teamId)
+                .orElseThrow(() -> new RuntimeException("예산 정보를 찾을 수 없습니다."));
+
+        // 7. 예산 부족 체크 — 남은 예산(total-used)보다 지출 금액이 크면 승인 거부
+        long remaining = budget.getTotalBudget() - budget.getUsedBudget();
+        if (expense.getAmount() > remaining) {
+            throw new ExpenseException(ExpenseErrorCode.BUDGET_EXCEEDED);
+        }
+
+        // 8. 승인 처리 (상태/처리자/시각 변경)
+        expense.approve(requester);
+
+        // 9. 예산 차감 (used_budget에 지출 금액 더하기)
+        budget.addUsedBudget(expense.getAmount());
+
+        // 10. expenses_reviews에 심사 결과 기록 (사람이 승인했다는 기록)
+        ExpensesReview review = ExpensesReview.builder()
+                .expense(expense)
+                .finalVerdict(FinalVerdict.APPROVED)
+                .detail(null)                     // 승인은 별도 사유 없음 (필요시 나중에 채움)
+                .suggestedCategory(null)
+                .processedBy(ProcessedBy.HUMAN)
+                .build();
+        expensesReviewRepository.save(review);
+
+        // 11. 응답 반환
+        return ExpenseApproveResponse.fromEntity(expense);
+    }
 }

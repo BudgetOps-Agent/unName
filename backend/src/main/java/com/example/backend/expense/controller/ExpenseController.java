@@ -87,4 +87,15 @@ public class ExpenseController {
         ExpenseRejectResponse response = expenseService.rejectExpense(expenseId, request);
         return ResponseEntity.ok(response); // 200 OK
     }
+
+    // 지출 승인 (API-019)
+    // POST /api/expenses/{expenseId}/approve
+    // 관리자/총무가 지출을 승인. 요청 body 없음(-)이라 @Valid/@RequestBody 없음
+    @PostMapping("/api/expenses/{expenseId}/approve")
+    public ResponseEntity<ExpenseApproveResponse> approveExpense(
+            @PathVariable("expenseId") Long expenseId
+    ) {
+        ExpenseApproveResponse response = expenseService.approveExpense(expenseId);
+        return ResponseEntity.ok(response); // 200 OK
+    }
 }

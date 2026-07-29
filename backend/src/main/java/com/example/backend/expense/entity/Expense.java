@@ -108,4 +108,14 @@ public class Expense {
         this.approvedAt = LocalDateTime.now();   // 처리 확정 시각
         this.updatedAt = LocalDateTime.now();    // 수정 시각 갱신
     }
+
+    // 지출 승인 처리 (API-019)
+    // 승인 시 상태/처리자/처리시각을 바꿈 (reject와 짝)
+    public void approve(User approvedBy) {
+        this.status = ExpenseStatus.APPROVED;   // 상태를 승인으로
+        this.approvedBy = approvedBy;            // 처리한 사람(승인한 관리자/총무)
+        this.processedBy = ProcessedBy.HUMAN;    // 사람이 처리
+        this.approvedAt = LocalDateTime.now();   // 처리 확정 시각
+        this.updatedAt = LocalDateTime.now();    // 수정 시각 갱신
+    }
 }

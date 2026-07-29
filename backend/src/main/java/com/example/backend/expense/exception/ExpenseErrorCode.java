@@ -63,6 +63,13 @@ public enum ExpenseErrorCode {
     ALREADY_PROCESSED(
             HttpStatus.CONFLICT,
             "이미 처리된 지출입니다."
+    ),
+
+    // 승인하려는데 남은 예산보다 지출 금액이 클 때 (019)
+    // 409 Conflict = 예산 상태와 요청이 충돌
+    BUDGET_EXCEEDED(
+            HttpStatus.CONFLICT,
+            "남은 예산이 부족하여 승인할 수 없습니다."
     );
 
     private final HttpStatus status;
