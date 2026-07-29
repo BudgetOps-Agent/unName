@@ -4,6 +4,12 @@ import { Badge } from '@/shared/components/badge/Badge';
 
 type BadgeStyle = 'blue' | 'purple' | 'gray' | 'yellow' | 'red' | 'green' | 'orange';
 
+const STATUS_BADGE_STYLE: Record<string, BadgeStyle> = {
+    '승인': 'green',
+    '대기': 'yellow',
+    '반려': 'red',
+};
+
 export interface ExpenseInfo {
     status: string;
     statusStyle?: BadgeStyle;
@@ -13,6 +19,7 @@ export interface ExpenseInfo {
     requester: string;
     description: string;
     amount: number;
+    rejectReason?: string;
 }
 
 interface ExpenseInfoCardProps {
@@ -20,13 +27,14 @@ interface ExpenseInfoCardProps {
 }
 
 const ExpenseInfoCard = ({ expense }: ExpenseInfoCardProps) => {
-    const { status, statusStyle = 'green', title, category, date, requester, description, amount } = expense;
+    const { status, statusStyle, title, category, date, requester, description, amount, rejectReason } = expense;
+    const badgeStyle = statusStyle ?? STATUS_BADGE_STYLE[status] ?? 'gray';
 
     return (
         <Card className={styles.expenseInfo} noPadding={true}>
             <div className={styles.infoHeader}>
                 <div className={styles.headerLeft}>
-                    <Badge text={status} style={statusStyle} />
+                    <Badge text={status} style={badgeStyle} />
                     <p className={styles.title}>{title}</p>
                     <p className={styles.meta}>{`${category} · ${date}`}</p>
                 </div>
@@ -40,15 +48,22 @@ const ExpenseInfoCard = ({ expense }: ExpenseInfoCardProps) => {
                     <p className={styles.infoValue}>{requester}</p>
                 </div>
 
-                <div className={styles.infoRow}>
+                <div className={`${styles.infoRow} ${styles.categoryRow}`}>
                     <span className={styles.infoLabel}>카테고리</span>
                     <p className={styles.infoValue}>{category}</p>
                 </div>
 
                 <div className={styles.expenseDesc}>
-                    <span className={styles.infoLabel}>설명</span>
-                    <p className={styles.infoValue}>{description}</p>
+                    <span className={styles.descLabel}>설명</span>
+                    <p className={styles.descValue}>{description}</p>
                 </div>
+
+                {status === '반려' && rejectReason && (
+                    <div className={styles.rejectReasonBox}>
+                        <span className={styles.rejectReasonTitle}>반려 사유</span>
+                        <p className={styles.rejectReasonText}>{rejectReason}</p>
+                    </div>
+                )}
             </div>
         </Card>
     )
