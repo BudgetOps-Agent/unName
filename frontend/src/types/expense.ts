@@ -1,3 +1,10 @@
+export interface ExpenseCreateResponse {
+    success: boolean;
+    expenseId: number;
+    status: 'SUBMITTED' | 'ESCALATED' | 'APPROVED' | 'REJECTED';
+    createdAt: string;
+}
+
 export interface ResponseExpenses {
     success: boolean;
     counts: {
