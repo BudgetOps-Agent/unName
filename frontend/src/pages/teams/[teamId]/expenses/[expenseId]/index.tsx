@@ -7,6 +7,7 @@ import Button from '@/shared/components/button/Button';
 import ExpenseInfoCard from '../../../components/ExpenseInfoCard/ExpenseInfoCard';
 import ReceiptCard from '../../../components/ReceiptCard/ReceiptCard';
 import AIReviewCard from '../../../components/AIReviewCard/AIReviewCard';
+import useExpenseDetail from '../../../hooks/useExpenseDetail';
 
 const aiReviewers = [
     {
@@ -29,25 +30,62 @@ const aiReviewers = [
     },
 ];
 
-const expense = {
-    status: '대기',
-    title: '정기 회의 다과비',
-    category: '회의',
-    date: '2025-01-15',
-    requester: '박지호',
-    description: '1월 정기 회의 다과비용.',
-    amount: 45000,
+const STATUS_LABEL: Record<string, string> = {
+    SUBMITTED: '대기',
+    ESCALATED: '대기',
+    APPROVED: '승인',
+    REJECTED: '반려',
+};
+
+const CATEGORY_LABEL: Record<string, string> = {
+    IT_인프라: 'IT/인프라',
 };
 
 const ExpenseDetail = () => {
 
     const router = useRouter();
-    const { teamId } = router.query;
+    const { teamId, expenseId } = router.query;
+    const validExpenseId = typeof expenseId === 'string' ? expenseId : undefined;
 
-    const receiptUrl: string | null = null;
+    const { expense, isLoading, error, refetch } = useExpenseDetail(validExpenseId);
 
     const [isRejecting, setIsRejecting] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
+
+    if (isLoading || !expense) {
+        return (
+            <div className={styles.detailContainer}>
+                <Link href={`/teams/${teamId}/expenses`} className={`link-back ${styles.backLink}`}>
+                    <span>지출 내역</span>
+                </Link>
+
+                {error && (
+                    <Card className={styles.errorCard}>
+                        <div className={styles.errorContainer}>
+                            <p className={styles.errorTextTitle}>⚠️ 지출 정보를 불러오지 못했습니다</p>
+                            <p className={styles.errorTextSub}>{error}</p>
+                            <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    }
+
+    const mappedExpense = {
+        status: STATUS_LABEL[expense.status] ?? expense.status,
+        title: expense.title,
+        category: CATEGORY_LABEL[expense.category] ?? expense.category,
+        date: expense.createdAt.slice(0, 10),
+        requester: expense.requesterName,
+        description: expense.description ?? '',
+        amount: expense.amount,
+        rejectReason: expense.rejectReason ?? undefined,
+    };
+
+    const receiptUrl = expense.receiptFileUrl
+        ? `${process.env.NEXT_PUBLIC_API_URL}${expense.receiptFileUrl}`
+        : null;
 
     return (
         <div className={styles.detailContainer}>
@@ -55,7 +93,7 @@ const ExpenseDetail = () => {
                 <span>지출 내역</span>
             </Link>
 
-            <ExpenseInfoCard expense={expense} />
+            <ExpenseInfoCard expense={mappedExpense} />
 
             <ReceiptCard receiptUrl={receiptUrl} />
 
@@ -67,7 +105,7 @@ const ExpenseDetail = () => {
                 category="회의비"
             />
 
-            {expense.status === '대기' && (
+            {mappedExpense.status === '대기' && (
                 isRejecting ? (
                     <Card className={styles.rejectCard}>
                         <p className={styles.rejectLabel}>반려 사유를 알려 주세요</p>
