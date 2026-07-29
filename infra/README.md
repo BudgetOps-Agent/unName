@@ -1,84 +1,113 @@
-# unName 프로젝트 — 프론트 분산 처리 구성 (지출 페이지 분리 + nginx)
+# Frontend Traffic Distribution with Nginx
 
-지출 등록 페이지에 트래픽이 몰릴 때, 로그인/모임 조회 같은 다른 페이지가 영향을 받지 않도록 **프론트엔드(Next.js)를 두 인스턴스로 나눠서 nginx가 경로별로 분산**하는 로컬 개발 환경 구성 문서입니다.
+## 📌 Overview
 
-> 백엔드는 1개(8080)만 사용합니다. (강사님 지시에 따라 백엔드 분리는 하지 않고, 프론트 분리로만 진행)
+프로젝트에서는 지출(Expenses) 페이지의 요청이 증가하더라도 로그인, 모임 조회 등 일반 페이지의 성능이 저하되지 않도록 **프론트엔드(Next.js)만 분산 처리하는 구조**를 적용하였다.
+
+백엔드는 하나의 Spring Boot 인스턴스만 유지하고, 동일한 Next.js 프로젝트를 두 개의 인스턴스로 실행한 뒤 Nginx의 **경로 기반(Path-based) 라우팅**을 이용하여 요청을 분산하였다.
+
+> 백엔드는 하나의 인스턴스(8080)만 사용하며, 프론트엔드만 분리하여 운영한다.
 
 ---
 
-## 1. 전체 구조
+# Architecture
 
 ```
-                         [브라우저]
-                             │
-                             ▼
-                  http://localhost:8081  ← nginx (진입점)
-                             │
-        ┌────────────────────┼────────────────────┐
-        ▼                    ▼                     ▼
-   /api/*              /expenses*                그 외 (/)
-        │                    │                     │
-        ▼                    ▼                     ▼
-  백엔드(Spring)        프론트 인스턴스 B          프론트 인스턴스 A
-   localhost:8080        (지출 전용)                (일반)
-                          localhost:3002            localhost:3001
-        │
-        ▼
-  ┌───────────┬────────────┐
-  │  MySQL    │   Redis    │
-  │  :3306    │   :6379    │
-  └───────────┴────────────┘
+                         Browser
+                            │
+                            ▼
+                    Nginx (localhost:8081)
+                            │
+          ┌─────────────────┴─────────────────┐
+          │                                   │
+          ▼                                   ▼
+   Frontend A (3001)                  Frontend B (3002)
+   일반 페이지                          지출 페이지
+
+                    │
+                    ▼
+             Spring Boot (8080)
+                    │
+          ┌─────────┴─────────┐
+          │                   │
+       MySQL              Redis
 ```
 
-- **백엔드는 1개**만 띄웁니다 (8080, IntelliJ에서 그냥 Run).
-- **프론트(Next.js)는 같은 코드**를 포트만 다르게 **2번 실행**합니다 (3001, 3002). 프로젝트를 물리적으로 분리하지 않습니다.
-- **nginx**가 요청 경로를 보고 적절한 포트로 그대로 전달(`proxy_pass`)합니다.
-- MySQL, Redis는 항상 1개씩만 존재하며, 프론트 두 인스턴스가 결국 같은 백엔드(8080) 하나를 공유하므로 데이터/로그인 상태 동기화는 원래부터 문제되지 않습니다.
+---
 
-> ⚠️ **한계**: 이 구조는 프론트(화면) 트래픽만 분산합니다. 지출 등록 시 실제 DB 쓰기·파일 업로드 부하는 여전히 백엔드 1개가 전부 처리합니다. 백엔드 자체의 부하 분산이 필요해지면 별도로 백엔드 인스턴스 분리를 검토해야 합니다.
+# Service Ports
+
+| Service | Port |
+|---------|------|
+| MySQL | 3306 |
+| Redis | 6379 |
+| Spring Boot | 8080 |
+| Frontend A | 3001 |
+| Frontend B | 3002 |
+| Nginx | 8081 |
 
 ---
 
-## 2. 포트 정리
+# Why This Architecture?
 
-| 서비스 | 포트 | 개수 |
-|---|---|---|
-| MySQL | 3306 | 1개 (고정) |
-| Redis | 6379 | 1개 (고정) |
-| 백엔드 (Spring Boot) | 8080 | 1개 |
-| 프론트 인스턴스 A (일반) | 3001 | 1개 |
-| 프론트 인스턴스 B (지출 전용) | 3002 | 1개 |
-| **nginx (최종 진입점)** | **8081** | 1개 |
+이번 프로젝트에서는 지출 관련 기능이 가장 많은 요청이 발생하는 화면이라고 판단하였다.
+
+만약 하나의 Next.js 서버에서 모든 페이지를 처리하면 지출 페이지 요청이 많아질 경우 일반 페이지까지 동일한 서버 자원을 사용하게 된다.
+
+이를 방지하기 위해 동일한 프론트엔드 프로젝트를 두 개의 인스턴스로 실행하고, Nginx가 URL을 기준으로 적절한 인스턴스로 요청을 전달하도록 구성하였다.
+
+이를 통해 특정 기능의 요청이 증가하더라도 일반 페이지의 응답 성능을 최대한 유지할 수 있도록 하였다.
 
 ---
 
-## 3. 실행 순서 (모두 PowerShell 기준)
+# Execution
 
+## 1. Backend
 
+Spring Boot 프로젝트를 IntelliJ에서 실행한다.
 
-### 3-1. 백엔드 — IntelliJ에서 실행
+```
+BackendApplication 실행
+```
 
-`BackendApplication` 실행 버튼(▶️)으로 그냥 실행합니다. 명령어로 띄울 필요 없습니다.
+---
 
-### 3-2. 프론트 인스턴스 A (포트 3001)
+## 2. Frontend A (일반 페이지)
 
 ```powershell
 cd D:\unName\frontend
+
 $env:NEXT_DIST_DIR=".next-main"
+
 npm run dev -- -p 3001
 ```
 
-### 3-3. 프론트 인스턴스 B (포트 3002, 새 PowerShell 창)
+---
+
+## 3. Frontend B (지출 페이지)
+
+새 PowerShell 창에서 실행한다.
 
 ```powershell
 cd D:\unName\frontend
-$env:NEXT_DIST_DIR=".next-teams"
+
+$env:NEXT_DIST_DIR=".next-expenses"
+
 npm run dev -- -p 3002
 ```
 
-> ⚠️ `NEXT_DIST_DIR` 환경변수로 `.next` 캐시 폴더를 분리하지 않으면, 두 인스턴스가 같은 빌드 캐시를 공유하면서 `EPERM: operation not permitted, rename ...` 에러가 반복됩니다. 반드시 인스턴스마다 다른 값을 지정하고, 새 터미널을 열 때마다 다시 설정해야 합니다 (세션마다 초기화됨).
+### Build Directory 분리
 
-`next.config.ts`:
+동일한 Next.js 프로젝트를 두 번 실행하면 기본적으로 `.next` 폴더를 함께 사용한다.
+
+이 경우 두 인스턴스가 동시에 빌드 파일을 수정하면서 다음과 같은 오류가 발생한다.
+
+```
+EPERM: operation not permitted
+```
+
+이를 방지하기 위해 각 인스턴스가 서로 다른 빌드 디렉터리를 사용하도록 설정하였다.
+
 ```typescript
 import type { NextConfig } from "next";
 
@@ -90,62 +119,82 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 ```
 
-### 3-4. nginx (새 PowerShell 창)
+---
+
+## 4. Nginx 실행
 
 ```powershell
 cd D:\unName\infra
+
 .\nginx-conf.ps1
 ```
 
-`services.json`을 읽어서 `nginx.conf`를 자동 생성하고, 필요하면 nginx를 자동 설치한 뒤 재시작까지 한 번에 처리합니다.
+PowerShell 스크립트는 다음 작업을 자동으로 수행한다.
+
+- services.json 읽기
+- nginx.conf 자동 생성
+- nginx 자동 설치(없는 경우)
+- nginx 재시작
 
 ---
 
-## 4. `services.json` — 라우팅 규칙 관리
+# Routing
+
+서비스 정보는 `services.json`에서 관리한다.
 
 ```json
 [
-  { "name": "expenses-frontend", "path": "/expenses", "port": 3002 },
-  { "name": "backend-api", "path": "/api/", "port": 8080 },
-  { "name": "frontend", "path": "/", "port": 3001 }
+  {
+    "name": "expenses-frontend",
+    "path": "^/teams/[^/]+/expenses",
+    "port": 3002
+  },
+  {
+    "name": "backend-api",
+    "path": "/api/",
+    "port": 8080
+  },
+  {
+    "name": "frontend",
+    "path": "/",
+    "port": 3001
+  }
 ]
 ```
 
-### 새 서비스를 추가하려면
+### Routing Result
 
-1. 이 파일에 `{ "name": ..., "path": ..., "port": ... }` 한 줄 추가
-2. `path`가 `"/"`(catch-all)인 항목은 **항상 배열 맨 마지막**에 위치 (nginx는 구체적인 경로부터 먼저 매칭하므로, `/`가 앞에 있으면 뒤의 규칙들이 전부 무시됨)
-3. `.\nginx-conf.ps1` 재실행
+| Request | Destination |
+|----------|-------------|
+| `/teams/{teamId}/expenses` | Frontend B (3002) |
+| `/api/*` | Spring Boot (8080) |
+| Others | Frontend A (3001) |
 
-서비스가 5개 이하일 때는 이 방식으로 충분합니다. 더 늘어나면 GCP Load Balancer + URL Map, 또는 Kubernetes Ingress 같은 관리형 라우팅으로 전환을 고려합니다.
-
-> 참고: 백엔드 API 경로 중 일부만(`/api/teams/{teamId}/expenses`처럼) 별도 서버로 보내고 싶을 경우, nginx 정규식 location(`location ~ 패턴`)이 필요합니다. `services.json`에 `"regex": true`를 추가하면 스크립트가 자동으로 `location ~ 경로` 형태로 생성합니다. 현재는 백엔드가 1개뿐이라 사용하지 않습니다.
+`services.json`을 수정한 후 `nginx-conf.ps1`만 다시 실행하면 새로운 `nginx.conf`가 자동 생성된다.
 
 ---
 
-## 5. 환경변수 / CORS
+# Advantages
 
-`frontend/.env.local`
-```
-NEXT_PUBLIC_API_URL=http://localhost:8081
-```
-프론트가 API를 호출할 때 nginx(8081)를 거치도록 설정합니다. 백엔드(8080)로 직접 요청하면 CORS 설정에 걸려 차단됩니다.
+- URL 기반으로 요청을 자동 분산할 수 있다.
+- 지출 페이지와 일반 페이지의 요청을 분리하여 성능 영향을 줄일 수 있다.
+- 동일한 소스를 사용하므로 유지보수가 쉽다.
+- Nginx 설정을 직접 수정하지 않고 JSON만 수정하면 된다.
+- 새로운 서비스가 추가되어도 쉽게 확장할 수 있다.
 
-`backend/src/main/java/.../CorsConfig.java`
-```java
-.allowedOrigins(
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:3002",
-        "http://localhost:8081"
-)
-```
+---
 
-## 6. 백엔드 분리는 하지 않은 이유
+# Limitations
 
-처음에는 지출 등록 API(`/api/teams/{teamId}/expenses`)만 별도 백엔드 인스턴스(8082)로 분리하는 방향도 검토했으나(nginx 정규식 라우팅으로 구현 가능), 아래 이유로 **백엔드는 1개로 유지**하기로 했습니다.
+- 프론트엔드 인스턴스를 두 개 실행하므로 메모리 사용량이 증가한다.
+- 실행해야 하는 프로세스가 늘어나 로컬 개발 환경이 다소 복잡해진다.
+- 백엔드는 하나만 사용하므로 실제 비즈니스 로직과 DB 처리 부하는 분산되지 않는다.
+- 운영 환경에서는 백엔드 이중화 또는 로드 밸런서를 추가로 구성해야 완전한 분산 환경이 된다.
 
-- 로컬 개발 환경에서 JDK 경로 미등록으로 인해 커맨드라인으로 백엔드 두 번째 인스턴스를 띄우는 데 어려움이 있었음
-- 프론트 분리만으로도 nginx 경로 기반 라우팅의 핵심 원리는 충분히 학습 가능
+---
 
-추후 실제로 지출 등록 트래픽이 몰려 백엔드 부하가 문제가 되면, `services.json`에 `regex: true` 옵션을 활용해 `/api/teams/{teamId}/(expenses|statistics)` 패턴을 별도 백엔드 인스턴스로 라우팅하는 구조를 다시 검토합니다.
+# Expected Effect
+
+- 지출 페이지의 요청이 증가하더라도 일반 페이지의 응답 속도 저하를 최소화할 수 있다.
+- 경로 기반 라우팅(Path-based Routing)을 적용하여 프론트엔드 트래픽을 효율적으로 분산할 수 있다.
+- `services.json` 기반 자동 설정 생성으로 서비스 추가 및 유지보수가 용이한 구조를 구축하였다.
