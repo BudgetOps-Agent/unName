@@ -1,0 +1,43 @@
+name: Deploy to GCP VM
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCP_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.GCP_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy
+        run: |
+          ssh -i ~/.ssh/deploy_key "${{ secrets.GCP_USER }}@${{ secrets.GCP_HOST }}" << 'EOF'
+            set -e
+            cd ~/unName
+            git fetch origin main
+            git reset --hard origin/main
+
+            cd backend
+            ./gradlew build -x test
+            pkill -f "java -jar" || true
+            sleep 2
+            nohup java -jar build/libs/backend-0.0.1-SNAPSHOT.jar > backend.log 2>&1 &
+
+            cd ../frontend
+            npm install
+            pkill -f "next dev" || true
+            sleep 2
+            NEXT_DIST_DIR=".next-main" nohup npm run dev -- -p 3001 > frontend-main.log 2>&1 &
+            NEXT_DIST_DIR=".next-teams" nohup npm run dev -- -p 3002 > frontend-expenses.log 2>&1 &
+
+            cd ../infra
+            bash nginx-conf.sh
+          EOF
