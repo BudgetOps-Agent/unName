@@ -1,0 +1,17 @@
+[
+  {
+    "name": "expenses-frontend",
+    "path": "/expenses",
+    "port": 3002
+  },
+  {
+    "name": "backend-api",
+    "path": "/api/",
+    "port": 8080
+  },
+  {
+    "name": "frontend",
+    "path": "/",
+    "port": 3001
+  }
+]

@@ -5,7 +5,7 @@ import NewteamForm from "./components/CreateTeamForm/CreateTeamForm";
 const NewTeam = () => {
     return (
         <>
-            <Link href="/" className="link-back"><span>내 모임으로 돌아가기</span></Link>
+            <Link href="/teams" className="link-back"><span>내 모임으로 돌아가기</span></Link>
             <Card>
                 <NewteamForm />
             </Card>
