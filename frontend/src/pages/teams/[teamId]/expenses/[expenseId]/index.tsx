@@ -4,10 +4,10 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
-import ExpenseInfoCard from '../../../components/ExpenseInfoCard/ExpenseInfoCard';
-import ReceiptCard from '../../../components/ReceiptCard/ReceiptCard';
-import AIReviewCard from '../../../components/AIReviewCard/AIReviewCard';
-import useExpenseDetail from '../../../hooks/useExpenseDetail';
+import useExpenseDetail from '@/features/teams/hooks/useExpenseDetail';
+import ExpenseInfoCard from '@/features/teams/components/ExpenseInfoCard/ExpenseInfoCard';
+import ReceiptCard from '@/features/teams/components/ReceiptCard/ReceiptCard';
+import AIReviewCard from '@/features/teams/components/AIReviewCard/AIReviewCard';
 
 const aiReviewers = [
     {

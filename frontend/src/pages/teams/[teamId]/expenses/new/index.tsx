@@ -5,7 +5,7 @@ import styles from './newexpense.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
 import Input from '@/shared/components/input/Input';
-import useCreateExpense from '../../../hooks/useCreateExpense';
+import useCreateExpense from '@/features/teams/hooks/useCreateExpense';
 
 const categories = ['회의', 'IT/인프라', '행사', '교육', '식비', '디자인', '기타'];
 

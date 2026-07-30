@@ -1,10 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import styles from './expenses.module.css';
-import Link from 'next/link';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
-import { useExpenses, ExpenseCounts } from '../../../../features/teams/hooks/useExpenses';
+import { useExpenses, ExpenseCounts } from '@/features/teams/hooks/useExpenses';
 import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
 import SearchBar from '@/features/teams/components/SearchBar/SearchBar';
 import ExpenseList from '@/features/teams/components/ExpenseList/ExpenseList';

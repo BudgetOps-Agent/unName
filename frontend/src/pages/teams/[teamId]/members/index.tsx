@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from "./members.module.css";
-import { useTeamMembers } from '../../../../features/teams/hooks/useTeamMembers';
+import { useTeamMembers } from '@/features/teams/hooks/useTeamMembers';
 import Button from "@/shared/components/button/Button";
 import { Card } from "@/shared/components/card/Card";
 import { Badge } from "@/shared/components/badge/Badge";
-import InvitationCard from "../../../../features/teams/components/MemberManageCard/InvitationCard";
+import InvitationCard from "@/features/teams/components/MemberManageCard/InvitationCard";
 import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
 import MemberSkeleton from '@/features/teams/components/MemberList/MemberSkeleton';
 import MemberList from '@/features/teams/components/MemberList/MemberList';

@@ -8,7 +8,7 @@ import ContentTitle from "@/shared/components/contentTitle/ContentTitle";
 import Button from "@/shared/components/button/Button";
 import { Badge } from "@/shared/components/badge/Badge";
 import { useRouter } from "next/router";
-import useDashboard from "../../hooks/useDashboard";
+import useDashboard from "@/features/teams/hooks/useDashboard";
 
 type PendingStatus = 'SUBMITTED' | 'ESCALATED';
 
