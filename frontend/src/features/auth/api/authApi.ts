@@ -30,3 +30,7 @@ export const logout = () : Promise<AxiosResponse<void>> => {
 export const mypage = () : Promise<AxiosResponse<ResponseMyPage>> => {
   return api.get<ResponseMyPage>("/api/user/me");
 }
+
+export const getMe = () => {
+  return api.get("/api/user/me");
+};

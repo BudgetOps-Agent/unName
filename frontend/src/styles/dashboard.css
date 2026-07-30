@@ -25,6 +25,7 @@
     color: var(--gray-9);
     font-size: 36px;
     font-weight: bold;
+    word-break: break-word;
 }
 
 .progress-content span {
@@ -37,6 +38,7 @@
 .budget-status-section {
     display: flex;
     justify-content: space-between;
+    gap: 30px;
     padding-top: 20px;
     border-top: 0.8px solid rgba(0, 0, 0, 0.05);
 }
@@ -49,6 +51,7 @@
     color: var(--gray-6);
     font-size: 12px;
     font-weight: 600;
+    flex-shrink: 0;
 }
 
 .budget-status p {
@@ -164,5 +167,14 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 30px;
+    }
+    .budget-status span {
+        flex-shrink: 0;
+    }
+    .budget-status p {
+    flex-shrink: 1;
+    overflow-wrap: break-word;
+    word-break: break-word;
     }
 }

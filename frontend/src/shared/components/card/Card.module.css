@@ -52,6 +52,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 0 16px;
+    gap: 30px;
 }
 
 :global(.card-title .title) {
@@ -88,12 +89,16 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
 }
 
 :global(.card-title .title-right) {
     color: var(--gray-6);
     font-size: 12px;
     font-weight: 600;
+    flex-shrink: 1;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 @media screen and (max-width: 768px) {

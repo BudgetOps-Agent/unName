@@ -8,6 +8,7 @@
     font-weight: 700;
     font-size: 12px;
     width: fit-content;
+    flex-shrink: 0;
 }
 
 .icon {

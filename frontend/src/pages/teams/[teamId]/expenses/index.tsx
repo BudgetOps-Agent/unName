@@ -71,28 +71,30 @@ const Expenses = () => {
                 <>
                     <SearchBar value={searchKeyword} onChange={setSearchKeyword} />
 
-                    <div className={styles.filterSection}>
+                    <div className={styles.filterWrapper}>
+                      <ul className={styles.filterSection}>
                         {filterBtn.map((item) => {
-                            const isActive = currentFilter === item.text;
+                          const isActive = currentFilter === item.text;
 
-                            return (
-                                <div key={item.id}>
-                                    <button
-                                        className={`${styles.filterBtn} ${isActive ? styles.active : ""}`}
-                                        onClick={() => handleFilterChange(item.text)}
-                                    >
-                                        <span className={styles.filterBtnText}>
-                                            <p className={styles.btnTitle}>{item.text}</p>
-                                            <p className={styles.btnCount}>
-                                                {counts[COUNT_KEY[item.text]]}
-                                            </p>
-                                        </span>
-                                    </button>
-                                </div>
-                            )
+                          return (
+                            <li key={item.id}>
+                              <button
+                                className={`${styles.filterBtn} ${isActive ? styles.active : ""}`}
+                                onClick={() => handleFilterChange(item.text)}
+                              >
+                                <span className={styles.filterBtnText}>
+                                  <p className={styles.btnTitle}>{item.text}</p>
+                                  <p className={styles.btnCount}>
+                                    {counts[COUNT_KEY[item.text]]}
+                                  </p>
+                                </span>
+                              </button>
+                            </li>
+                          )
                         })}
-                    </div>
-
+                      </ul>
+                  </div>
+                  
                     {isLoading ? (
                         <p className={styles.empty}>불러오는 중이에요...</p>
                     ) : filteredExpenses.length === 0 ? (

@@ -1,21 +1,19 @@
+import { ReportExpense } from '@/types/report';
 import styles from './expensedetailtable.module.css';
 import { Card } from '@/shared/components/card/Card';
 
-interface Expense {
-    id: number;
-    item: string;
-    category: string;
-    requester: string;
-    date: string;
-    amount: number;
-}
-
 interface ExpenseDetailTableProps {
-    expenses: Expense[];
+    expenses: ReportExpense[];
+    isLoading: boolean;
+    isError: boolean;
 }
 
-const ExpenseDetailTable = ({ expenses }: ExpenseDetailTableProps) => {
-
+const ExpenseDetailTable = ({ expenses, isLoading, isError }: ExpenseDetailTableProps) => {
+  console.log({
+    isLoading,
+    isError,
+    length: expenses.length,
+  });
     const totalAmount = expenses.reduce((sum, item) => sum + item.amount, 0);
 
     return (
@@ -36,20 +34,48 @@ const ExpenseDetailTable = ({ expenses }: ExpenseDetailTableProps) => {
                 </thead>
 
                 <tbody>
-                    {expenses.map((expense) => (
-                        <tr key={expense.id} className={styles.tableItems}>
-                            <td className={styles.item}>{expense.item}</td>
-                            <td className={styles.category}>{expense.category}</td>
-                            <td className={styles.requester}>{expense.requester}</td>
-                            <td className={styles.date}>{expense.date}</td>
-                            <td className={styles.amount}>{expense.amount.toLocaleString()}원</td>
+                  {isLoading ? (
+                    <>
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <tr key={index} className={styles.tableItems}>
+                          <td><div className={styles.skeleton} /></td>
+                          <td><div className={styles.skeleton} /></td>
+                          <td><div className={styles.skeleton} /></td>
+                          <td><div className={styles.skeleton} /></td>
+                          <td><div className={styles.skeleton} /></td>
                         </tr>
-                    ))}
+                      ))}
+                    </>
+                  ) : isError ? (
+                    <tr>
+                      <td colSpan={5} className={styles.noData}>
+                        데이터를 불러오지 못했어요.
+                      </td>
+                    </tr>
+                  ) : expenses.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className={styles.noData}>
+                        등록된 지출이 없어요!
+                      </td>
+                    </tr>
+                  ) : (
+                    <>
+                      {expenses.map((expense) => (
+                        <tr key={expense.id} className={styles.tableItems}>
+                          <td className={styles.item}>{expense.title}</td>
+                          <td className={styles.category}>{expense.category}</td>
+                          <td className={styles.requester}>{expense.requesterName}</td>
+                          <td className={styles.date}>{expense.date}</td>
+                          <td className={styles.amount}>{expense.amount.toLocaleString()}원</td>
+                        </tr>
+                      ))}
 
-                    <tr className={styles.totalRow}>
+                      <tr className={styles.totalRow}>
                         <td colSpan={4}>합계</td>
                         <td>{totalAmount.toLocaleString()}원</td>
-                    </tr>
+                      </tr>
+                    </>
+                  )}
                 </tbody>
             </table>
         </Card>

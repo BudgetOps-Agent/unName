@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import { getMe } from "@/features/auth/api/authApi";
 
 export default function Custom404() {
   const router = useRouter();
@@ -7,15 +8,8 @@ export default function Custom404() {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        const response = await fetch("/api/user/me", {
-          credentials: "include",
-        });
-
-        if (response.ok) {
-          router.replace("/teams");
-        } else {
-          router.replace("/auth/signin");
-        }
+        await getMe();
+        router.replace("/teams");
       } catch {
         router.replace("/auth/signin");
       }

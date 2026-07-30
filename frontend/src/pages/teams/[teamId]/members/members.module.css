@@ -54,6 +54,10 @@
     font-size: 12px;
     gap: 12px;
 }
+.roleItem span {
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+}
 
 .roleContent, .errorTextSub {
     color: var(--gray-7);

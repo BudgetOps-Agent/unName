@@ -6,6 +6,10 @@ import "@/shared/layouts/mainLayout/MainLayout.css";
 import "@/shared/layouts/authLayout/AuthLayout.css";
 import MainLayout from "@/shared/layouts/mainLayout/MainLayout";
 import AuthLayout from "@/shared/layouts/authLayout/AuthLayout";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/shared/lib/queryClient";
+
+
 
 export default function App({ Component, pageProps, router }: AppProps) {
     const currentPath = router.pathname;
@@ -19,9 +23,10 @@ export default function App({ Component, pageProps, router }: AppProps) {
     const mobileAlign = centerAlignPaths.includes(currentPath) ? "center" : "flex-start";
     
     const useAuthLayout = isAuthPage || isMyGroup || isNewTeamPage;
+  
     
     return (
-        <>
+        <QueryClientProvider client={queryClient}>
             {useAuthLayout ? (
                 <AuthLayout showLogo={showLogo} mobileAlign={mobileAlign}>
                     <Component {...pageProps} />
@@ -31,6 +36,6 @@ export default function App({ Component, pageProps, router }: AppProps) {
                     <Component {...pageProps} />
                 </MainLayout>
             )}
-        </>
+        </QueryClientProvider>
     );
 }

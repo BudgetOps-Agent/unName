@@ -39,3 +39,12 @@ export interface ResponseExpenses {
         date: string;
     }[];
 }
+
+export interface Expense {
+  id: number;
+  title: string;
+  category: string;
+  requesterName: string;
+  date: string;
+  amount: number;
+}
