@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Card } from "@/shared/components/card/Card";
 import "./Signup.module.css";
-import SignupForm from "../components/signupForm";
+import SignupForm from "@/features/auth/components/signupForm";
 
 const Signup = () => {
     return (

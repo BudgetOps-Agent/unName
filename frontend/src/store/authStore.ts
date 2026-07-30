@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ResponseSignin } from "@/types/auth"; 
-import { logout as logoutApi } from '@/pages/auth/api/authApi';
+import { logout as logoutApi } from '@/features/auth/api/authApi';
 
 
 interface AuthState {

@@ -1,5 +1,5 @@
 import { Card } from "@/shared/components/card/Card";
-import FindIdForm from "../components/findidForm";
+import FindIdForm from "@/features/auth/components/findidForm";
 import Link from "next/link";
 
 const Findid = () => {

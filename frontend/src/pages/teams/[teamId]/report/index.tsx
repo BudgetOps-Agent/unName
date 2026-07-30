@@ -1,8 +1,8 @@
+import SummaryCard from '@/features/teams/components/SummaryCard/SummaryCard';
 import styles from './report.module.css';
 import Button from '@/shared/components/button/Button';
-import SummaryCard from '../../components/SummaryCard/SummaryCard';
-import ExpenseDetailTable from '../../components/ExpenseDetailTable/ExpenseDetailTable';
 import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
+import ExpenseDetailTable from '@/features/teams/components/ExpenseDetailTable/ExpenseDetailTable';
 
 const expenses = [
     { id: 1, item: '정기 회의 다과비', category: '회의', requester: '박지호', date: '2025-01-15', amount: 45000 },

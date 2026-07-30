@@ -4,10 +4,10 @@ import { Card } from "@/shared/components/card/Card";
 import Button from "@/shared/components/button/Button";
 import UserProfile from "@/shared/components/userProfile/UserProfile";
 import GroupList from "@/shared/components/groupList/GroupList";
-import { logout } from "../auth/api/authApi";
+import { logout } from "@/features/auth/api/authApi";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/router";
-import { useMyPage } from "./useMyPage";
+import { useMyPage } from "@/features/mypage/hooks/useMyPage";
 import Image from "next/image";
 
 const Mypage = () => {

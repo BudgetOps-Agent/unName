@@ -3,12 +3,14 @@ package com.example.backend.expense.service;
 import com.example.backend.budget.entity.Budget;
 import com.example.backend.budget.repository.BudgetRepository;
 import com.example.backend.expense.dto.*;
-import com.example.backend.expense.entity.Expense;
-import com.example.backend.expense.entity.ExpenseStatus;
+import com.example.backend.expense.entity.*;
 import com.example.backend.expense.exception.ExpenseErrorCode;
 import com.example.backend.expense.exception.ExpenseException;
 import com.example.backend.expense.repository.ExpenseRepository;
+import com.example.backend.expense.repository.ExpensesReviewRepository;
 import com.example.backend.member.repository.UserRepository;
+import com.example.backend.teamMember.entity.TeamMember;
+import com.example.backend.teamMember.entity.TeamRole;
 import com.example.backend.teamMember.repository.TeamMemberRepository;
 import com.example.backend.member.entity.User;
 import com.example.backend.member.exception.MemberErrorCode;
@@ -19,13 +21,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-// ===== 아래 import 추가 (API-016) =====
 import com.example.backend.global.file.FileStorageService;
 import com.example.backend.team.entity.Team;
 import com.example.backend.team.repository.TeamRepository;
 import org.springframework.web.multipart.MultipartFile;
-// =====================================
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,10 +39,12 @@ public class ExpenseService {
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
 
-    // ===== 아래 필드 추가 (API-016) =====
+    // 지출 등록 (API-016)
     private final FileStorageService fileStorageService; // 영수증 파일 저장 담당 부품
     private final TeamRepository teamRepository;          // 지출 등록 시 팀 존재 확인 + Team 객체 조회용
-    // ===================================
+
+    // 지출 반려(API-020)
+    private final ExpensesReviewRepository expensesReviewRepository;
 
     // 지출 목록 조회 (API-014)
     //
@@ -235,5 +236,126 @@ public class ExpenseService {
         // 2. 엔티티 → 상세 응답 DTO로 변환해서 반환
         //    (receiptUrl → receiptFileUrl 변환, 요청자 이름 등은 fromEntity 안에서 처리)
         return ExpenseDetailResponse.fromEntity(expense);
+    }
+
+    // 지출 반려 (API-020)
+    // 관리자/총무가 지출을 반려. expenses + expenses_reviews 두 테이블을 한 트랜잭션으로 처리
+    @Transactional
+    public ExpenseRejectResponse rejectExpense(Long expenseId, ExpenseRejectRequest request) {
+
+        // 1. 로그인한 사람 이메일 꺼내기
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        // 2. 요청자 조회 (없으면 404)
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 3. 반려할 지출 조회 (없으면 404)
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new ExpenseException(ExpenseErrorCode.EXPENSE_NOT_FOUND));
+
+        // 4. 요청자가 이 지출의 팀에서 승인/반려 권한이 있는지 확인 (ADMIN 또는 ACCOUNTANT)
+        Long teamId = expense.getTeam().getId();
+        TeamMember teamMember = teamMemberRepository
+                .findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        TeamRole role = teamMember.getRole();
+        if (role != TeamRole.ADMIN && role != TeamRole.ACCOUNTANT) {
+            throw new ExpenseException(ExpenseErrorCode.NOT_AUTHORIZED_TO_APPROVE);
+        }
+
+        // 5. 이미 처리된 건(APPROVED/REJECTED)이면 막기
+        if (expense.getStatus() == ExpenseStatus.APPROVED
+                || expense.getStatus() == ExpenseStatus.REJECTED) {
+            throw new ExpenseException(ExpenseErrorCode.ALREADY_PROCESSED);
+        }
+
+        // 6. 반려 처리 (엔티티의 reject 메서드 호출 → status/사유/처리자/시각 한번에 변경)
+        expense.reject(requester, request.getRejectReason());
+
+        // 7. expenses_reviews에 심사 결과 기록 (사람이 반려했다는 기록)
+        ExpensesReview review = ExpensesReview.builder()
+                .expense(expense)
+                .finalVerdict(FinalVerdict.REJECTED)
+                .detail("{\"reason\": \"" + request.getRejectReason() + "\"}") // 반려사유를 json으로
+                .suggestedCategory(null)          // 사람 처리라 AI 추천 카테고리 없음
+                .processedBy(ProcessedBy.HUMAN)   // 사람이 처리
+                .build();
+        expensesReviewRepository.save(review);
+
+        //      LLM팀에게 반려 사유 전달 (URL 확정 후)
+        //       @TransactionalEventListener(AFTER_COMMIT)로 커밋 성공 후 비동기 전송 예정
+
+        // 8. 응답 반환
+        return ExpenseRejectResponse.fromEntity(expense);
+    }
+
+    // 지출 승인 (API-019)
+    // 관리자/총무가 지출을 승인. expenses + budgets + expenses_reviews 세 테이블을 한 트랜잭션으로 처리
+    // 승인 시 예산(usedBudget)에 지출 금액이 반영되므로, 반려(020)보다 예산 처리가 추가됨
+    @Transactional
+    public ExpenseApproveResponse approveExpense(Long expenseId) {
+
+        // 1. 로그인한 사람 이메일 꺼내기
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        // 2. 요청자 조회 (없으면 404)
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 3. 승인할 지출 조회 (없으면 404)
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new ExpenseException(ExpenseErrorCode.EXPENSE_NOT_FOUND));
+
+        // 4. 요청자가 이 지출의 팀에서 승인 권한이 있는지 확인 (ADMIN 또는 ACCOUNTANT)
+        Long teamId = expense.getTeam().getId();
+        TeamMember teamMember = teamMemberRepository
+                .findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        TeamRole role = teamMember.getRole();
+        if (role != TeamRole.ADMIN && role != TeamRole.ACCOUNTANT) {
+            throw new ExpenseException(ExpenseErrorCode.NOT_AUTHORIZED_TO_APPROVE);
+        }
+
+        // 5. 이미 처리된 건(APPROVED/REJECTED)이면 막기
+        if (expense.getStatus() == ExpenseStatus.APPROVED
+                || expense.getStatus() == ExpenseStatus.REJECTED) {
+            throw new ExpenseException(ExpenseErrorCode.ALREADY_PROCESSED);
+        }
+
+        // 6. 예산 조회 (팀당 1개)
+        Budget budget = budgetRepository.findByTeamId(teamId)
+                .orElseThrow(() -> new RuntimeException("예산 정보를 찾을 수 없습니다."));
+
+        // 7. 예산 부족 체크 — 남은 예산(total-used)보다 지출 금액이 크면 승인 거부
+        long remaining = budget.getTotalBudget() - budget.getUsedBudget();
+        if (expense.getAmount() > remaining) {
+            throw new ExpenseException(ExpenseErrorCode.BUDGET_EXCEEDED);
+        }
+
+        // 8. 승인 처리 (상태/처리자/시각 변경)
+        expense.approve(requester);
+
+        // 9. 예산 차감 (used_budget에 지출 금액 더하기)
+        budget.addUsedBudget(expense.getAmount());
+
+        // 10. expenses_reviews에 심사 결과 기록 (사람이 승인했다는 기록)
+        ExpensesReview review = ExpensesReview.builder()
+                .expense(expense)
+                .finalVerdict(FinalVerdict.APPROVED)
+                .detail(null)                     // 승인은 별도 사유 없음 (필요시 나중에 채움)
+                .suggestedCategory(null)
+                .processedBy(ProcessedBy.HUMAN)
+                .build();
+        expensesReviewRepository.save(review);
+
+        // 11. 응답 반환
+        return ExpenseApproveResponse.fromEntity(expense);
     }
 }

@@ -5,13 +5,10 @@ import com.example.backend.expense.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-// ===== import 추가 (API-016) =====
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
-// =================================
 
 @RestController // JSON 반환하는 REST API 컨트롤러
 @RequiredArgsConstructor // final 필드 생성자 자동 생성
@@ -76,6 +73,29 @@ public class ExpenseController {
             @PathVariable("expenseId") Long expenseId
     ) {
         ExpenseDetailResponse response = expenseService.getExpenseDetail(expenseId);
+        return ResponseEntity.ok(response); // 200 OK
+    }
+
+    // 지출 반려 (API-020)
+    // POST /api/expenses/{expenseId}/reject
+    // 관리자/총무가 지출을 반려. rejectReason 필수(body)라 @Valid로 검증
+    @PostMapping("/api/expenses/{expenseId}/reject")
+    public ResponseEntity<ExpenseRejectResponse> rejectExpense(
+            @PathVariable("expenseId") Long expenseId,
+            @Valid @RequestBody ExpenseRejectRequest request  // 반려 사유를 JSON body로 받음
+    ) {
+        ExpenseRejectResponse response = expenseService.rejectExpense(expenseId, request);
+        return ResponseEntity.ok(response); // 200 OK
+    }
+
+    // 지출 승인 (API-019)
+    // POST /api/expenses/{expenseId}/approve
+    // 관리자/총무가 지출을 승인. 요청 body 없음(-)이라 @Valid/@RequestBody 없음
+    @PostMapping("/api/expenses/{expenseId}/approve")
+    public ResponseEntity<ExpenseApproveResponse> approveExpense(
+            @PathVariable("expenseId") Long expenseId
+    ) {
+        ExpenseApproveResponse response = expenseService.approveExpense(expenseId);
         return ResponseEntity.ok(response); // 200 OK
     }
 }

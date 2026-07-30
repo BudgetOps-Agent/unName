@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/shared/components/card/Card";
-import FindPwForm from "../components/findpwForm";
+import FindPwForm from "@/features/auth/components/findpwForm";
 
 const findpw = () => {
     return (

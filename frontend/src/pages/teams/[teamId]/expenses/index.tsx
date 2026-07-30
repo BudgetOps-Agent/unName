@@ -4,10 +4,10 @@ import styles from './expenses.module.css';
 import Link from 'next/link';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
-import SearchBar from '../../components/SearchBar/SearchBar';
-import ExpenseList from '../../components/ExpenseList/ExpenseList';
-import { useExpenses, ExpenseCounts } from '../../hooks/useExpenses';
+import { useExpenses, ExpenseCounts } from '../../../../features/teams/hooks/useExpenses';
 import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
+import SearchBar from '@/features/teams/components/SearchBar/SearchBar';
+import ExpenseList from '@/features/teams/components/ExpenseList/ExpenseList';
 
 const filterBtn = [
     { id: 1, text: '전체' },
