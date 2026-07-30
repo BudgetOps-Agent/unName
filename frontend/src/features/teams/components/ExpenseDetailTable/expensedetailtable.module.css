@@ -1,0 +1,64 @@
+.tableTitle {
+    padding: 16px 24px;
+}
+
+.title {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.reportTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableHeader {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.reportTable th,
+.reportTable td {
+    padding: 12px 20px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.reportTable th,
+.tableItems td {
+    border-top: 0.8px solid rgba(0, 0, 0, 0.04);
+}
+
+.reportTable tbody {
+    font-size: 14px;
+}
+
+.tableItems:hover td {
+    background-color: var(--gray-3);
+}
+
+.item, .amount, .totalRow {
+    font-weight: 700;
+}
+
+.category, .requester, .date {
+    color: var(--gray-8);
+    font-weight: 600;
+}
+
+.tableHeader th:last-child,
+.tableItems td:last-child,
+.totalRow td:last-child {
+    text-align: right;
+}
+
+.totalRow td:last-child {
+    color: var(--blue-8);
+}
+
+.totalRow td {
+    padding: 16px 20px;
+    border-top: 1.6px solid rgba(0, 0, 0, 0.06);
+}

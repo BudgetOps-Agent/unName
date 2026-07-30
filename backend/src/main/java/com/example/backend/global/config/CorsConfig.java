@@ -35,7 +35,13 @@ public class CorsConfig {
 
                         // localhost:3000 에서 오는 요청 허용
                         // Next.js 개발 서버
-                        .allowedOrigins("http://localhost:3000")
+                        .allowedOrigins(
+                                "http://localhost:3000",
+                                "http://localhost:3001",
+                                "http://localhost:3002",
+                                "http://localhost:8081",
+                                "https://klein-specialists-appreciation-suggest.trycloudflare.com/"
+                        )
                         .allowedMethods("*")                // 모든 HTTP Method 허용 -> GET, POST, PUT, PATCH, DELETE 등
                         .allowedHeaders("*")                // 모든 요청 헤더 허용
                         .allowCredentials(true)             // 쿠키 사용 시 필요

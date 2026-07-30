@@ -99,7 +99,7 @@
         border-bottom: none;
     }
     .sidebar-container .sidebar-toggle {
-        right: 0;
+        right: 20px;
     }
     .sidebar-container .menu-section  {
         position: absolute;
