@@ -1,5 +1,5 @@
 import { Card } from "@/shared/components/card/Card";
-import SigninForm from "../components/signinForm";
+import SigninForm from "@/features/auth/components/signinForm";
 
 const Signin = () => {
 

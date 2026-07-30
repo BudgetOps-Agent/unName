@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { signup } from "@/pages/auth/api/authApi";
+import { signup } from "@/features/auth/api/authApi";
 import { RequestSignup, ResponseSignup, ErrorResponse, } from '@/types/auth';
 
 type UseSignupResult = ResponseSignup | ErrorResponse;

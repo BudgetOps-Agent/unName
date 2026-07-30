@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { ErrorResponse, RequestFindid, ResponseFindid } from "@/types/auth"
-import { findId } from "../api/authApi";
+import { findId } from "../../../features/auth/api/authApi";
 
 type UseFindIdResult = ResponseFindid | ErrorResponse;
 

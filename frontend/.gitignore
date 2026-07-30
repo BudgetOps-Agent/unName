@@ -43,4 +43,4 @@ next-env.d.ts
 package-lock.json
 
 .next-main
-.next-teams
+.next-expenses

@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { signin } from "@/pages/auth/api/authApi";
+import { signin } from "@/features/auth/api/authApi";
 import { ErrorResponse, RequestSignin, ResponseSignin } from "@/types/auth";
 
 interface UseSigninResult {

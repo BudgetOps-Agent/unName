@@ -6,7 +6,7 @@ import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import ExpenseList from '../../components/ExpenseList/ExpenseList';
-import { useExpenses, ExpenseCounts } from '../../hooks/useExpenses';
+import { useExpenses, ExpenseCounts } from '../../../../features/teams/hooks/useExpenses';
 import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
 
 const filterBtn = [

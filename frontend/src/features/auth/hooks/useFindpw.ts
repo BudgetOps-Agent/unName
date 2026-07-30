@@ -6,7 +6,7 @@ import {
     ResponseResetPassword,
     ErrorResponse
 } from "@/types/auth";
-import { findPW, resetPw } from "../api/authApi";
+import { findPW, resetPw } from "../../../features/auth/api/authApi";
 
 type UseExecuteVerifyResult = ResponseVerifyUser | ErrorResponse;
 type UseExecuteResetPasswordResult = ResponseResetPassword | ErrorResponse;

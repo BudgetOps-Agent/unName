@@ -3,7 +3,7 @@ import Dropdown from "@/shared/components/dropdown/Dropdown";
 import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
-import { logout, mypage } from "@/pages/auth/api/authApi";
+import { logout, mypage } from "@/features/auth/api/authApi";
 
 const noticelist = [
     {

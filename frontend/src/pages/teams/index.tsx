@@ -31,7 +31,7 @@ const Teams = () => {
 
     return (
         <div className={styles.teamsContainer}>
-            <ContentTitle title="내모임" subTitle="참여 중인 모임이에요" href="/teams/new" btnText="새 모임"/>
+            <ContentTitle title="내 모임" subTitle="참여 중인 모임이에요" href="/teams/new" btnText="새 모임"/>
 
             <div className={styles.inviteListSection}>
                 <p className={styles.inviteAlarm}>

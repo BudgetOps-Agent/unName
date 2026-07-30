@@ -3,9 +3,8 @@ import styles from './memberManageCard.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
 import Input from '@/shared/components/input/Input';
-import { Badge } from '@/shared/components/badge/Badge';
-import { validateEmailFormat } from '@/pages/auth/utils/signupValidator';
 import useInviteMember from '../../hooks/useInviteMember';
+import { validateEmailFormat } from '@/features/auth/utils/signupValidator';
 
 interface InvitationCardProps {
     teamId: string | undefined;

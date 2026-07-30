@@ -26,7 +26,6 @@ if (-not (Test-Path "$NginxDir\conf\mime.types")) {
 
 $services = Get-Content $ServicesFile | ConvertFrom-Json
 
-# --- nginx.conf 전체 내용을 문자열 하나로 다 조립 ---
 $configContent = @"
 worker_processes 1;
 
@@ -39,15 +38,41 @@ http {
     default_type application/octet-stream;
     sendfile on;
 
+    map `$http_upgrade `$connection_upgrade {
+        default upgrade;
+        '' close;
+    }
+
     server {
         listen 8081;
         server_name localhost;
+
+        # Next.js HMR
+        location /_next/ {
+            proxy_pass http://127.0.0.1:3001;
+
+            proxy_http_version 1.1;
+            proxy_set_header Host `$host;
+            proxy_set_header Upgrade `$http_upgrade;
+            proxy_set_header Connection `$connection_upgrade;
+
+            proxy_set_header X-Real-IP `$remote_addr;
+            proxy_set_header X-Forwarded-For `$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto `$scheme;
+
+            proxy_cache_bypass `$http_upgrade;
+
+            proxy_read_timeout 86400;
+            proxy_send_timeout 86400;
+
+            add_header X-Served-By "frontend-3001" always;
+        }
 
 "@
 
 foreach ($service in $services) {
 
-    if ($service.path.StartsWith("^")) {
+    if ($service.regex) {
         $locationDirective = "location ~ $($service.path)"
     } else {
         $locationDirective = "location $($service.path)"
@@ -57,11 +82,20 @@ foreach ($service in $services) {
         # --- $($service.name) ---
         $locationDirective {
             proxy_pass http://127.0.0.1:$($service.port);
+
             proxy_http_version 1.1;
+
             proxy_set_header Host `$host;
             proxy_set_header X-Real-IP `$remote_addr;
             proxy_set_header X-Forwarded-For `$proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto `$scheme;
+
+            proxy_set_header Upgrade `$http_upgrade;
+            proxy_set_header Connection `$connection_upgrade;
+            proxy_cache_bypass `$http_upgrade;
+
+            proxy_read_timeout 86400;
+            proxy_send_timeout 86400;
 
             add_header X-Served-By "$($service.name)-$($service.port)" always;
         }
@@ -74,18 +108,22 @@ $configContent += @"
 }
 "@
 
-# --- BOM 없는 UTF-8로 파일 쓰기 (.NET 방식 사용) ---
 $utf8NoBom = New-Object System.Text.UTF8Encoding $false
 [System.IO.File]::WriteAllText($OutputFile, $configContent, $utf8NoBom)
 
 Write-Host "nginx.conf 생성 완료: $OutputFile"
-
 # nginx 재시작
 Push-Location $NginxDir
+
 & .\nginx.exe -t
-& .\nginx.exe -s stop 2>$null
-Start-Sleep -Seconds 1
-& .\nginx.exe
+
+if ($LASTEXITCODE -eq 0) {
+    taskkill /F /IM nginx.exe 2>$null
+    Start-Sleep -Seconds 1
+    Remove-Item ".\logs\nginx.pid" -Force -ErrorAction SilentlyContinue
+    & .\nginx.exe
+}
+
 Pop-Location
 
 Write-Host "nginx 재시작 완료"

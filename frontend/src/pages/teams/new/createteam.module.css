@@ -1,0 +1,14 @@
+.formTitleSection {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.backLink {
+    text-align: left;
+}
+
+.formCard {
+    margin-top: 24px;
+    max-width: 500px;
+}
