@@ -2,7 +2,7 @@ import Link from "next/link";
 import styles from './createteam.module.css';
 import { Card } from "@/shared/components/card/Card";
 import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
-import CreateTeamForm from "../components/CreateTeamForm/CreateTeamForm";
+import CreateTeamForm from "@/features/teams/components/CreateTeamForm/CreateTeamForm";
 
 const CreateTeam = () => {
     return (
