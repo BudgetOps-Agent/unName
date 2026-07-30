@@ -22,12 +22,12 @@ const Report = () => {
     return (
         <>
             <ContentTitle title="정산 리포트" subTitle="승인된 지출만 포함돼요">
-                <Button
+                {/* <Button
                     className={styles.downloadBtn}
                     text='PDF'
                     iconLeft={<img src="/download.svg" alt="다운로드" />}
                     style='secondary'
-                />
+                /> */}
                 <Button
                     className={styles.downloadBtn}
                     text='CSV'

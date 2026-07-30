@@ -2,6 +2,7 @@ package com.example.backend.expense.repository;
 
 import com.example.backend.expense.entity.Expense;
 import com.example.backend.expense.entity.ExpenseStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -27,8 +28,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     long countByTeamIdAndStatusIn(Long teamId, List<ExpenseStatus> statuses);
 
     // 정산 리포트용 (API-050) - 승인된 지출을 승인일 최신순으로 조회
-    List<Expense> findByTeamIdAndStatusOrderByApprovedAtDesc(Long teamId, ExpenseStatus status);
-
+    List<Expense> findByTeamIdAndStatusOrderByApprovedAtDesc(
+            Long teamId,
+            ExpenseStatus status
+    );
+    Page<Expense> findByTeamIdAndStatusOrderByApprovedAtDesc(
+            Long teamId,
+            ExpenseStatus status,
+            Pageable pageable
+    );
     // 대시보드 미리보기용 (API-023) - 승인 대기(SUBMITTED+ESCALATED) 지출을 최신순으로 조회
     // Pageable로 개수 제한 (상위 N개만)
     List<Expense> findByTeamIdAndStatusInOrderByCreatedAtDesc(

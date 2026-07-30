@@ -17,6 +17,8 @@ import com.example.backend.member.exception.MemberErrorCode;
 import com.example.backend.member.exception.MemberException;
 import com.example.backend.teamMember.exception.TeamMemberErrorCode;
 import com.example.backend.teamMember.exception.TeamMemberException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -106,10 +108,64 @@ public class ExpenseService {
         }
     }
     // 정산 리포트 조회 (API-050)
-// 승인된 지출 내역 + 예산 현황을 한 번에 조회
+    // 승인된 지출 내역 + 예산 현황을 한 번에 조회
     @Transactional(readOnly = true)
-    public ReportResponse getReport(Long teamId) {
+    public ReportExpenseListResponse getReport(Long teamId, int page, int size) {
+        // 1. 토큰에서 로그인한 사람 이메일 꺼내기
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
 
+        // 2. 요청자 조회
+        User requester = userRepository.findByEmail(email)
+            .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        PageRequest pageable = PageRequest.of(page, size);
+
+        Page<Expense> approvedExpenses =
+                expenseRepository.findByTeamIdAndStatusOrderByApprovedAtDesc(
+                        teamId,
+                        ExpenseStatus.APPROVED,
+                        pageable
+                );
+
+        if (approvedExpenses.isEmpty()) {
+            throw new ExpenseException(ExpenseErrorCode.EXPENSE_NOT_FOUND);
+        }
+
+        // 7. Expense → ExpenseInfo(DTO)로 변환
+        List<ReportExpenseListResponse.ExpenseInfo> expenseInfos =
+                approvedExpenses.getContent().stream()
+                .map(expense ->
+                    ReportExpenseListResponse.ExpenseInfo.builder()
+                        .id(expense.getId())
+                        .title(expense.getTitle())
+                        .category(expense.getCategory().name())
+                        .requesterName(expense.getUser().getName())
+                        .date(expense.getApprovedAt() == null
+                                ? null
+                                : expense.getApprovedAt().toString())
+                        .amount(expense.getAmount())
+                        .build()
+                )
+                .collect(Collectors.toList());
+
+        // 8. 응답 반환
+        return ReportExpenseListResponse.builder()
+                .success(true)
+                .page(approvedExpenses.getNumber())
+                .size(approvedExpenses.getSize())
+                .totalElements(approvedExpenses.getTotalElements())
+                .totalPages(approvedExpenses.getTotalPages())
+                .expenses(expenseInfos)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public ReportSummaryResponse getSummary(Long teamId) {
         // 1. 토큰에서 로그인한 사람 이메일 꺼내기
         String email = SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -125,7 +181,10 @@ public class ExpenseService {
 
         // 4. 승인된 지출 목록 조회 (승인일 최신순)
         List<Expense> approvedExpenses =
-                expenseRepository.findByTeamIdAndStatusOrderByApprovedAtDesc(teamId, ExpenseStatus.APPROVED);
+                expenseRepository.findByTeamIdAndStatusOrderByApprovedAtDesc(
+                        teamId,
+                        ExpenseStatus.APPROVED
+                );
 
         // 5. 총 지출 합계 계산
         Long totalExpense = approvedExpenses.stream()
@@ -143,30 +202,14 @@ public class ExpenseService {
         // 총 예산이 0이면 나누기 에러(ArithmeticException) 나니까 0으로 처리
         int usagePercentage = totalBudget == 0 ? 0 : (int) ((usedBudget * 100) / totalBudget);
 
-        // 7. Expense → ExpenseInfo(DTO)로 변환
-        List<ReportResponse.ExpenseInfo> expenseInfos = approvedExpenses.stream()
-                .map(expense -> ReportResponse.ExpenseInfo.builder()
-                        .id(expense.getId())
-                        .title(expense.getTitle())
-                        .category(expense.getCategory().name())   // Enum → String
-                        .requesterName(expense.getUser().getName())
-                        .date(expense.getApprovedAt() == null ? null : expense.getApprovedAt().toString())
-                        .amount(expense.getAmount())
-                        .build())
-                .collect(Collectors.toList());
-
-        // 8. 응답 반환
-        return ReportResponse.builder()
+        return ReportSummaryResponse.builder()
                 .success(true)
-                .report(ReportResponse.ReportInfo.builder()
-                        .totalExpense(totalExpense)
-                        .approvedCount(approvedExpenses.size())
-                        .totalBudget(totalBudget)
-                        .usedBudget(usedBudget)
-                        .remainingBudget(remainingBudget)
-                        .usagePercentage(usagePercentage)
-                        .expenses(expenseInfos)
-                        .build())
+                .totalExpense(totalExpense)
+                .approvedCount((long) approvedExpenses.size())
+                .totalBudget(totalBudget)
+                .usedBudget(usedBudget)
+                .remainingBudget(remainingBudget)
+                .usagePercentage(usagePercentage)
                 .build();
     }
 

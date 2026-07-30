@@ -2,6 +2,13 @@ package com.example.backend.expense.controller;
 
 import com.example.backend.expense.dto.*;
 import com.example.backend.expense.service.ExpenseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
+@Tag(name = "Expense", description = "지출 등록/조회/승인/반려 및 정산 리포트 API")
 @RestController // JSON 반환하는 REST API 컨트롤러
 @RequiredArgsConstructor // final 필드 생성자 자동 생성
 public class ExpenseController {
@@ -20,6 +28,17 @@ public class ExpenseController {
     // 지출 목록 조회 API (API-014)
     // @PathVariable = URL 경로에서 teamId 꺼내기
     // @RequestParam(required = false) = ?status=... 형태로 오는 값 받기, 없어도 됨
+    @Operation(
+            summary = "지출 목록 조회 (API-014)",
+            description = "팀의 지출 목록을 상태별로 조회합니다. "
+                    + "status가 없거나 'ALL'이면 전체, 'SUBMITTED'면 대기(SUBMITTED+ESCALATED) 목록을 반환합니다."
+    )
+    @Parameter(name = "teamId", description = "팀 ID", required = true, example = "1")
+    @Parameter(name = "status", description = "조회할 상태 (ALL, SUBMITTED, APPROVED, REJECTED). 생략 시 ALL", example = "SUBMITTED")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(schema = @Schema(implementation = ExpenseListResponse.class)))
+    })
     @GetMapping("/api/teams/{teamId}/expenses")
     public ResponseEntity<ExpenseListResponse> getExpenses(
             @PathVariable("teamId") Long teamId,
@@ -29,18 +48,74 @@ public class ExpenseController {
         return ResponseEntity.ok(response);
     }
 
+    // 정산 리포트 요약 조회 API (API-051)
+    @Operation(
+            summary = "정산 리포트 요약 조회 (API-051)",
+            description = "정산 리포트 상단에 표시되는 예산 및 지출 요약 정보를 조회합니다. "
+                    + "응답은 { success, summary: { totalExpense, approvedCount, totalBudget, "
+                    + "usedBudget, remainingBudget, usagePercentage } } 형태입니다."
+    )
+    @Parameter(name = "teamId", description = "팀 ID", required = true, example = "1")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(schema = @Schema(implementation = ReportSummaryResponse.class))),
+            @ApiResponse(responseCode = "401", description = "인증 실패"),
+            @ApiResponse(responseCode = "403", description = "해당 팀 소속이 아님"),
+            @ApiResponse(responseCode = "404", description = "예산 정보를 찾을 수 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/api/teams/{teamId}/statistics/summary")
+    public ResponseEntity<ReportSummaryResponse> getSummary(
+            @PathVariable("teamId") Long teamId
+    ) {
+        ReportSummaryResponse response = expenseService.getSummary(teamId);
+        return ResponseEntity.ok(response);
+    }
+
     // 정산 리포트 조회 API (API-050)
-    // 승인된 지출 내역 + 예산 현황을 한 번에 조회
+    // 승인된 지출 전체 내역 조회 (예산 현황은 API-051 summary에서 별도 제공)
+    @Operation(
+            summary = "정산 리포트 조회 (API-050)",
+            description = "승인된 지출 내역을 페이지 단위로 조회합니다 (정산 리포트 화면용). "
+                    + "응답은 { success, page, size, totalElements, totalPages, expenses: [...] } 형태이며, "
+                    + "page/size는 query parameter로도 받습니다 (기본값 page=0, size=10)."
+    )
+    @Parameter(name = "teamId", description = "팀 ID", required = true, example = "1")
+    @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0")
+    @Parameter(name = "size", description = "페이지당 개수", example = "10")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(schema = @Schema(implementation = ReportExpenseListResponse.class))),
+            @ApiResponse(responseCode = "401", description = "인증 실패"),
+            @ApiResponse(responseCode = "403", description = "해당 팀 소속이 아님"),
+            @ApiResponse(responseCode = "404", description = "승인된 지출 내역을 찾을 수 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
     @GetMapping("/api/teams/{teamId}/statistics/report")
-    public ResponseEntity<ReportResponse> getReport(
-            @PathVariable("teamId") Long teamId) {
-        ReportResponse response = expenseService.getReport(teamId);
+    public ResponseEntity<ReportExpenseListResponse> getReport(
+            @PathVariable("teamId") Long teamId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        ReportExpenseListResponse response = expenseService.getReport(teamId, page, size);
         return ResponseEntity.ok(response);
     }
 
     // 지출 등록 (API-016)
     // POST /api/teams/{teamId}/expenses
     // multipart/form-data로 받음 (글자값 + 영수증 파일 같이 오니까)
+    @Operation(
+            summary = "지출 등록 (API-016)",
+            description = "팀원이 영수증 파일과 함께 지출을 등록합니다. 등록 시 상태는 기본적으로 SUBMITTED입니다."
+    )
+    @Parameter(name = "teamId", description = "팀 ID", required = true, example = "1")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "등록 성공",
+                    content = @Content(schema = @Schema(implementation = ExpenseCreateResponse.class))),
+            @ApiResponse(responseCode = "400", description = "요청 값 검증 실패 (제목/금액/카테고리 등)"),
+            @ApiResponse(responseCode = "403", description = "해당 팀 소속이 아님"),
+            @ApiResponse(responseCode = "404", description = "사용자 또는 팀을 찾을 수 없음")
+    })
     @PostMapping(
             value = "/api/teams/{teamId}/expenses",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE  // "나 multipart로 받을게" 표시
@@ -68,6 +143,16 @@ public class ExpenseController {
     // 지출 상세 조회 (API-017)
     // GET /api/expenses/{expenseId}
     // 지출 한 건의 상세 정보 조회 (영수증 URL, 승인/반려 이력 포함)
+    @Operation(
+            summary = "지출 상세 조회 (API-017)",
+            description = "지출 한 건의 상세 정보(제목, 금액, 카테고리, 영수증 URL, 승인/반려 이력 등)를 조회합니다."
+    )
+    @Parameter(name = "expenseId", description = "지출 ID", required = true, example = "100")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(schema = @Schema(implementation = ExpenseDetailResponse.class))),
+            @ApiResponse(responseCode = "404", description = "지출을 찾을 수 없음")
+    })
     @GetMapping("/api/expenses/{expenseId}")
     public ResponseEntity<ExpenseDetailResponse> getExpenseDetail(
             @PathVariable("expenseId") Long expenseId
@@ -79,6 +164,20 @@ public class ExpenseController {
     // 지출 반려 (API-020)
     // POST /api/expenses/{expenseId}/reject
     // 관리자/총무가 지출을 반려. rejectReason 필수(body)라 @Valid로 검증
+    @Operation(
+            summary = "지출 반려 (API-020)",
+            description = "관리자(ADMIN) 또는 회계 담당자(ACCOUNTANT)가 지출을 반려합니다. "
+                    + "반려 사유는 필수이며 expenses_reviews 테이블에 함께 기록됩니다."
+    )
+    @Parameter(name = "expenseId", description = "반려할 지출 ID", required = true, example = "100")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "반려 성공",
+                    content = @Content(schema = @Schema(implementation = ExpenseRejectResponse.class))),
+            @ApiResponse(responseCode = "400", description = "반려 사유 누락 등 요청 값 검증 실패"),
+            @ApiResponse(responseCode = "403", description = "반려 권한 없음 (ADMIN/ACCOUNTANT만 가능)"),
+            @ApiResponse(responseCode = "404", description = "지출을 찾을 수 없음"),
+            @ApiResponse(responseCode = "409", description = "이미 처리된 지출 (ALREADY_PROCESSED)")
+    })
     @PostMapping("/api/expenses/{expenseId}/reject")
     public ResponseEntity<ExpenseRejectResponse> rejectExpense(
             @PathVariable("expenseId") Long expenseId,
@@ -91,6 +190,19 @@ public class ExpenseController {
     // 지출 승인 (API-019)
     // POST /api/expenses/{expenseId}/approve
     // 관리자/총무가 지출을 승인. 요청 body 없음(-)이라 @Valid/@RequestBody 없음
+    @Operation(
+            summary = "지출 승인 (API-019)",
+            description = "관리자(ADMIN) 또는 회계 담당자(ACCOUNTANT)가 지출을 승인합니다. "
+                    + "승인 시 팀 예산의 usedBudget이 증가하며, 남은 예산보다 지출 금액이 크면 승인이 거부됩니다."
+    )
+    @Parameter(name = "expenseId", description = "승인할 지출 ID", required = true, example = "100")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "승인 성공",
+                    content = @Content(schema = @Schema(implementation = ExpenseApproveResponse.class))),
+            @ApiResponse(responseCode = "403", description = "승인 권한 없음 (ADMIN/ACCOUNTANT만 가능)"),
+            @ApiResponse(responseCode = "404", description = "지출 또는 예산 정보를 찾을 수 없음"),
+            @ApiResponse(responseCode = "409", description = "이미 처리된 지출(ALREADY_PROCESSED) 또는 예산 초과(BUDGET_EXCEEDED)")
+    })
     @PostMapping("/api/expenses/{expenseId}/approve")
     public ResponseEntity<ExpenseApproveResponse> approveExpense(
             @PathVariable("expenseId") Long expenseId
