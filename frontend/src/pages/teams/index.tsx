@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import styles from './teams.module.css';
-import InviteCard from './components/InviteCard/InviteCard';
-import GroupCard from './components/GroupCard/GroupCard';
-import useMyTeams from './hooks/useMyTeams';
 import { Card } from '@/shared/components/card/Card';
 import Image from 'next/image';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/router';
-import useInviteActions from './hooks/useInviteActions';
 import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
+import InviteCard from '@/features/teams/components/InviteCard/InviteCard';
+import GroupCard from '@/features/teams/components/GroupCard/GroupCard';
+import useMyTeams from '@/features/teams/hooks/useMyTeams';
+import useInviteActions from '@/features/teams/hooks/useInviteActions';
 
 const Teams = () => {
     const router = useRouter();
