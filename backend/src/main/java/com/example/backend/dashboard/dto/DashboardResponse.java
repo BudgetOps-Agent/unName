@@ -1,5 +1,6 @@
 package com.example.backend.dashboard.dto;
 
+import com.example.backend.expense.entity.ExpenseStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -32,7 +33,8 @@ public class DashboardResponse {
         private Long id;
         private String title;
         private Long amount;
-        private String status;  // Enum → String
+        private ExpenseStatus status;
+        private String requesterName;
         private String date;
     }
 }

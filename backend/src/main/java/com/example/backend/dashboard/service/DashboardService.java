@@ -86,8 +86,9 @@ public class DashboardService {
                         .id(expense.getId())
                         .title(expense.getTitle())
                         .amount(expense.getAmount())
-                        .status(expense.getStatus().name())
-                        .date(expense.getCreatedAt().toString())
+                        .status(expense.getStatus())
+                        .requesterName(expense.getUser().getName())
+                        .date(expense.getExpenseDate().toString())
                         .build())
                 .collect(Collectors.toList());
 
