@@ -5,6 +5,18 @@ export interface ExpenseCreateResponse {
     createdAt: string;
 }
 
+export interface ExpenseApproveResponse {
+    success: boolean;
+    status: 'APPROVED';
+    approvedAt: string;
+}
+
+export interface ExpenseRejectResponse {
+    success: boolean;
+    status: 'REJECTED';
+    approvedAt: string;
+}
+
 export interface ExpenseDetailResponse {
     success: boolean;
     expense: {
@@ -41,10 +53,10 @@ export interface ResponseExpenses {
 }
 
 export interface Expense {
-  id: number;
-  title: string;
-  category: string;
-  requesterName: string;
-  date: string;
-  amount: number;
+    id: number;
+    title: string;
+    category: string;
+    requesterName: string;
+    date: string;
+    amount: number;
 }
