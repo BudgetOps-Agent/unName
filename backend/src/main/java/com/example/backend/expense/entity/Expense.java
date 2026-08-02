@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -47,6 +48,9 @@ public class Expense {
     @Column(columnDefinition = "TEXT")
     private String description; // 지출 사유 상세
 
+    @Column(name = "expense_date", nullable = false)
+    private LocalDate expenseDate; // 지출 발생 날짜 (등록일 createdAt과 다름 - 실제 돈 쓴 날)
+
     @Column(name = "receipt_url", length = 500)
     private String receiptUrl; // 영수증 파일 경로
 
@@ -83,7 +87,7 @@ public class Expense {
 
     @Builder
     public Expense(Team team, User user, String title, ExpenseCategory category,
-                   Long amount, String description, String receiptUrl) {
+                   Long amount, String description, String receiptUrl,LocalDate expenseDate) {
         this.team = team;
         this.user = user;
         this.title = title;
@@ -91,6 +95,7 @@ public class Expense {
         this.amount = amount;
         this.description = description;
         this.receiptUrl = receiptUrl;
+        this.expenseDate = expenseDate;
         this.status = ExpenseStatus.SUBMITTED; // 지출 등록하면 기본값은 항상 SUBMITTED (승인 대기)
         this.version = 0;
         this.createdAt = LocalDateTime.now();

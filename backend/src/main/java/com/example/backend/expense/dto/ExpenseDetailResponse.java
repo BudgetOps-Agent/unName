@@ -6,6 +6,7 @@ import com.example.backend.expense.entity.ExpenseStatus;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -30,6 +31,7 @@ public class ExpenseDetailResponse {
         private LocalDateTime createdAt;    // 등록 시각
         private LocalDateTime approvedAt;   // 승인/반려 확정 시각 (처리 전이면 null)
         private String rejectReason;        // 반려 사유 (반려된 경우만, 아니면 null)
+        private LocalDate expenseDate;      // 지출 발생 날짜 (실제 돈 쓴 날)
     }
 
     // Expense 엔티티 → 상세 응답 DTO로 변환
@@ -40,6 +42,7 @@ public class ExpenseDetailResponse {
                 .amount(expense.getAmount())
                 .category(expense.getCategory())
                 .description(expense.getDescription())
+                .expenseDate(expense.getExpenseDate())
                 // receiptUrl은 "uploads/xxx.jpg" 같은 서버 내부 경로라
                 // 프론트가 바로 못 씀 → 파일 꺼내주는 통로 URL로 변환해서 내려줌
                 .receiptFileUrl(toReceiptFileUrl(expense.getReceiptUrl()))

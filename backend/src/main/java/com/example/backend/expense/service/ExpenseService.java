@@ -210,6 +210,7 @@ public class ExpenseService {
                 .category(request.getCategory())
                 .amount(request.getAmount())
                 .description(request.getDescription())
+                .expenseDate(request.getExpenseDate())
                 .receiptUrl(receiptUrl)
                 .build();
 

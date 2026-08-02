@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter // multipart/form-data는 값을 Setter로 채워넣어서 @Setter가 필요함 (JSON이랑 다른 점)
 @NoArgsConstructor // 기본 생성자 필요 (Spring이 빈 객체 만들고 Setter로 하나씩 채우는 방식)
@@ -27,6 +29,11 @@ public class ExpenseCreateRequest {
     // 카테고리 (회의/IT인프라/행사/교육/식비/디자인/기타)
     @NotNull(message = "카테고리는 필수입니다.")
     private ExpenseCategory category;
+
+    // 지출 발생 날짜 - 필수 (실제로 돈 쓴 날. 등록 시각 createdAt과 다름)
+    // 프론트가 "2025-01-24" 형식으로 보내면 Spring이 LocalDate로 자동 변환
+    @NotNull(message = "지출 발생 날짜는 필수입니다.")
+    private LocalDate expenseDate;
 
     // 설명 선택이여서 검증 안 붙임
     private String description;
