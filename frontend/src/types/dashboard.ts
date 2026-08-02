@@ -14,6 +14,7 @@ export interface DashboardResponse {
             amount: number;
             status: string;
             date: string;
+            requesterName?: string;
         }[];
     };
 }
