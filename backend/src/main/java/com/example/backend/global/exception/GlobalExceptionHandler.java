@@ -9,6 +9,7 @@ import com.example.backend.teamMember.exception.TeamMemberException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -182,7 +183,28 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    // 동시 승인/반려 충돌 처리 (version 낙관적 락)
+    // 두 명이 동시에 같은 지출을 처리하면 늦은 쪽에서 이 예외 발생 → 409로 안내
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> handleOptimisticLock(
+            ObjectOptimisticLockingFailureException e
+    ) {
 
+        log.warn(
+                "Optimistic Lock 충돌 : {}",
+                e.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT) // 409
+                .body(
+                        ErrorResponse.builder()
+                                .success(false)
+                                .code("ALREADY_PROCESSED")
+                                .message("다른 사람이 먼저 처리했습니다. 새로고침 후 다시 시도해주세요.")
+                                .build()
+                );
+    }
     /**
      * 예상하지 못한 서버 오류 처리
      *

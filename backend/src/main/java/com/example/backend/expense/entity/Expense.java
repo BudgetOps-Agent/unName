@@ -69,6 +69,7 @@ public class Expense {
     @Column(name = "approved_at")
     private LocalDateTime approvedAt; // 승인/반려 확정 시각
 
+    @Version
     @Column(nullable = false)
     private Integer version = 0; // 동시 승인 방지용 버전 (여러 명이 동시에 승인 못 하게 방지 체크)
 
