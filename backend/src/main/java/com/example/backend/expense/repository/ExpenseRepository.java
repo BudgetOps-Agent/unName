@@ -4,7 +4,10 @@ import com.example.backend.expense.entity.Expense;
 import com.example.backend.expense.entity.ExpenseStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
@@ -33,4 +36,21 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     // Pageable로 개수 제한 (상위 N개만)
     List<Expense> findByTeamIdAndStatusInOrderByCreatedAtDesc(
             Long teamId, List<ExpenseStatus> statuses, Pageable pageable);
+
+    // 월별 승인 지출 합계 (막대그래프용, API-047)
+    // expense_date 기준으로 "연-월"별로 묶어서(GROUP BY) 금액 합산, 승인된 것만
+    // 단순 메서드 이름으로는 "월별로 묶어서 합계내기(GROUP BY + SUM)"가 불가능해서 직접 쿼리 작성
+    @Query("""
+        SELECT FUNCTION('DATE_FORMAT', e.expenseDate, '%Y-%m') AS ym,
+               SUM(e.amount) AS total
+        FROM Expense e
+        WHERE e.team.id = :teamId
+        AND e.status = :status
+        AND e.expenseDate >= :startDate
+        GROUP BY FUNCTION('DATE_FORMAT', e.expenseDate, '%Y-%m')
+        ORDER BY ym ASC
+        """)
+    List<Object[]> findMonthlyTotals(@Param("teamId") Long teamId,
+                                     @Param("status") ExpenseStatus status,
+                                     @Param("startDate") LocalDate startDate);
 }

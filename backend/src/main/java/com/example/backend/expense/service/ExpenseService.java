@@ -26,6 +26,7 @@ import com.example.backend.team.entity.Team;
 import com.example.backend.team.repository.TeamRepository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -358,5 +359,40 @@ public class ExpenseService {
 
         // 11. 응답 반환
         return ExpenseApproveResponse.fromEntity(expense);
+    }
+
+    // 월별 지출 통계 (API-047)
+    // 최근 N개월의 승인 지출 합계를 월별로 계산 (대시보드 막대그래프용)
+    @Transactional(readOnly = true)
+    public MonthlyStatsResponse getMonthlyStats(Long teamId, Integer months) {
+
+        // 1. months 파라미터가 없으면 기본값 5개월
+        int monthCount = (months == null) ? 5 : months;
+
+        // 2. "몇 개월 전"부터 조회할지 시작일 계산
+        //    오늘이 2026-02-15면, 5개월 전인 2025-10-01부터 조회
+        //    withDayOfMonth(1)로 그 달의 1일부터로 맞춤 (그래야 그 달 지출이 안 빠짐)
+        LocalDate startDate = LocalDate.now()
+                .minusMonths(monthCount - 1)
+                .withDayOfMonth(1);
+
+        // 3. Repository에서 월별 합계 조회 (승인된 것만, 시작일 이후)
+        List<Object[]> results = expenseRepository.findMonthlyTotals(teamId, ExpenseStatus.APPROVED, startDate);
+
+        // 4. Object[] 결과를 DTO로 변환
+        //    result[0] = 연-월 문자열("2025-10"), result[1] = 합계
+        //    SUM 결과가 Long이 아닌 다른 숫자 타입으로 올 수 있어서 Number로 받아 변환
+        List<MonthlyStatsResponse.MonthlyData> statistics = results.stream()
+                .map(result -> MonthlyStatsResponse.MonthlyData.builder()
+                        .month((String) result[0])
+                        .amount(((Number) result[1]).longValue())
+                        .build())
+                .collect(Collectors.toList());
+
+        // 5. 응답 반환
+        return MonthlyStatsResponse.builder()
+                .success(true)
+                .statistics(statistics)
+                .build();
     }
 }
