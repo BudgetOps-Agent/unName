@@ -210,4 +210,16 @@ public class ExpenseController {
         ExpenseApproveResponse response = expenseService.approveExpense(expenseId);
         return ResponseEntity.ok(response); // 200 OK
     }
+
+    // 월별 지출 통계 (API-047)
+    // GET /api/teams/{teamId}/statistics/monthly?months=5
+    // 최근 N개월의 월별 승인 지출 합계 (대시보드 막대그래프용)
+    @GetMapping("/api/teams/{teamId}/statistics/monthly")
+    public ResponseEntity<MonthlyStatsResponse> getMonthlyStats(
+            @PathVariable("teamId") Long teamId,
+            @RequestParam(value = "months", required = false) Integer months
+    ) {
+        MonthlyStatsResponse response = expenseService.getMonthlyStats(teamId, months);
+        return ResponseEntity.ok(response); // 200 OK
+    }
 }

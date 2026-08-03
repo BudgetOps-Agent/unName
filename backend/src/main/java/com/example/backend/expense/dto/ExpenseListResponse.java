@@ -34,7 +34,7 @@ public class ExpenseListResponse {
         private Long amount; // 지출 금액
         private String status; // SUBMITTED/ESCALATED/APPROVED/REJECTED 그대로 내려줌
         private String requesterName; // 작성자 이름
-        private String date; // 지출 등록일
+        private String date; // 지출 발생일 (실제 돈 쓴 날)
 
         // Expense 엔티티를 ExpenseInfo(DTO)로 변환하는 메서드
         public static ExpenseInfo fromEntity(Expense expense) {
@@ -44,7 +44,7 @@ public class ExpenseListResponse {
                     .amount(expense.getAmount())
                     .status(expense.getStatus().name())
                     .requesterName(expense.getUser().getName()) // User 엔티티 타고 들어가서 이름 꺼내기
-                    .date(expense.getCreatedAt().toString())
+                    .date(expense.getExpenseDate().toString())
                     .build();
         }
     }
