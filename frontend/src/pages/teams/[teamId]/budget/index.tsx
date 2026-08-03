@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from './budget.module.css';
 import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
@@ -18,23 +18,19 @@ const Budget = () => {
     const { budget, isLoading, error, refetch } = useBudget(validTeamId);
 
     const [activeTab, setActiveTab] = useState<BudgetTabId>('budget');
-    const [totalBudget, setTotalBudget] = useState(0);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-    useEffect(() => {
-        if (budget) setTotalBudget(budget.totalBudget);
-    }, [budget]);
-
-    const handleBudgetAdd = (amount: number) => {
-        setTotalBudget((prev) => prev + amount);
-    };
 
     return (
         <>
             <ContentTitle title="예산 관리" subTitle="예산과 회칙·정책을 관리해요" onClick={() => setIsEditModalOpen(true)} btnText="예산 수정" />
 
             {isEditModalOpen && (
-                <BudgetEditModal onClose={() => setIsEditModalOpen(false)} onSubmit={handleBudgetAdd} />
+                <BudgetEditModal
+                    teamId={validTeamId}
+                    currentTotalBudget={budget?.totalBudget ?? 0}
+                    onClose={() => setIsEditModalOpen(false)}
+                    onSuccess={refetch}
+                />
             )}
 
             <Card noPadding={true}>
@@ -50,7 +46,7 @@ const Budget = () => {
                     ) : isLoading || !budget ? (
                         <p className={styles.placeholder}>불러오는 중이에요...</p>
                     ) : (
-                        <BudgetManagementCard totalBudget={totalBudget} usedBudget={budget.usedBudget} />
+                        <BudgetManagementCard totalBudget={budget.totalBudget} usedBudget={budget.usedBudget} />
                     )
                 )}
 
