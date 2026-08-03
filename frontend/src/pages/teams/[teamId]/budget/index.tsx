@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import styles from './budget.module.css';
 import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
 import { Card } from '@/shared/components/card/Card';
 import BudgetTabs, { BudgetTabId } from '@/features/teams/components/BudgetTabs/BudgetTabs';
 import BudgetManagementCard from '@/features/teams/components/BudgetManagementCard/BudgetManagementCard';
+import PolicyManageCard from '@/features/teams/components/PolicyManageCard/PolicyManageCard';
 
 const totalBudget = 3424;
 const usedBudget = 0;
@@ -23,7 +23,7 @@ const Budget = () => {
                 )}
 
                 {activeTab === 'policy' && (
-                    <p className={styles.placeholder}>준비 중이에요</p>
+                    <PolicyManageCard />
                 )}
             </Card>
         </>
