@@ -2,23 +2,34 @@ import { useState, ChangeEvent } from 'react';
 import styles from './budgeteditmodal.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
+import useUpdateBudget from '@/features/teams/hooks/useUpdateBudget';
 
 interface BudgetEditModalProps {
+    teamId: string | undefined;
+    currentTotalBudget: number;
     onClose: () => void;
-    onSubmit: (amount: number) => void;
+    onSuccess: () => void;
 }
 
-const BudgetEditModal = ({ onClose, onSubmit }: BudgetEditModalProps) => {
+const BudgetEditModal = ({ teamId, currentTotalBudget, onClose, onSuccess }: BudgetEditModalProps) => {
     const [amount, setAmount] = useState('');
+    const { isSubmitting, submitBudgetUpdate } = useUpdateBudget(teamId);
 
     const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
         setAmount(e.target.value.replace(/[^0-9]/g, ''));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!amount) return;
-        onSubmit(Number(amount));
-        onClose();
+
+        const result = await submitBudgetUpdate(currentTotalBudget + Number(amount));
+
+        if (result.success) {
+            onSuccess();
+            onClose();
+        } else {
+            alert(result.message);
+        }
     };
 
     return (
@@ -48,9 +59,9 @@ const BudgetEditModal = ({ onClose, onSubmit }: BudgetEditModalProps) => {
                     />
                     <Button
                         className={styles.submitBtn}
-                        text="추가하기"
+                        text={isSubmitting ? "추가하는 중..." : "추가하기"}
                         style="tertiary"
-                        disabled={!amount}
+                        disabled={!amount || isSubmitting}
                         onClick={handleSubmit}
                     />
                 </div>
