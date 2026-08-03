@@ -6,3 +6,7 @@ export interface BudgetResponse {
         remainingBudget: number;
     };
 }
+
+export interface UpdateBudgetRequest {
+    totalBudget: number;
+}

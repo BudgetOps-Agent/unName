@@ -60,6 +60,10 @@ export const getBudget = (teamId: string): Promise<AxiosResponse<BudgetResponse>
   return api.get<BudgetResponse>(`/api/teams/${teamId}/budget`);
 }
 
+export const updateBudget = (teamId: string, totalBudget: number): Promise<AxiosResponse<BudgetResponse>> => {
+  return api.patch<BudgetResponse>(`/api/teams/${teamId}/budget`, { totalBudget });
+}
+
 export const approveExpense = (expenseId: string): Promise<AxiosResponse<ExpenseApproveResponse>> => {
   return api.post<ExpenseApproveResponse>(`/api/expenses/${expenseId}/approve`);
 }
