@@ -1,0 +1,90 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.title {
+    color: var(--gray-9);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 20px;
+}
+
+.label {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.amountInput {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    box-sizing: border-box;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.amountInput:focus-within {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.amountInput input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    color: var(--gray-9);
+    font-size: 14px;
+    outline: none;
+}
+
+.amountInput input::placeholder {
+    color: var(--gray-6);
+    font-weight: 600;
+}
+
+.amountInput .unit {
+    flex-shrink: 0;
+    margin-left: 8px;
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.buttonSection {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.cancelBtn,
+.submitBtn {
+    flex: 1;
+    width: auto;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 0;
+}
+
+.cancelBtn {
+    border: 1px solid var(--gray-5);
+}

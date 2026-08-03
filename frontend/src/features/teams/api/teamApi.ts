@@ -1,8 +1,9 @@
 import api from "@/shared/api/api";
 import { AcceptInviteResponse, RejectInviteResponse, InviteMemberResponse, TransferAdminResponse, RemoveMemberResponse, ChangeRoleResponse, ResponseMyTeams } from "@/types/team";
-import { ResponseExpenses, ExpenseCreateResponse, ExpenseDetailResponse } from "@/types/expense";
+import { ResponseExpenses, ExpenseCreateResponse, ExpenseDetailResponse, ExpenseApproveResponse, ExpenseRejectResponse } from "@/types/expense";
 import { Member, ResponseTeamMembers } from "@/types/member";
 import { DashboardResponse } from "@/types/dashboard";
+import { BudgetResponse } from "@/types/budget";
 import { AxiosResponse } from "axios";
 
 export const getMyTeams = (): Promise<AxiosResponse<ResponseMyTeams>> => {
@@ -53,4 +54,20 @@ export const getExpenseDetail = (expenseId: string): Promise<AxiosResponse<Expen
 
 export const getDashboard = (teamId: string): Promise<AxiosResponse<DashboardResponse>> => {
   return api.get<DashboardResponse>(`/api/teams/${teamId}/dashboard`);
+}
+
+export const getBudget = (teamId: string): Promise<AxiosResponse<BudgetResponse>> => {
+  return api.get<BudgetResponse>(`/api/teams/${teamId}/budget`);
+}
+
+export const updateBudget = (teamId: string, totalBudget: number): Promise<AxiosResponse<BudgetResponse>> => {
+  return api.patch<BudgetResponse>(`/api/teams/${teamId}/budget`, { totalBudget });
+}
+
+export const approveExpense = (expenseId: string): Promise<AxiosResponse<ExpenseApproveResponse>> => {
+  return api.post<ExpenseApproveResponse>(`/api/expenses/${expenseId}/approve`);
+}
+
+export const rejectExpense = (expenseId: string, rejectReason: string): Promise<AxiosResponse<ExpenseRejectResponse>> => {
+  return api.post<ExpenseRejectResponse>(`/api/expenses/${expenseId}/reject`, { rejectReason });
 }

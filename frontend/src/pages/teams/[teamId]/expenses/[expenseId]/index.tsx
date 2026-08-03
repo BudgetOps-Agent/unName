@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
 import useExpenseDetail from '@/features/teams/hooks/useExpenseDetail';
+import useApproveExpense from '@/features/teams/hooks/useApproveExpense';
+import useRejectExpense from '@/features/teams/hooks/useRejectExpense';
 import ExpenseInfoCard from '@/features/teams/components/ExpenseInfoCard/ExpenseInfoCard';
 import ReceiptCard from '@/features/teams/components/ReceiptCard/ReceiptCard';
 import AIReviewCard from '@/features/teams/components/AIReviewCard/AIReviewCard';
@@ -48,9 +50,37 @@ const ExpenseDetail = () => {
     const validExpenseId = typeof expenseId === 'string' ? expenseId : undefined;
 
     const { expense, isLoading, error, refetch } = useExpenseDetail(validExpenseId);
+    const { isSubmitting: isApproving, submitApprove } = useApproveExpense();
+    const { isSubmitting: isRejectingSubmit, submitReject } = useRejectExpense();
 
     const [isRejecting, setIsRejecting] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
+
+    const handleApprove = async () => {
+        if (!validExpenseId) return;
+
+        const result = await submitApprove(validExpenseId);
+
+        if (result.success) {
+            refetch();
+        } else {
+            alert(result.message);
+        }
+    };
+
+    const handleReject = async () => {
+        if (!validExpenseId || !rejectReason.trim()) return;
+
+        const result = await submitReject(validExpenseId, rejectReason.trim());
+
+        if (result.success) {
+            setIsRejecting(false);
+            setRejectReason('');
+            refetch();
+        } else {
+            alert(result.message);
+        }
+    };
 
     if (isLoading || !expense) {
         return (
@@ -121,12 +151,14 @@ const ExpenseDetail = () => {
                                 text="취소"
                                 style="secondary"
                                 onClick={() => setIsRejecting(false)}
+                                disabled={isRejectingSubmit}
                             />
                             <Button
                                 className={styles.confirmRejectBtn}
-                                text="반려하기"
+                                text={isRejectingSubmit ? '처리 중...' : '반려하기'}
                                 style="tertiary"
-                                disabled={!rejectReason.trim()}
+                                disabled={!rejectReason.trim() || isRejectingSubmit}
+                                onClick={handleReject}
                             />
                         </div>
                     </Card>
@@ -140,8 +172,10 @@ const ExpenseDetail = () => {
                         />
                         <Button
                             className={styles.approveBtn}
-                            text="승인하기"
+                            text={isApproving ? '처리 중...' : '승인하기'}
                             style="tertiary"
+                            disabled={isApproving}
+                            onClick={handleApprove}
                         />
                     </div>
                 )

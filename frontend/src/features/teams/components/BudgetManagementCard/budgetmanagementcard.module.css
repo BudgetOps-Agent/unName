@@ -1,0 +1,59 @@
+.content {
+    padding: 24px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.label {
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.usageLabel {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.totalAmount {
+    margin: 8px 0 16px;
+    color: var(--gray-9);
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.statsRow {
+    display: flex;
+    gap: 30px;
+    padding-top: 20px;
+    border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+}
+
+.statItem {
+    width: calc(100% / 2);
+}
+
+.statLabel {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.statValue {
+    margin-top: 4px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.used {
+    color: var(--blue-8);
+}
+
+.remaining {
+    color: var(--green-2);
+}

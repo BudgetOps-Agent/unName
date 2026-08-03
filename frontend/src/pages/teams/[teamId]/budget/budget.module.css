@@ -1,0 +1,35 @@
+.placeholder {
+    padding: 40px 24px;
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 24px;
+}
+
+.errorTextTitle {
+    color: var(--gray-9);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.errorTextSub {
+    color: var(--gray-7);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.errorBtn {
+    max-width: 120px;
+    padding: 6px 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
