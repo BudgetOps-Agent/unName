@@ -1,0 +1,66 @@
+.container {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+}
+
+.title {
+    color: var(--gray-9);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.subTitle {
+    margin-top: 4px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.content {
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+    margin-top: 20px;
+}
+
+.chart {
+    flex: 2;
+    min-width: 0;
+}
+
+.analysisList {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 3;
+    min-width: 0;
+}
+
+.analysisTitle {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.analysisText {
+    margin-top: 8px;
+    color: var(--gray-7);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.analysisText strong {
+    font-weight: 700;
+}
+
+@media screen and (max-width: 768px) {
+    .content {
+        flex-direction: column;
+    }
+
+    .chart {
+        width: 100%;
+    }
+}

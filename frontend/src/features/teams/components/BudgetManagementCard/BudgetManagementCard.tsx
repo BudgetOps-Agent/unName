@@ -1,5 +1,6 @@
 import styles from './budgetmanagementcard.module.css';
 import ProgressBar from '@/shared/components/progressbar/ProgressBar';
+import AIBudgetRecommendCard from '@/features/teams/components/AIBudgetRecommendCard/AIBudgetRecommendCard';
 
 interface BudgetManagementCardProps {
     totalBudget: number;
@@ -32,6 +33,8 @@ const BudgetManagementCard = ({ totalBudget, usedBudget }: BudgetManagementCardP
                     <p className={`${styles.statValue} ${styles.remaining}`}>{`${remainingBudget.toLocaleString()}원`}</p>
                 </div>
             </div>
+
+            <AIBudgetRecommendCard />
         </div>
     );
 };
