@@ -4,3 +4,19 @@
     width: 100%;
     gap: 12px;
 }
+
+.downloadBtn {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 6px;
+    color: var(--gray-7);
+    font-size: 14px;
+    font-weight: 700;
+    background: transparent;
+    border: 0.8px solid var(--gray-5);
+    padding: 10px 14px;
+}
+
+.downloadBtn:hover {
+    background-color: var(--gray-3);
+}

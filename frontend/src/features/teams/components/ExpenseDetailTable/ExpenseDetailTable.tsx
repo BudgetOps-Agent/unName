@@ -8,6 +8,11 @@ interface ExpenseDetailTableProps {
     isError: boolean;
 }
 
+const formatDate = (isoString: string) => {
+    if (!isoString) return "";
+    return isoString.slice(0, 10);
+}
+
 const ExpenseDetailTable = ({ expenses, isLoading, isError }: ExpenseDetailTableProps) => {
   console.log({
     isLoading,
@@ -65,7 +70,7 @@ const ExpenseDetailTable = ({ expenses, isLoading, isError }: ExpenseDetailTable
                           <td className={styles.item}>{expense.title}</td>
                           <td className={styles.category}>{expense.category}</td>
                           <td className={styles.requester}>{expense.requesterName}</td>
-                          <td className={styles.date}>{expense.date}</td>
+                          <td className={styles.date}>{formatDate(expense.date)}</td>
                           <td className={styles.amount}>{expense.amount.toLocaleString()}원</td>
                         </tr>
                       ))}
