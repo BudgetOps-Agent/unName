@@ -78,8 +78,8 @@ public class TeamService {
         // budgets row 생성
         Budget budget = Budget.builder()
                 .team(team)
-                .totalBudget(request.getInitialBudget())
-                .usedBudget(0L) // 사용한 건 0
+                .totalBudget(request.getTotalBudget())
+                .usedBudget(0L)
                 .build();
         budgetRepository.save(budget);
 
