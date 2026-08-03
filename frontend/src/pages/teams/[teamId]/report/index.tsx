@@ -32,7 +32,7 @@ const Report = () => {
                     className={styles.downloadBtn}
                     text='CSV'
                     iconLeft={<img src="/download.svg" alt="다운로드" />}
-                    style='secondary'
+                    style='noStyle'
                 />
             </ContentTitle>
 
