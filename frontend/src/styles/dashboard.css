@@ -111,6 +111,28 @@
     font-weight: 500;
 }
 
+.donut-chart-wrapper--bottom {
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+    gap: 16px;
+}
+
+.donut-chart-left--bottom {
+    width: 100%;
+    height: 300px;
+}
+
+.donut-legend-right--bottom {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    height: auto;
+    justify-content: center;
+    gap: 8px 20px;
+}
+
 @media screen and (max-width: 768px) {
     .progress-content {
         flex-direction: column
