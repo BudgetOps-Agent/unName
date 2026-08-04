@@ -1,0 +1,229 @@
+.stepCard {
+    max-width: 500px;
+    margin: 24px auto 0;
+}
+
+.title {
+    color: var(--gray-9);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.subTitle {
+    margin-top: 4px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.toggleRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: var(--gray-3);
+}
+
+.toggleTitle {
+    color: var(--gray-9);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.toggleDesc {
+    margin-top: 2px;
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.switch {
+    position: relative;
+    flex-shrink: 0;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background-color: var(--gray-5);
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--white);
+    transition: transform 0.15s ease;
+}
+
+.switch input:checked + .slider {
+    background-color: var(--blue-8);
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(18px);
+}
+
+.formGroup {
+    margin-top: 20px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.thresholdInputWrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    box-sizing: border-box;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.thresholdInputWrap:focus-within {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.thresholdInput {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gray-9);
+    outline: none;
+}
+
+.thresholdInput:disabled {
+    color: var(--gray-6);
+}
+
+.thresholdUnit {
+    flex-shrink: 0;
+    margin-left: 8px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.presetList {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.presetList .presetBtn {
+    flex: 1;
+    padding: 8px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.presetList .presetBtnActive {
+    color: var(--white);
+    background: var(--blue-8);
+}
+
+.presetList .presetBtnActive:hover {
+    background: var(--blue-8);
+}
+
+.policyTable {
+    width: 100%;
+    margin-top: 24px;
+    border-collapse: collapse;
+    border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+}
+
+.policyTable th {
+    padding: 12px 8px 8px;
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.policyTable td {
+    padding: 10px 8px;
+    border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.rowTitle {
+    color: var(--gray-9);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.rowSub {
+    margin-top: 2px;
+    color: var(--gray-6);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.approved {
+    color: var(--green-2);
+    font-weight: 700;
+}
+
+.pending {
+    color: var(--orange-2);
+    font-weight: 700;
+}
+
+.required {
+    color: var(--blue-8);
+    font-weight: 700;
+}
+
+.dash {
+    color: var(--gray-6);
+}
+
+.buttonSection {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.prevBtn,
+.nextBtn {
+    flex: 1;
+    width: auto;
+}
+
+.prevBtn {
+    border: 1px solid var(--gray-5);
+}
