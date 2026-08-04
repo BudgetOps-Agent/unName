@@ -1,15 +1,22 @@
-.createTeamForm {
+.createTeamForm.createTeamForm {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
     margin: 0;
+    gap: 20px;
+}
+
+.formCard {
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px;
+    gap: 20px;
 }
 
 .formGroup {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-}
-
-.formGroup + .formGroup {
-    margin-top: 20px;
+    gap: 8px;
 }
 
 .label {
@@ -25,7 +32,7 @@
 }
 
 .optional {
-    color: var(--gray-5);
+    color: var(--gray-6);
     font-size: 12px;
     font-weight: 600;
 }
@@ -51,7 +58,21 @@
 }
 
 .nameInput {
+    width: 100%;
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    font-size: 14px;
+    color: var(--gray-9);
+    box-sizing: border-box;
     outline: none;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nameInput:focus {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
 }
 
 .budgetInputWrap {
@@ -63,6 +84,19 @@
     border-radius: 16px;
     background: var(--gray-3);
     box-sizing: border-box;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.budgetInputWrap:focus-within {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.budgetPreview {
+    margin-top: 6px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .budgetInput {
@@ -74,26 +108,25 @@
     outline: none;
 }
 
-.budgetInput::placeholder {
-    color: var(--gray-6);
-}
-
-.budgetUnit {
+.nameInput::placeholder, .budgetInput::placeholder, .budgetUnit, .textarea::placeholder {
     color: var(--gray-6);
     font-size: 14px;
     font-weight: 600;
 }
 
 .infoBox {
-    margin-top: 20px;
-    padding: 12px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
     border-radius: 16px;
-    background-color: var(--blue-1);
+    background-color: var(--blue-2);
+    border: 0.8px solid #DBEAFE;
 }
 
 .infoBox p {
     color: var(--blue-9);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     line-height: 1.5;
 }
@@ -110,12 +143,10 @@
     resize: none;
     box-sizing: border-box;
     outline: none;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.textarea::placeholder {
-    color: var(--gray-6);
-}
-
-.submitBtn {
-    margin-top: 20px;
+.textarea:focus {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
 }
