@@ -67,7 +67,11 @@ public class ExpenseService {
         List<ExpenseStatus> statusFilter = resolveStatusFilter(status);
 
         // 2. 그 조건으로 지출 목록 조회
-        List<Expense> expenses = expenseRepository.findByTeamIdAndStatusIn(teamId, statusFilter);
+        List<Expense> expenses =
+                expenseRepository.findByTeamIdAndStatusInOrderByExpenseDateDesc(
+                        teamId,
+                        statusFilter
+                );
 
         // 3. Expense 엔티티 → ExpenseInfo(DTO)로 변환
         List<ExpenseListResponse.ExpenseInfo> expenseInfos = expenses.stream()

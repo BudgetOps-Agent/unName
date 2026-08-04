@@ -1,111 +1,177 @@
-import { useState, useMemo } from 'react';
-import { useRouter } from 'next/router';
-import styles from './expenses.module.css';
-import { Card } from '@/shared/components/card/Card';
-import Button from '@/shared/components/button/Button';
-import { useExpenses, ExpenseCounts } from '@/features/teams/hooks/useExpenses';
-import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
-import SearchBar from '@/features/teams/components/SearchBar/SearchBar';
-import ExpenseList from '@/features/teams/components/ExpenseList/ExpenseList';
+import { useState, useMemo } from "react";
+import { useRouter } from "next/router";
+
+import styles from "./expenses.module.css";
+
+import { Card } from "@/shared/components/card/Card";
+import Button from "@/shared/components/button/Button";
+import ContentTitle from "@/shared/components/contentTitle/ContentTitle";
+
+import SearchBar from "@/features/teams/components/SearchBar/SearchBar";
+import ExpenseList from "@/features/teams/components/ExpenseList/ExpenseList";
+
+import { ExpenseCounts } from "@/features/teams/hooks/useExpenses";
+import { useExpenses } from "@/features/teams/hooks/useExpenses";
 
 const filterBtn = [
-    { id: 1, text: '전체' },
-    { id: 2, text: '대기' },
-    { id: 3, text: '승인' },
-    { id: 4, text: '반려' },
-];
+  { id: 1, text: "전체", value: "ALL" },
+  { id: 2, text: "대기", value: "SUBMITTED" },
+  { id: 3, text: "승인", value: "APPROVED" },
+  { id: 4, text: "반려", value: "REJECTED" },
+] as const;
 
-const COUNT_KEY: Record<string, keyof ExpenseCounts> = {
-    '전체': 'all',
-    '대기': 'pending',
-    '승인': 'approved',
-    '반려': 'rejected',
-};
+const COUNT_KEY = {
+  전체: "all",
+  대기: "pending",
+  승인: "approved",
+  반려: "rejected",
+} as const;
+
+type ExpenseFilter =
+  | "ALL"
+  | "SUBMITTED"
+  | "APPROVED"
+  | "REJECTED";
 
 const Expenses = () => {
+  const router = useRouter();
 
-    const router = useRouter();
-    const { teamId } = router.query;
-    const validTeamId = typeof teamId === 'string' ? teamId : undefined;
+  const { teamId } = router.query;
+  const validTeamId =
+    typeof teamId === "string" ? teamId : undefined;
 
-    const { expenses, counts, isLoading, error, refetch } = useExpenses(validTeamId);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const currentFilter = (router.query.status as ExpenseFilter) ?? "ALL";
 
-    const [searchKeyword, setSearchKeyword] = useState<string>("");
-    const [currentFilter, setCurrentFilter] = useState<string>("전체");
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+  } = useExpenses(validTeamId, currentFilter);
 
-    const handleFilterChange = (filterText: string) => {
-        setCurrentFilter(filterText);
-    };
+  const expenses = data?.expenses ?? [];
 
-    const filteredExpenses = useMemo(() => {
-        return expenses.filter((expense) => {
-            const matchesFilter =
-                currentFilter === '전체' ? true
-                : currentFilter === '대기' ? (expense.status === 'SUBMITTED' || expense.status === 'ESCALATED')
-                : currentFilter === '승인' ? expense.status === 'APPROVED'
-                : currentFilter === '반려' ? expense.status === 'REJECTED'
-                : true;
+  const counts = data?.counts ?? {
+    all: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+  };
 
-            const lowercaseKeyword = searchKeyword.toLowerCase();
-            const matchesSearch =
-                expense.title.toLowerCase().includes(lowercaseKeyword) ||
-                expense.requesterName.toLowerCase().includes(lowercaseKeyword);
+  const filteredExpenses = useMemo(() => {
+    const keyword = searchKeyword.toLowerCase();
 
-            return matchesFilter && matchesSearch;
-        })
-    }, [expenses, searchKeyword, currentFilter]);
+    return expenses.filter(
+      (expense) =>
+        expense.title.toLowerCase().includes(keyword) ||
+        expense.requesterName
+          .toLowerCase()
+          .includes(keyword)
+    );
+  }, [expenses, searchKeyword]);
 
-    return (
+  return (
+    <>
+      <ContentTitle
+        title="지출 내역"
+        subTitle={`총 ${counts.all}건이에요`}
+        href={`/teams/${validTeamId}/expenses/new`}
+        btnText="지출 요청"
+      />
+
+      {error ? (
+        <Card className={styles.errorCard}>
+          <div className={styles.errorContainer}>
+            <p className={styles.errorTextTitle}>
+              ⚠️ 지출 내역을 불러오지 못했습니다
+            </p>
+
+            <p className={styles.errorTextSub}>
+              {error.message}
+            </p>
+
+            <Button
+              className={styles.errorBtn}
+              text="다시 시도"
+              style="tertiary"
+              onClick={() => refetch()}
+            />
+          </div>
+        </Card>
+      ) : (
         <>
-            <ContentTitle title="지출 내역" subTitle={`총 ${counts.all}건이에요`} href={`/teams/${validTeamId}/expenses/new`} btnText="지출 요청" />
+          <SearchBar
+            value={searchKeyword}
+            onChange={setSearchKeyword}
+          />
 
-            {error ? (
-                <Card className={styles.errorCard}>
-                    <div className={styles.errorContainer}>
-                        <p className={styles.errorTextTitle}>⚠️ 지출 내역을 불러오지 못했습니다</p>
-                        <p className={styles.errorTextSub}>{error}</p>
-                        <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
-                    </div>
-                </Card>
-            ) : (
-                <>
-                    <SearchBar value={searchKeyword} onChange={setSearchKeyword} />
+          <div className={styles.filterWrapper}>
+            <ul className={styles.filterSection}>
+              {filterBtn.map((item) => {
+                const isActive =
+                  currentFilter === item.value;
 
-                    <div className={styles.filterWrapper}>
-                      <ul className={styles.filterSection}>
-                        {filterBtn.map((item) => {
-                          const isActive = currentFilter === item.text;
+                return (
+                  <li key={item.id}>
+                    <button
+                      className={`${styles.filterBtn} ${isActive ? styles.active : ""
+                        }`}
+                      onClick={() =>
+                        router.push(
+                          {
+                            pathname: router.pathname,
+                            query: {
+                              teamId: validTeamId,
+                              ...(item.value !== "ALL" && {
+                                status: item.value,
+                              }),
+                            },
+                          },
+                          undefined,
+                          { shallow: true }
+                        )
+                      }
+                    >
+                      <span
+                        className={styles.filterBtnText}
+                      >
+                        <p className={styles.btnTitle}>
+                          {item.text}
+                        </p>
 
-                          return (
-                            <li key={item.id}>
-                              <button
-                                className={`${styles.filterBtn} ${isActive ? styles.active : ""}`}
-                                onClick={() => handleFilterChange(item.text)}
-                              >
-                                <span className={styles.filterBtnText}>
-                                  <p className={styles.btnTitle}>{item.text}</p>
-                                  <p className={styles.btnCount}>
-                                    {counts[COUNT_KEY[item.text]]}
-                                  </p>
-                                </span>
-                              </button>
-                            </li>
-                          )
-                        })}
-                      </ul>
-                  </div>
-                  
-                    {isLoading ? (
-                        <p className={styles.empty}>불러오는 중이에요...</p>
-                    ) : filteredExpenses.length === 0 ? (
-                        <p className={styles.empty}>표시할 지출 내역이 없어요.</p>
-                    ) : (
-                        <ExpenseList expenses={filteredExpenses} />
-                    )}
-                </>
-            )}
+                        <p className={styles.btnCount}>
+                          {
+                            counts[
+                            COUNT_KEY[item.text]
+                            ]
+                          }
+                        </p>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          {isLoading ? (
+            <p className={styles.empty}>
+              불러오는 중이에요...
+            </p>
+          ) : filteredExpenses.length === 0 ? (
+            <p className={styles.empty}>
+              표시할 지출 내역이 없어요.
+            </p>
+          ) : (
+            <ExpenseList
+              expenses={filteredExpenses}
+            />
+          )}
         </>
-    )
-}
+      )}
+    </>
+  );
+};
 
-export default Expenses
+export default Expenses;
