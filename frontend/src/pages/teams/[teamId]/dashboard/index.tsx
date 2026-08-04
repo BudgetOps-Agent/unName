@@ -6,15 +6,13 @@ import ContentTitle from "@/shared/components/contentTitle/ContentTitle";
 import Button from "@/shared/components/button/Button";
 import { useRouter } from "next/router";
 import useDashboard from "@/features/teams/hooks/useDashboard";
+import useMonthlyStats from "@/features/teams/hooks/useMonthlyStats";
 import PendingApprovalCard from "@/features/teams/components/PendingApprovalCard/PendingApprovalCard";
 
-const barData = [
-  { name: '9월', amount: 320000 },
-  { name: '10월', amount: 580000 },
-  { name: '11월', amount: 410000 },
-  { name: '12월', amount: 290000 },
-  { name: '1월', amount: 743000 },
-];
+const formatMonthLabel = (yearMonth: string) => {
+  const month = Number(yearMonth.split('-')[1]);
+  return Number.isNaN(month) ? yearMonth : `${month}월`;
+};
 
 const donutData = [
   { name: 'IT/인프라', value: 228000 },
@@ -32,6 +30,9 @@ const Dashboard = () => {
     const validTeamId = typeof teamId === 'string' ? teamId : undefined;
 
     const { dashboard, isLoading, error, refetch } = useDashboard(validTeamId);
+    const { statistics, isLoading: isStatsLoading, error: statsError, refetch: refetchStats } = useMonthlyStats(validTeamId);
+
+    const barData = statistics.map((item) => ({ month: formatMonthLabel(item.month), amount: item.amount }));
 
   return (
     <>
@@ -79,7 +80,16 @@ const Dashboard = () => {
 
         <div className="cards">
             <Card title="월별 지출">
-                <MainBarChart data={barData} />
+                {isStatsLoading ? (
+                    <p>불러오는 중이에요...</p>
+                ) : statsError ? (
+                    <div className="budget-error">
+                        <p>{statsError}</p>
+                        <Button text="다시 시도" onClick={() => refetchStats()} style="tertiary" />
+                    </div>
+                ) : (
+                    <MainBarChart data={barData} />
+                )}
             </Card>
 
             <Card>
