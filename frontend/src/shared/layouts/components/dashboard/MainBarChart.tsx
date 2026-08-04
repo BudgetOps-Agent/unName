@@ -2,7 +2,7 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface BarData {
-    name: string;
+    month: string;
     amount: number;
 }
 
@@ -16,7 +16,7 @@ export default function MainBarChart({ data }: MainBarChartProps) {
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data}>
 
-                    <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} fontWeight="bold" tickLine={false} axisLine={false} />
+                    <XAxis dataKey="month" stroke="#9ca3af" fontSize={12} fontWeight="bold" tickLine={false} axisLine={false} />
                     <YAxis hide />
 
                     <Tooltip 
