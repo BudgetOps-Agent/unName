@@ -1,6 +1,5 @@
 export interface ReportExpense {
     id: number;
-    item: string;
     title: string;
     category: string;
     requesterName: string;
@@ -9,18 +8,15 @@ export interface ReportExpense {
 }
 
 export interface Report {
-  approvedCount: number;
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
   expenses: ReportExpense[];
-  remainingBudget: number;
-  totalBudget: number;
-  totalExpense: number;
-  usagePercentage: number;
-  usedBudget: number;
 }
 
-export interface ResponseReport {
+export interface ResponseReport extends Report {
   success: boolean;
-  report: Report;
 }
 
 export interface ReportSummary {

@@ -4,7 +4,7 @@ import { Report, ResponseReport, ReportSummary, ResponseReportSummary } from "@/
 export const getReport = async (teamId: number): Promise<Report> => {
   const { data } = await api.get<ResponseReport>(`/api/teams/${teamId}/statistics/report`);
 
-  return data.report;
+  return data;
 };
 
 export const getReportSummary = async (teamId: number): Promise<ReportSummary> => {
