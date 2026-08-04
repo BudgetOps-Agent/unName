@@ -45,6 +45,7 @@ const NewExpense = () => {
             title,
             amount,
             category: CATEGORY_VALUE[category] ?? category,
+            expenseDate: date,
             description,
             receipt,
         });
