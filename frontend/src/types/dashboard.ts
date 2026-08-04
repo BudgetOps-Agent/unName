@@ -18,3 +18,13 @@ export interface DashboardResponse {
         }[];
     };
 }
+
+export interface MonthlyStat {
+    month: string;
+    amount: number;
+}
+
+export interface MonthlyStatsResponse {
+    success: boolean;
+    statistics: MonthlyStat[];
+}

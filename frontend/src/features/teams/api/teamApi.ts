@@ -2,7 +2,7 @@ import api from "@/shared/api/api";
 import { AcceptInviteResponse, RejectInviteResponse, InviteMemberResponse, TransferAdminResponse, RemoveMemberResponse, ChangeRoleResponse, ResponseMyTeams } from "@/types/team";
 import { ResponseExpenses, ExpenseCreateResponse, ExpenseDetailResponse, ExpenseApproveResponse, ExpenseRejectResponse } from "@/types/expense";
 import { Member, ResponseTeamMembers } from "@/types/member";
-import { DashboardResponse } from "@/types/dashboard";
+import { DashboardResponse, MonthlyStatsResponse } from "@/types/dashboard";
 import { BudgetResponse } from "@/types/budget";
 import { AxiosResponse } from "axios";
 
@@ -54,6 +54,12 @@ export const getExpenseDetail = (expenseId: string): Promise<AxiosResponse<Expen
 
 export const getDashboard = (teamId: string): Promise<AxiosResponse<DashboardResponse>> => {
   return api.get<DashboardResponse>(`/api/teams/${teamId}/dashboard`);
+}
+
+export const getMonthlyStats = (teamId: string, months?: number): Promise<AxiosResponse<MonthlyStatsResponse>> => {
+  return api.get<MonthlyStatsResponse>(`/api/teams/${teamId}/statistics/monthly`, {
+    params: months ? { months } : undefined,
+  });
 }
 
 export const getBudget = (teamId: string): Promise<AxiosResponse<BudgetResponse>> => {
