@@ -9,9 +9,11 @@ import com.example.backend.member.repository.UserRepository;
 import com.example.backend.team.dto.CreateTeamRequest;
 import com.example.backend.team.dto.CreateTeamResponse;
 import com.example.backend.team.entity.Team;
+import com.example.backend.team.entity.TeamSettings;
 import com.example.backend.team.exception.TeamErrorCode;
 import com.example.backend.team.exception.TeamException;
 import com.example.backend.team.repository.TeamRepository;
+import com.example.backend.team.repository.TeamSettingsRepository;
 import com.example.backend.teamMember.entity.TeamMember;
 import com.example.backend.teamMember.entity.TeamRole;
 import com.example.backend.teamMember.entity.TeamStatus;
@@ -29,6 +31,7 @@ public class TeamService {
     private final UserRepository userRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final BudgetRepository budgetRepository;
+    private final TeamSettingsRepository teamSettingsRepository;
 
     @Transactional
     public CreateTeamResponse createTeam(CreateTeamRequest request) {
@@ -82,6 +85,15 @@ public class TeamService {
                 .usedBudget(0L)
                 .build();
         budgetRepository.save(budget);
+
+        // team_settings row 생성 (기본값)
+        // membershipFee=0, autoApprove=false 는 엔티티 빌더에서 처리
+        // escalationThreshold는 일단 총예산으로 초기화 → 사실상 에스컬레이션 비활성
+        TeamSettings settings = TeamSettings.builder()
+                .team(team)
+                .escalationThreshold(request.getTotalBudget())
+                .build();
+        teamSettingsRepository.save(settings);
 
         // Response 반환 (성공하면 반환할것들 만들어서 json 객체로 만들어서 반환)
         return CreateTeamResponse.builder()
