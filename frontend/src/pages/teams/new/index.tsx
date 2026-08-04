@@ -1,6 +1,5 @@
 import Link from "next/link";
 import styles from './createteam.module.css';
-import { Card } from "@/shared/components/card/Card";
 import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
 import CreateTeamForm from "@/features/teams/components/CreateTeamForm/CreateTeamForm";
 
@@ -12,9 +11,7 @@ const CreateTeam = () => {
                 <ContentTitle title="새 모임 만들기" subTitle="모임을 만들면 관리자가 돼요"/>
             </div>
 
-            <Card className={styles.formCard}>
-                <CreateTeamForm />
-            </Card>
+            <CreateTeamForm />
         </>
     )
 }
