@@ -9,6 +9,7 @@ import com.example.backend.expense.exception.ExpenseException;
 import com.example.backend.expense.repository.ExpenseRepository;
 import com.example.backend.expense.repository.ExpensesReviewRepository;
 import com.example.backend.member.repository.UserRepository;
+import com.example.backend.notification.service.NotificationService;
 import com.example.backend.teamMember.entity.TeamMember;
 import com.example.backend.teamMember.entity.TeamRole;
 import com.example.backend.teamMember.repository.TeamMemberRepository;
@@ -48,6 +49,8 @@ public class ExpenseService {
 
     // 지출 반려(API-020)
     private final ExpensesReviewRepository expensesReviewRepository;
+
+    private final NotificationService notificationService;
 
     // 지출 목록 조회 (API-014)
     //
@@ -265,6 +268,9 @@ public class ExpenseService {
         // 7. DB에 저장
         Expense saved = expenseRepository.save(expense);
 
+        // 승인 요청 알림 생성 (관리자+총무에게, 작성자 제외)
+        notificationService.notifyApprovalRequest(saved);
+
         // 8. 저장된 Expense → 응답 DTO로 변환해서 return
         return ExpenseCreateResponse.fromEntity(saved);
     }
@@ -331,9 +337,11 @@ public class ExpenseService {
                 .build();
         expensesReviewRepository.save(review);
 
-        //      LLM팀에게 반려 사유 전달 (URL 확정 후)
-        //       @TransactionalEventListener(AFTER_COMMIT)로 커밋 성공 후 비동기 전송 예정
+        // 반려 결과 알림 (작성자 + 나머지 승인권자에게)
+        notificationService.notifyRejected(expense, requester);
 
+        // LLM팀에게 반려 사유 전달 (URL 확정 후)
+        // @TransactionalEventListener(AFTER_COMMIT)로 커밋 성공 후 비동기 전송 예정
         // 8. 응답 반환
         return ExpenseRejectResponse.fromEntity(expense);
     }
@@ -399,6 +407,9 @@ public class ExpenseService {
                 .processedBy(ProcessedBy.HUMAN)
                 .build();
         expensesReviewRepository.save(review);
+
+        // 승인 결과 알림 (작성자 + 나머지 승인권자에게)
+        notificationService.notifyApproved(expense, requester);
 
         // 11. 응답 반환
         return ExpenseApproveResponse.fromEntity(expense);
