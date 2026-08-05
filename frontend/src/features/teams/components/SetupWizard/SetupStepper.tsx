@@ -1,7 +1,7 @@
 import styles from './setupstepper.module.css';
 
 const STEPS = [
-    { id: 1, label: '회비·예산' },
+    { id: 1, label: '회비' },
     { id: 2, label: '승인 정책' },
     { id: 3, label: '회칙·규정' },
 ];
