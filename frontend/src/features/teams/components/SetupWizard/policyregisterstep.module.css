@@ -1,0 +1,170 @@
+.stepCard {
+    max-width: 500px;
+    margin: 24px auto 0;
+}
+
+.title {
+    color: var(--gray-9);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.subTitle {
+    margin-top: 4px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.methodTabs {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.methodTab {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 16px;
+    background: var(--gray-3);
+    color: var(--gray-8);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.methodTabActive {
+    border: 1.6px solid var(--blue-8);
+    background: #EBF3FE;
+    color: var(--blue-8);
+}
+
+.uploadBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 32px 16px;
+    border: 1.6px dashed var(--gray-5);
+    border-radius: 16px;
+    background: var(--gray-3);
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.uploadBox:hover {
+    border-color: rgba(49, 130, 246, 0.4);
+    background: rgba(235, 243, 254, 0.3);
+}
+
+.hiddenFileInput {
+    display: none;
+}
+
+.uploadIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 4px;
+    border-radius: 16px;
+    background: var(--white);
+    color: var(--gray-7);
+    font-size: 16px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+                0 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.uploadText {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.uploadSubText {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.textArea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 140px;
+    margin-top: 20px;
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    color: var(--gray-9);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.textArea:focus {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.textArea::placeholder {
+    color: var(--gray-6);
+    font-weight: 700;
+}
+
+.aiBox {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 16px;
+    background: #F5F3FF;
+}
+
+.aiTitle {
+    color: #7008E7;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.aiText {
+    color: #7F22FE;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.aiButton.aiButton {
+    width: fit-content;
+    padding: 8px 16px;
+    margin-top: 16px;
+    background: #8E51FF;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.buttonSection {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.prevBtn,
+.skipBtn {
+    flex: 1;
+    width: auto;
+    border: 1px solid var(--gray-5);
+}
+
+.completeBtn {
+    flex: 2;
+    width: auto;
+}

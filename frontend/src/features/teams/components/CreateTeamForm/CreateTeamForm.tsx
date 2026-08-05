@@ -1,4 +1,5 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, SubmitEvent } from 'react';
+import { useRouter } from 'next/router';
 import styles from './createteamform.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
@@ -6,6 +7,8 @@ import Button from '@/shared/components/button/Button';
 const teamTypes = ['동아리/학생회', '스터디', '친목', '동호회', '회사'];
 
 const CreateTeamForm = () => {
+
+    const router = useRouter();
 
     const [teamType, setTeamType] = useState<string | null>(null);
     const [name, setName] = useState('');
@@ -18,8 +21,17 @@ const CreateTeamForm = () => {
 
     const isFormValid = teamType !== null && name.trim() !== '' && budget.trim() !== '';
 
+    const handleSubmit = (e: SubmitEvent) => {
+        e.preventDefault();
+        console.log('POST /api/teams', { teamType, name, budget, description });
+        router.push({
+            pathname: '/teams/new/setup',
+            query: { step: 1, teamType },
+        });
+    };
+
     return (
-        <form className={styles.createTeamForm}>
+        <form className={styles.createTeamForm} onSubmit={handleSubmit}>
             <Card className={styles.formCard}>
                 <div className={styles.formGroup}>
                     <label className={styles.label}>

@@ -1,0 +1,114 @@
+.stepCard {
+    max-width: 500px;
+    margin: 24px auto 0;
+}
+
+.title {
+    color: var(--gray-9);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.subTitle {
+    margin-top: 4px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.feeHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.label {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--gray-7);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.checkbox {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--blue-8);
+    cursor: pointer;
+}
+
+.feeInputWrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    box-sizing: border-box;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feeInputWrap:focus-within {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.feeInput {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: var(--gray-9);
+    outline: none;
+}
+
+.feeInput:disabled {
+    color: var(--gray-6);
+}
+
+.feeInput::placeholder {
+    color: var(--gray-6);
+    font-weight: 600;
+}
+
+.feeUnit {
+    flex-shrink: 0;
+    margin-left: 8px;
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.infoBox {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background-color: var(--blue-2);
+    border: 0.8px solid #DBEAFE;
+}
+
+.infoBox p {
+    color: var(--blue-9);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.nextBtn {
+    margin-top: 20px;
+}
