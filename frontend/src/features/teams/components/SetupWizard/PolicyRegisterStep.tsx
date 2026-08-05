@@ -32,9 +32,9 @@ const PolicyRegisterStep = ({ onPrev, onSkip, onComplete }: PolicyRegisterStepPr
         setFile(e.target.files?.[0] ?? null);
     };
 
-    const handleGenerateDraft = () => {
-        console.log('POST /policy/draft');
-    };
+    const isCompleteDisabled =
+        (method === 'upload' && file === null) ||
+        (method === 'text' && text.trim() === '');
 
     const handleComplete = () => {
         onComplete({ method, file, text });
@@ -75,7 +75,7 @@ const PolicyRegisterStep = ({ onPrev, onSkip, onComplete }: PolicyRegisterStepPr
                     ) : (
                         <p className={styles.uploadText}>회칙 문서를 업로드해 주세요</p>
                     )}
-                    <p className={styles.uploadSubText}>PDF, Word, 텍스트 파일 지원 · AI가 자동으로 분석해요</p>
+                    <p className={styles.uploadSubText}>PDF, Word · AI가 자동 분석해요</p>
                 </label>
             )}
 
@@ -90,20 +90,15 @@ const PolicyRegisterStep = ({ onPrev, onSkip, onComplete }: PolicyRegisterStepPr
 
             {method === 'ai' && (
                 <div className={styles.aiBox}>
-                    <p className={styles.aiTitle}>AI가 회칙 초안을 만들어 드려요</p>
-                    <p className={styles.aiText}>모임 유형과 예산 정보를 바탕으로 적합한 회칙 초안을 자동 생성해요. 이후 수정할 수 있어요.</p>
-                    <Button
-                        className={styles.aiButton}
-                        text="AI 초안 생성하기"
-                        onClick={handleGenerateDraft}
-                    />
+                    <p className={styles.aiTitle}>AI가 회칙 초안을 만들어요</p>
+                    <p className={styles.aiText}>모임 정보를 바탕으로 적합한 회칙 초안을 자동 생성해요</p>
                 </div>
             )}
 
             <div className={styles.buttonSection}>
                 <Button className={styles.prevBtn} text="이전" style="secondary" size="lg" onClick={onPrev} />
                 <Button className={styles.skipBtn} text="건너뛰기" style="secondary" size="lg" onClick={onSkip} />
-                <Button className={styles.completeBtn} text="설정 완료" style="tertiary" size="lg" onClick={handleComplete} />
+                <Button className={styles.completeBtn} text="설정 완료" style="tertiary" size="lg" onClick={handleComplete} disabled={isCompleteDisabled} />
             </div>
         </Card>
     );
