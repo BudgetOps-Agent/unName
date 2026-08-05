@@ -8,6 +8,7 @@ import com.example.backend.member.exception.MemberException;
 import com.example.backend.member.repository.UserRepository;
 import com.example.backend.team.dto.CreateTeamRequest;
 import com.example.backend.team.dto.CreateTeamResponse;
+import com.example.backend.team.dto.UpdateSettingsRequest;
 import com.example.backend.team.entity.Team;
 import com.example.backend.team.entity.TeamSettings;
 import com.example.backend.team.exception.TeamErrorCode;
@@ -17,6 +18,8 @@ import com.example.backend.team.repository.TeamSettingsRepository;
 import com.example.backend.teamMember.entity.TeamMember;
 import com.example.backend.teamMember.entity.TeamRole;
 import com.example.backend.teamMember.entity.TeamStatus;
+import com.example.backend.teamMember.exception.TeamMemberErrorCode;
+import com.example.backend.teamMember.exception.TeamMemberException;
 import com.example.backend.teamMember.repository.TeamMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -87,11 +90,9 @@ public class TeamService {
         budgetRepository.save(budget);
 
         // team_settings row 생성 (기본값)
-        // membershipFee=0, autoApprove=false 는 엔티티 빌더에서 처리
-        // escalationThreshold는 일단 총예산으로 초기화 → 사실상 에스컬레이션 비활성
+        // membershipFee=0, autoApprove=false, autoApproveLimit=null 은 엔티티 빌더에서 처리
         TeamSettings settings = TeamSettings.builder()
                 .team(team)
-                .escalationThreshold(request.getTotalBudget())
                 .build();
         teamSettingsRepository.save(settings);
 
@@ -102,5 +103,30 @@ public class TeamService {
                 .build();
 
 
+    }
+
+    // 팀 설정 수정 (API-029) — 마법사 1단계(회비) · 3단계(승인정책) 공용
+    // PATCH 방식: 보낸 필드만 반영, 안 보낸 필드(null)는 안 건드림
+    @Transactional
+    public void updateSettings(Long teamId, UpdateSettingsRequest request) {
+        // 해당 팀의 settings 조회 (모임 생성 때 만들어진 row)
+        TeamSettings settings = teamSettingsRepository.findByTeamId(teamId)
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.TEAM_NOT_FOUND));
+
+        // 1) 회비 (음수 방어 — 0은 "없음"이라 허용)
+        if (request.getMembershipFee() != null) {
+            if (request.getMembershipFee() < 0) {
+                throw new IllegalArgumentException("회비는 0 이상이어야 합니다.");
+            }
+            settings.updateMembershipFee(request.getMembershipFee());
+        }
+
+        // 2) 승인 정책 (조건부: autoApprove=true면 관리자 설정 금액 필수)
+        if (request.getAutoApprove() != null) {
+            if (request.getAutoApprove() && request.getAutoApproveLimit() == null) {
+                throw new IllegalArgumentException("자동승인 사용 시 관리자 설정 금액이 필요합니다.");
+            }
+            settings.updateApprovalPolicy(request.getAutoApprove(), request.getAutoApproveLimit());
+        }
     }
 }

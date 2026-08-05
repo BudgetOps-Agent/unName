@@ -2,6 +2,7 @@ package com.example.backend.team.controller;
 
 import com.example.backend.team.dto.CreateTeamRequest;
 import com.example.backend.team.dto.CreateTeamResponse;
+import com.example.backend.team.dto.UpdateSettingsRequest;
 import com.example.backend.team.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,10 +14,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Tag(name = "Team", description = "모임(팀) 관련 API")
 @RestController // JSON 반환하는 REST API 컨트롤러
@@ -57,5 +58,18 @@ public class TeamController {
     public ResponseEntity<CreateTeamResponse> createTeam(@RequestBody @Valid CreateTeamRequest request) {
         CreateTeamResponse response = teamService.createTeam(request);
         return ResponseEntity.status(201).body(response); // 201 생성 성공
+    }
+
+    // 팀 설정 수정 (API-029) — 마법사 1단계(회비) · 3단계(승인정책) 공용
+    @PatchMapping("/{teamId}/settings")
+    public ResponseEntity<Map<String, Object>> updateSettings(
+            @PathVariable("teamId") Long teamId,
+            @RequestBody UpdateSettingsRequest request) {
+
+        teamService.updateSettings(teamId, request);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        return ResponseEntity.ok(response);
     }
 }
