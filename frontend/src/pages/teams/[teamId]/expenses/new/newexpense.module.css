@@ -1,6 +1,7 @@
 .newExpenseContainer {
     display: flex;
     flex-direction: column;
+    width: 100%;
     max-width: 860px;
     margin: 0 auto;
     gap: 16px;
@@ -19,11 +20,20 @@
 .formCard {
     display: flex;
     flex-direction: column;
+    width: 100%;
     gap: 20px;
 }
 
 .titleInput {
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    box-sizing: border-box;
+    font-size: 14px;
+    color: var(--gray-9);
     outline: none;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .formGroup {
@@ -97,36 +107,17 @@
     font-weight: 600;
 }
 
-.categoryList {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.categoryList .categoryBtn {
-    display: flex;
-    justify-content: center;
-    width: fit-content;
-    padding: 6px 14px;
-    font-size: 14px;
-    font-weight: 700;
-}
-
-.categoryList .categoryBtnActive {
-    color: var(--white);
-    background: var(--blue-8);
-    box-shadow:
-        0px 4px 6px -1px rgba(190, 219, 255, 0.6),
-        0px 2px 4px -2px rgba(190, 219, 255, 0.6);
-}
-
-.categoryList .categoryBtnActive:hover {
-    background: var(--blue-8);
-}
-
 .dateInput {
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    box-sizing: border-box;
+    font-size: 14px;
+    color: var(--gray-9);
     outline: none;
     font-weight: 600;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .formGroup .dateInput:focus {
