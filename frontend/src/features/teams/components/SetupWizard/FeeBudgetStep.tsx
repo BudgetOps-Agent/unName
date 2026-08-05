@@ -1,17 +1,18 @@
-import { useState, ChangeEvent } from 'react';
+import { ChangeEvent } from 'react';
 import styles from './feebudgetstep.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
 
 interface FeeBudgetStepProps {
     teamType: string;
+    fee: string;
+    setFee: (fee: string) => void;
+    noFee: boolean;
+    setNoFee: (noFee: boolean) => void;
     onNext: (membershipFee: number | null) => void;
 }
 
-const FeeBudgetStep = ({ teamType, onNext }: FeeBudgetStepProps) => {
-    const [fee, setFee] = useState('');
-    const [noFee, setNoFee] = useState(false);
-
+const FeeBudgetStep = ({ teamType, fee, setFee, noFee, setNoFee, onNext }: FeeBudgetStepProps) => {
     const handleFeeChange = (e: ChangeEvent<HTMLInputElement>) => {
         setFee(e.target.value.replace(/[^0-9]/g, ''));
     };

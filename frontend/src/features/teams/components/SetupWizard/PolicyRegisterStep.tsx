@@ -1,9 +1,8 @@
-import { useState } from 'react';
 import styles from './policyregisterstep.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
 
-type RegisterMethod = 'upload' | 'text' | 'ai';
+export type RegisterMethod = 'upload' | 'text' | 'ai';
 
 const METHOD_OPTIONS: { id: RegisterMethod; label: string }[] = [
     { id: 'upload', label: '파일 업로드' },
@@ -18,16 +17,28 @@ export interface PolicyRegisterValue {
 }
 
 interface PolicyRegisterStepProps {
+    method: RegisterMethod;
+    setMethod: (method: RegisterMethod) => void;
+    file: File | null;
+    setFile: (file: File | null) => void;
+    text: string;
+    setText: (text: string) => void;
     onPrev: () => void;
     onSkip: () => void;
     onComplete: (value: PolicyRegisterValue) => void;
 }
 
-const PolicyRegisterStep = ({ onPrev, onSkip, onComplete }: PolicyRegisterStepProps) => {
-    const [method, setMethod] = useState<RegisterMethod>('upload');
-    const [file, setFile] = useState<File | null>(null);
-    const [text, setText] = useState('');
-
+const PolicyRegisterStep = ({
+    method,
+    setMethod,
+    file,
+    setFile,
+    text,
+    setText,
+    onPrev,
+    onSkip,
+    onComplete,
+}: PolicyRegisterStepProps) => {
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFile(e.target.files?.[0] ?? null);
     };

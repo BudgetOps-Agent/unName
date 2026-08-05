@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { ChangeEvent } from 'react';
 import styles from './approvalpolicystep.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
@@ -9,14 +9,22 @@ export interface ApprovalPolicyValue {
 }
 
 interface ApprovalPolicyStepProps {
+    alwaysReviewManually: boolean;
+    setAlwaysReviewManually: (value: boolean) => void;
+    threshold: string;
+    setThreshold: (value: string) => void;
     onPrev: () => void;
     onNext: (value: ApprovalPolicyValue) => void;
 }
 
-const ApprovalPolicyStep = ({ onPrev, onNext }: ApprovalPolicyStepProps) => {
-    const [alwaysReviewManually, setAlwaysReviewManually] = useState(false);
-    const [threshold, setThreshold] = useState('');
-
+const ApprovalPolicyStep = ({
+    alwaysReviewManually,
+    setAlwaysReviewManually,
+    threshold,
+    setThreshold,
+    onPrev,
+    onNext,
+}: ApprovalPolicyStepProps) => {
     const handleThresholdChange = (e: ChangeEvent<HTMLInputElement>) => {
         setThreshold(e.target.value.replace(/[^0-9]/g, ''));
     };
