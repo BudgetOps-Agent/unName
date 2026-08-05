@@ -102,10 +102,12 @@ const ExpenseDetail = () => {
         );
     }
 
+    const category = expense.category;
+
     const mappedExpense = {
         status: STATUS_LABEL[expense.status] ?? expense.status,
         title: expense.title,
-        category: CATEGORY_LABEL[expense.category] ?? expense.category,
+        category: category ? (CATEGORY_LABEL[category] ?? category) : '-',
         date: expense.createdAt.slice(0, 10),
         requester: expense.requesterName,
         description: expense.description ?? '',
