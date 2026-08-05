@@ -160,12 +160,6 @@
     border-top: 0.8px solid rgba(0, 0, 0, 0.05);
 }
 
-.historySection {
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 0.8px solid rgba(0, 0, 0, 0.05);
-}
-
 .sectionTitle {
     color: var(--gray-9);
     font-size: 14px;
@@ -241,6 +235,20 @@
     font-weight: 600;
 }
 
+.paramPreview {
+    margin-top: 6px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.paramErrorText {
+    margin-top: 6px;
+    color: var(--red-7);
+    font-size: 13px;
+    font-weight: 600;
+}
+
 .paramHelper {
     margin-top: 6px;
     color: var(--gray-6);
@@ -253,62 +261,4 @@
     padding: 12px 16px;
     font-size: 14px;
     font-weight: 700;
-}
-
-.historyList {
-    margin-top: 12px;
-    border: 1px solid var(--gray-4);
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.historyItem {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
-}
-
-.historyItem + .historyItem {
-    border-top: 1px solid var(--gray-4);
-}
-
-.historyInfo {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-}
-
-.historyDate {
-    color: var(--gray-9);
-    font-size: 14px;
-    font-weight: 700;
-}
-
-.historyAuthor {
-    color: var(--gray-6);
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.historyActive {
-    flex-shrink: 0;
-    color: var(--green-2);
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.historyLink {
-    flex-shrink: 0;
-    padding: 0;
-    color: var(--gray-6);
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.historyLink:hover {
-    color: #4B5563;
 }

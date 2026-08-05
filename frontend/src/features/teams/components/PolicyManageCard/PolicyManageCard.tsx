@@ -1,28 +1,13 @@
 import { useState } from 'react';
 import styles from './policymanagecard.module.css';
 import Button from '@/shared/components/button/Button';
-import { Badge } from '@/shared/components/badge/Badge';
 
 type RegisterMethod = 'upload' | 'text' | 'ai';
 
 const METHOD_OPTIONS: { id: RegisterMethod; label: string }[] = [
     { id: 'upload', label: '파일 업로드' },
     { id: 'text', label: '직접 입력' },
-    { id: 'ai', label: 'AI 초안' },
-];
-
-interface PolicyVersion {
-    id: number;
-    version: string;
-    updatedAt: string;
-    updatedBy: string;
-    isActive: boolean;
-}
-
-const POLICY_VERSIONS: PolicyVersion[] = [
-    { id: 3, version: 'v3', updatedAt: '2025-01-20 업데이트', updatedBy: '김민준', isActive: true },
-    { id: 2, version: 'v2', updatedAt: '2025-01-05 업데이트', updatedBy: '김민준', isActive: false },
-    { id: 1, version: 'v1', updatedAt: '2024-12-01 업데이트', updatedBy: '김민준', isActive: false },
+    { id: 'ai', label: 'AI 추천' },
 ];
 
 const PolicyManageCard = () => {
@@ -30,15 +15,30 @@ const PolicyManageCard = () => {
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [policyText, setPolicyText] = useState('');
     const [autoApproveLimit, setAutoApproveLimit] = useState('');
-    const [escalationLimit, setEscalationLimit] = useState('');
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUploadedFile(e.target.files?.[0] ?? null);
     };
 
+    const MIN_AUTO_APPROVE_LIMIT = 50000;
+
+    const handleAutoApproveLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setAutoApproveLimit(e.target.value.replace(/[^0-9]/g, ''));
+    };
+
+    const autoApproveLimitNumber = Number(autoApproveLimit) || 0;
+    const isAutoApproveLimitValid = autoApproveLimitNumber >= MIN_AUTO_APPROVE_LIMIT;
+
+    const isPolicyProvided =
+        (method === 'upload' && uploadedFile !== null) ||
+        (method === 'text' && policyText.trim() !== '') ||
+        method === 'ai';
+
+    const isFormValid = isPolicyProvided || isAutoApproveLimitValid;
+
     return (
         <div className={styles.container}>
-            <p className={styles.title}>회칙·규정 등록</p>
+            <p className={styles.title}>회칙·규정 수정</p>
             <p className={styles.subTitle}>회칙을 등록하면 AI가 지출 심사 기준으로 활용해요</p>
 
             <div className={styles.methodTabs}>
@@ -71,7 +71,7 @@ const PolicyManageCard = () => {
                     ) : (
                         <p className={styles.uploadText}>회칙 문서를 업로드해 주세요</p>
                     )}
-                    <p className={styles.uploadSubText}>PDF, Word, 텍스트 파일 지원 · AI가 자동으로 분석해요</p>
+                    <p className={styles.uploadSubText}>PDF, Word · AI가 자동으로 분석해요</p>
                 </label>
             )}
 
@@ -101,30 +101,25 @@ const PolicyManageCard = () => {
                 <p className={styles.sectionSubTitle}>관리자만 수정할 수 있어요</p>
 
                 <div className={styles.paramField}>
-                    <label className={styles.paramLabel}>자동 승인 상한액</label>
+                    <label className={styles.paramLabel}>관리자 승인 필수 금액</label>
                     <div className={styles.amountInput}>
                         <input
-                            type="number"
-                            placeholder="100000"
+                            inputMode="numeric"
+                            placeholder="50,000"
                             value={autoApproveLimit}
-                            onChange={(e) => setAutoApproveLimit(e.target.value)}
+                            onChange={handleAutoApproveLimitChange}
                         />
                         <span className={styles.unit}>원</span>
                     </div>
-                    <p className={styles.paramHelper}>이 금액 이하 지출은 AI가 자동으로 승인해요</p>
-                </div>
 
-                <div className={styles.paramField}>
-                    <label className={styles.paramLabel}>에스컬레이션 기준액</label>
-                    <div className={styles.amountInput}>
-                        <input
-                            type="number"
-                            placeholder="500000"
-                            value={escalationLimit}
-                            onChange={(e) => setEscalationLimit(e.target.value)}
-                        />
-                        <span className={styles.unit}>원</span>
-                    </div>
+                    {autoApproveLimit !== '' && (
+                        isAutoApproveLimitValid ? (
+                            <p className={styles.paramPreview}>{`${autoApproveLimitNumber.toLocaleString()}원`}</p>
+                        ) : (
+                            <p className={styles.paramErrorText}>최소 금액은 50,000원이에요</p>
+                        )
+                    )}
+
                     <p className={styles.paramHelper}>이 금액 초과 시 항상 관리자 검토가 필요해요</p>
                 </div>
 
@@ -132,37 +127,9 @@ const PolicyManageCard = () => {
                     className={styles.saveButton}
                     text="저장하기"
                     style='tertiary'
+                    disabled={!isFormValid}
                     onClick={() => console.log('저장하기 클릭')}
                 />
-            </div>
-
-            <div className={styles.historySection}>
-                <p className={styles.sectionTitle}>회칙 버전 이력</p>
-
-                <div className={styles.historyList}>
-                    {POLICY_VERSIONS.map((item) => (
-                        <div key={item.id} className={styles.historyItem}>
-                            <Badge text={item.version} style={item.isActive ? 'green' : 'gray'} />
-
-                            <div className={styles.historyInfo}>
-                                <p className={styles.historyDate}>{item.updatedAt}</p>
-                                <span className={styles.historyAuthor}>{item.updatedBy}</span>
-                            </div>
-
-                            {item.isActive ? (
-                                <span className={styles.historyActive}>적용 중</span>
-                            ) : (
-                                <button
-                                    type="button"
-                                    className={styles.historyLink}
-                                    onClick={() => console.log('회칙 버전 보기 클릭', item.version)}
-                                >
-                                    보기
-                                </button>
-                            )}
-                        </div>
-                    ))}
-                </div>
             </div>
         </div>
     );
