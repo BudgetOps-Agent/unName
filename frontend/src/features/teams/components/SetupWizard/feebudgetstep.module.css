@@ -1,19 +1,20 @@
 .stepCard {
-    max-width: 500px;
+    width: 100%;
+    max-width: 480px;
     margin: 24px auto 0;
 }
 
 .title {
     color: var(--gray-9);
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 .subTitle {
     margin-top: 4px;
     color: var(--gray-6);
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .feeHeader {
@@ -40,10 +41,32 @@
 }
 
 .checkbox {
+    position: relative;
     width: 16px;
     height: 16px;
-    accent-color: var(--blue-8);
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--white);
+    border: 1px solid var(--blue-8);
+    border-radius: 3px;
     cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.checkbox:checked {
+    background-color: var(--blue-8);
+}
+
+.checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid var(--white);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
 }
 
 .feeInputWrap {
@@ -80,6 +103,13 @@
 
 .feeInput::placeholder {
     color: var(--gray-6);
+    font-weight: 600;
+}
+
+.feePreview {
+    margin-top: 6px;
+    color: var(--gray-6);
+    font-size: 13px;
     font-weight: 600;
 }
 

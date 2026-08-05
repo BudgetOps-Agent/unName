@@ -1,20 +1,26 @@
 .stepCard {
-    max-width: 500px;
+    width: 100%;
+    max-width: 480px;
     margin: 24px auto 0;
 }
 
 .title {
     color: var(--gray-9);
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 .subTitle {
     margin-top: 4px;
     color: var(--gray-6);
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.6;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.description {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .toggleRow {
@@ -30,7 +36,7 @@
 
 .toggleTitle {
     color: var(--gray-9);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
 }
 
@@ -38,7 +44,7 @@
     margin-top: 2px;
     color: var(--gray-6);
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .switch {
@@ -82,6 +88,28 @@
 
 .switch input:checked + .slider::before {
     transform: translateX(18px);
+}
+
+.collapsible {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.25s ease;
+}
+
+.collapsible.collapsed {
+    grid-template-rows: 0fr;
+}
+
+.collapsibleInner {
+    min-height: 0;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.collapsible.collapsed .collapsibleInner {
+    opacity: 0;
+    transition: opacity 0.15s ease;
 }
 
 .formGroup {
@@ -136,26 +164,18 @@
     font-weight: 600;
 }
 
-.presetList {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.presetList .presetBtn {
-    flex: 1;
-    padding: 8px;
+.thresholdPreview {
+    margin-top: 6px;
+    color: var(--gray-6);
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
-.presetList .presetBtnActive {
-    color: var(--white);
-    background: var(--blue-8);
-}
-
-.presetList .presetBtnActive:hover {
-    background: var(--blue-8);
+.thresholdErrorText {
+    margin-top: 6px;
+    color: var(--red-7);
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .policyTable {

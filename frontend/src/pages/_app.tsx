@@ -18,12 +18,12 @@ export default function App({ Component, pageProps, router }: AppProps) {
     const isNewTeamPage = currentPath.startsWith("/teams/new");
     const isMyGroup = currentPath === "/teams";
 
-    const showLogo = !["/teams", "/teams/new"].includes(currentPath); 
+    const showLogo = !["/teams", "/teams/new", "/teams/new/setup"].includes(currentPath); 
     const centerAlignPaths = ["/auth/signin", "/auth/findId", "/auth/findPw"];
     const mobileAlign = centerAlignPaths.includes(currentPath) ? "center" : "flex-start";
     
     const useAuthLayout = isAuthPage || isMyGroup || isNewTeamPage;
-  
+
     
     return (
         <QueryClientProvider client={queryClient}>

@@ -1,3 +1,10 @@
+/* AuthLayout의 <main>은 align-items:center로 shrink-to-fit 되어
+   콘텐츠에 따라 카드 너비가 들쭉날쭉해진다. 이 페이지에서만 <main>을
+   꽉 채워서 .setupContainer의 width:100%가 실제로 의미를 갖게 한다. */
+:global(main):has(> .setupContainer) {
+    width: 100%;
+}
+
 .setupContainer {
     display: flex;
     flex-direction: column;

@@ -1,5 +1,6 @@
 .stepCard {
-    max-width: 500px;
+    width: 100%;
+    max-width: 480px;
     margin: 24px auto 0;
 }
 

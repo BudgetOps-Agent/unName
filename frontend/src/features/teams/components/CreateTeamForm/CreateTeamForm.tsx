@@ -51,7 +51,9 @@ const CreateTeamForm = () => {
                 </div>
 
                 <div className={styles.formGroup}>
-                    <label className={styles.label}>모임 이름</label>
+                    <label className={styles.label}>
+                        모임 이름 <span className={styles.required}>*</span>
+                    </label>
                     <input
                         className={styles.nameInput}
                         type="text"
@@ -62,7 +64,9 @@ const CreateTeamForm = () => {
                 </div>
 
                 <div className={styles.formGroup}>
-                    <label className={styles.label}>초기 예산</label>
+                    <label className={styles.label}>
+                        초기 예산 <span className={styles.required}>*</span>
+                    </label>
                     <div className={styles.budgetInputWrap}>
                         <input
                             className={styles.budgetInput}
