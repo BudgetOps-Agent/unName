@@ -5,9 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@NoArgsConstructor
+@Setter // multipart/form-data는 값을 Setter로 채워넣어서 @Setter가 필요함 (지출 등록 DTO랑 동일)
+@NoArgsConstructor // 기본 생성자 필요 (Spring이 빈 객체 만들고 Setter로 하나씩 채우는 방식)
 public class PolicyCreateRequest {
 
     // 정책 제목 (필수)
@@ -22,5 +24,5 @@ public class PolicyCreateRequest {
     // 직접입력 텍스트 또는 AI 초안으로 받은 텍스트가 여기 담김
     private String content;
 
-    // file은 여기 안 넣음 — Controller에서 @RequestPart로 별도 받음 (multipart)
+    // file은 여기 안 넣음 — Controller에서 @RequestPart로 별도 받음 (파일만 별도 파트)
 }
