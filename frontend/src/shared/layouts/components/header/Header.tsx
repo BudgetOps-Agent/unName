@@ -4,51 +4,53 @@ import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 import { logout, mypage } from "@/features/auth/api/authApi";
+import useNotifications from "@/features/notifications/hooks/useNotifications";
+import { NotificationType } from "@/types/notification";
 
-const noticelist = [
-    {
-        "id": 1,
-        "type": "request",
-        "status": "pending",
-        "title": "해커톤 참가비 승인 요청",
-        "content": "이서연님이 방금 요청했어요",
-        "time": "10분 전",
-        "hasButton": true
-    },
-    {
-        "id": 2,
-        "type": "request",
-        "status": "pending",
-        "title": "외부 강사 강연료 승인 요청",
-        "content": "박지호님이 요청했어요 — 위험도 높음",
-        "time": "1시간 전",
-        "hasButton": true
-    },
-    {
-        "id": 3,
-        "type": "notice",
-        "status": "approved",
-        "title": "노션 팀 플랜 승인됐어요",
-        "content": "이서연 총무님이 승인했어요",
-        "time": "3시간 전",
-        "hasButton": false
-    },
-    {
-        "id": 4,
-        "type": "request",
-        "status": "pending",
-        "title": "포스터 인쇄비 승인 요청",
-        "content": "정다은님이 요청했어요",
-        "time": "5일 전",
-        "hasButton": true
-    }
-]
+const NOTIFICATION_ICON: Record<NotificationType, { src: string; className: string }> = {
+    APPROVAL_REQUEST: { src: '/header/notice-yellow.svg', className: 'request' },
+    APPROVED: { src: '/header/check-green.svg', className: 'approved' },
+    REJECTED: { src: '/fail-icon.svg', className: 'reject' },
+};
+
+const NOTIFICATION_TEXT: Record<NotificationType, (expenseTitle: string, actorName: string | null) => { title: string; content: string }> = {
+    APPROVAL_REQUEST: (expenseTitle, actorName) => ({
+        title: `${expenseTitle} 승인 요청`,
+        content: `${actorName}님이 요청했어요`,
+    }),
+    APPROVED: (expenseTitle, actorName) => ({
+        title: `${expenseTitle} 승인됐어요`,
+        content: actorName ? `${actorName}님이 승인했어요` : 'AI가 자동으로 승인했어요',
+    }),
+    REJECTED: (expenseTitle, actorName) => ({
+        title: `${expenseTitle} 반려됐어요`,
+        content: actorName ? `${actorName}님이 반려했어요` : 'AI가 자동으로 반려했어요',
+    }),
+};
+
+const formatNotificationTime = (createdAt: string) => {
+    if (!createdAt) return '';
+
+    const diffMs = Date.now() - new Date(createdAt).getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+    if (diffMinutes < 1) return '방금 전';
+    if (diffMinutes < 60) return `${diffMinutes}분 전`;
+
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) return `${diffHours}시간 전`;
+
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 30) return `${diffDays}일 전`;
+
+    return createdAt.slice(0, 10);
+};
 
 const ROLE_LABEL: Record<string, string> = {
     ADMIN: "관리자",
     ACCOUNTANT: "총무",
     MEMBER: "멤버",
-} 
+}
 
 const Header = () => {
 
@@ -56,7 +58,8 @@ const Header = () => {
     const user = useAuthStore((state) => state.user);
     const clearAuth = useAuthStore((state) => state.clearAuth);
 
-    const pendingCount = noticelist.filter((item) => item.status === 'pending').length;
+    const { notifications, markAsRead } = useNotifications();
+    const pendingCount = notifications.length;
 
     const userName = user?.user?.name ?? "";
 
@@ -150,29 +153,52 @@ const Header = () => {
                     text="알림"
                     className="notice"
                     iconOnly={true}
-                    iconLeft={<img src="/header/notice.svg" alt="notice" />}
+                    iconLeft={
+                        <>
+                            <img className="notice-icon-default" src="/header/notice.svg" alt="notice" />
+                            <img className="notice-icon-active" src="/header/notice-blue.svg" alt="notice" />
+                        </>
+                    }
+                    badge={pendingCount > 0 && <span className="notice-count-badge">{pendingCount}</span>}
+                    emptyContent={<p className="notice-empty">새 알림이 없어요</p>}
                     headerContent={
                         <div className="notice-header">
                             <span className="title">알림</span>
                             <span className="badge">{pendingCount}건 대기</span>
                         </div>
                     }
-                    items={noticelist}
-                    renderItem={(item, index) => (
-                        <div className={`notice-item ${item.status === 'pending' ? 'pending' : ''}`}>
-                            {item.type === 'request' 
-                            ? <span className="notice-item-icon request"><img className="request" src="/header/notice-yellow.svg" alt="request" /></span>
-                            : <span className="notice-item-icon approved"><img className="approved" src="/header/check-green.svg" alt="approved" /></span>}
+                    items={notifications}
+                    renderItem={(item, index) => {
+                        const icon = NOTIFICATION_ICON[item.type as NotificationType];
+                        const { title, content } = NOTIFICATION_TEXT[item.type as NotificationType](item.expenseTitle, item.actorName);
 
-                            <div className="notice-item-info">
-                                <span className="notice-item-title ellipsis">{item.title}</span>
-                                <span className="notice-item-content ellipsis-2">{item.content}</span>
-                                <span className="notice-item-time">{item.time}</span>
+                        return (
+                            <div
+                                className={`notice-item ${!item.isRead ? 'pending' : ''}`}
+                                onClick={() => markAsRead(item.id)}
+                            >
+                                <span className={`notice-item-icon ${icon.className}`}>
+                                    <img className={icon.className} src={icon.src} alt={item.type} />
+                                </span>
+
+                                <div className="notice-item-info">
+                                    <span className="notice-item-title ellipsis">{title}</span>
+                                    <span className="notice-item-content ellipsis-2">{content}</span>
+                                    <span className="notice-item-time">{formatNotificationTime(item.createdAt)}</span>
+                                </div>
+
+                                {item.type === 'APPROVAL_REQUEST' && item.expenseId && (
+                                    <Link
+                                        key={index}
+                                        href={`/teams/${effectiveTeamId ?? ''}/expenses/${item.expenseId}`}
+                                        className="btn-primary btn-sm"
+                                    >
+                                        검토하기
+                                    </Link>
+                                )}
                             </div>
-
-                            {item.status === 'pending' && <Link key={index} href={`/teams/1/expenses/${item.id}`} className="btn-primary btn-sm">검토하기</Link>}
-                        </div>
-                    )}
+                        );
+                    }}
                 />
 
                 <Dropdown
