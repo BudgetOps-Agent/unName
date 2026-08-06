@@ -39,7 +39,7 @@ public class Expense {
     private String title; // 지출 제목
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column // null 허용 - 등록 시엔 비어있고 AI 심사 결과로 채워짐 (8/4 회의 반영)
     private ExpenseCategory category; // 지출 카테고리 (회의/IT_인프라/행사/교육/식비/디자인/기타)
 
     @Column(nullable = false)

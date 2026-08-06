@@ -28,10 +28,10 @@ public class PolicyController {
 
     // 회칙 등록 (API-031)
     // POST /api/teams/{teamId}/policies
-    // multipart/form-data로 받음 (JSON 값 + 회칙 파일 같이 오니까)
+    // multipart/form-data로 받음 (글자값 + 회칙 파일 같이 오니까)
     //
-    // 지출 등록(API-016)은 @ModelAttribute로 폼 필드를 하나씩 받았지만,
-    // 회칙은 프론트랑 "request 파트에 JSON 통째로" 형식으로 합의해서 @RequestPart를 씀
+    // 지출 등록(API-016)이랑 똑같은 방식으로 맞춤:
+    // 글자값은 @ModelAttribute로 폼 필드 하나씩 받고, 파일만 @RequestPart로 따로 받음
     @Operation(
             summary = "회칙 등록 (API-031)",
             description = "관리자가 모임의 회칙을 등록합니다. 회칙은 팀당 1개이며, 이미 등록된 회칙이 있으면 덮어씁니다. "
@@ -55,11 +55,10 @@ public class PolicyController {
             // URL의 {teamId} 부분을 꺼냄
             @PathVariable("teamId") Long teamId,
 
-            // title/policyType/content를 JSON 한 덩어리로 받음
+            // 글자값(title/policyType/content)을 DTO에 담아서 받음
             // @Valid → DTO에 붙인 @NotBlank/@NotNull 검증 실행
-            // 주의: 이 파트는 Content-Type이 application/json이어야 함
-            //       (Postman에서 파트 타입을 Text로만 두면 415 남 → 파트 Content-Type을 application/json으로 지정)
-            @Valid @RequestPart("request") PolicyCreateRequest request,
+            // @ModelAttribute → form-data의 title/policyType 등을 각 필드로 자동 매핑 (JSON 안 씀)
+            @Valid @ModelAttribute PolicyCreateRequest request,
 
             // 회칙 파일 파트 (TEXT 방식일 땐 안 보내므로 required = false)
             // "FILE인데 파일 없음" 체크는 Service에서 처리 (400)
