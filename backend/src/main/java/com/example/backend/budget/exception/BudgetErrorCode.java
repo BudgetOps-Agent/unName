@@ -26,10 +26,17 @@ import org.springframework.http.HttpStatus;
 
 
 public enum BudgetErrorCode {
+    // 팀에 예산 row가 없을 때 (명세 API-026·027 기준 404)
     BUDGET_NOT_FOUND(
-            HttpStatus.INTERNAL_SERVER_ERROR,
+            HttpStatus.NOT_FOUND,
                 "예산 정보를 찾을 수 없습니다."
-            );
+            ),
+
+    // 관리자가 아닌데 예산을 수정하려 할 때 (API-027)
+    NOT_ADMIN_FOR_BUDGET(
+            HttpStatus.FORBIDDEN,
+            "관리자만 예산을 수정할 수 있습니다."
+    );
     private final HttpStatus status;
     private final String message;
 

@@ -47,9 +47,16 @@ public class Budget {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // 지출 승인 시 사용 예산 증가 (API-019)
-    // 승인된 지출 금액만큼 usedBudget을 늘림 (남은 예산은 total-used 계산값이라 안 건드림)
-    // 스키마 규칙: used_budget은 직접 UPDATE 금지 → 이 메서드로만 갱신
+    // 총 예산 설정 (API-027 - 예산 수정 모달)
+    // 받은 값으로 총 예산을 설정함(덮어쓰기).
+    // 화면상 "추가하기" 동작은 프론트가 이미 (기존 예산 + 입력 금액)을 더해서 보내주기 때문에
+    // 백엔드는 그 최종 합계를 그대로 저장하면 됨. 여기서 또 더하면 이중 합산되므로 주의.
+    // 사용 예산(usedBudget)은 지출 승인/취소로만 바뀌는 값이라 여기선 안 건드림
+    public void updateTotalBudget(Long totalBudget) {
+        this.totalBudget = totalBudget;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void addUsedBudget(Long amount) {
         this.usedBudget += amount;            // 사용 예산에 지출 금액 더하기
         this.updatedAt = LocalDateTime.now(); // 수정 시각 갱신
