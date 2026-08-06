@@ -1,5 +1,6 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import styles from './CategoryDonutChart.module.css';
 
 interface DonutData {
     name: string;
@@ -24,8 +25,8 @@ export default function CategoryDonutChart({ data, variant = 'sideLegend' }: Cat
     const isBottomLegend = variant === 'bottomLegend';
 
     return (
-        <div className={`donut-chart-wrapper${isBottomLegend ? ' donut-chart-wrapper--bottom' : ''}`}>
-            <div className={`donut-chart-left${isBottomLegend ? ' donut-chart-left--bottom' : ''}`}>
+        <div className={`${styles.donutChartWrapper}${isBottomLegend ? ` ${styles.donutChartWrapperBottom}` : ''}`}>
+            <div className={`${styles.donutChartLeft}${isBottomLegend ? ` ${styles.donutChartLeftBottom}` : ''}`}>
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                         <Pie
@@ -49,16 +50,16 @@ export default function CategoryDonutChart({ data, variant = 'sideLegend' }: Cat
                 </ResponsiveContainer>
             </div>
 
-            <div className={`donut-legend-right${isBottomLegend ? ' donut-legend-right--bottom' : ''}`}>
+            <div className={`${styles.donutLegendRight}${isBottomLegend ? ` ${styles.donutLegendRightBottom}` : ''}`}>
                 {data.map((item, index) => (
-                    <div key={index} className="legend-item">
+                    <div key={index} className={styles.legendItem}>
 
                     <span
-                        className="legend-color-dot"
+                        className={styles.legendColorDot}
                         style={{ backgroundColor: COLORS[index % COLORS.length] }}
                     />
 
-                    <span className="legend-text">{item.name}</span>
+                    <span className={styles.legendText}>{item.name}</span>
                     </div>
                 ))}
             </div>

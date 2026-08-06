@@ -1,0 +1,97 @@
+.progressBar {
+    padding-bottom: 16px;
+}
+
+.budgetError {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px 0;
+}
+
+.budgetError button {
+    max-width: 120px;
+}
+
+.progressContent {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.progressContent p {
+    color: var(--gray-9);
+    font-size: 36px;
+    font-weight: bold;
+    word-break: break-word;
+}
+
+.progressContent span {
+    padding-bottom: 8px;
+    color: var(--gray-6);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.budgetStatusSection {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    padding-top: 20px;
+    border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+}
+
+.budgetStatus {
+    width: calc(100% / 3);
+}
+
+.budgetStatus span {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.budgetStatus p {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.usedBudget p {
+    color: var(--blue-8);
+}
+
+.pendingBudget p {
+    color: var(--orange-2);
+}
+
+.remainBudget p {
+    color: var(--green-2);
+}
+
+@media screen and (max-width: 768px) {
+    .progressContent {
+        flex-direction: column
+    }
+    .budgetStatusSection {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .budgetStatus  {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+    }
+    .budgetStatus span {
+        flex-shrink: 0;
+    }
+    .budgetStatus p {
+        flex-shrink: 1;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+}

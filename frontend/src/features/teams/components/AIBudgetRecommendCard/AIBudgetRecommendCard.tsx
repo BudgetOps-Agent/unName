@@ -1,5 +1,5 @@
 import styles from './aibudgetrecommendcard.module.css';
-import CategoryDonutChart from '@/shared/layouts/components/dashboard/CategoryDonutChart';
+import CategoryDonutChart from '@/features/teams/components/CategoryDonutChart/CategoryDonutChart';
 
 const donutData = [
     { name: 'IT/인프라', value: 228000 },
