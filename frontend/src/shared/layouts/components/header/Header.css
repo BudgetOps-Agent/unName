@@ -126,10 +126,44 @@
     position: relative;
 }
 
+.notice-btn-active {
+    background-color: var(--blue-2);
+}
+
+.notice-icon-active {
+    display: none;
+}
+
+.notice-btn-active .notice-icon-default {
+    display: none;
+}
+
+.notice-btn-active .notice-icon-active {
+    display: inline;
+}
+
+.notice-count-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 9999px;
+    background-color: #FB2C36;
+    color: var(--white);
+    font-size: 10px;
+    font-weight: 700;
+    pointer-events: none;
+}
+
 .notice .dropdown-container {
     position: absolute;
     right: 20%;
-    height: 380px;
+    max-height: 380px;
 }
 
 .notice-header {
@@ -138,6 +172,7 @@
     justify-content: space-between;
     padding: 14px 20px;
     width: 340px;
+    border-bottom: 0.8px solid rgba(0, 0, 0, 0.05);
 }
 
 .notice-header .title {
@@ -159,6 +194,16 @@
     font-weight: bold;
 }
 
+.notice-empty {
+    padding: 40px 20px;
+    width: 340px;
+    box-sizing: border-box;
+    text-align: center;
+    color: #99A1AF;
+    font-size: 13px;
+    font-weight: 600;
+}
+
 .notice-btn {
     display: flex;
     align-items: center;
@@ -168,8 +213,18 @@
     border-radius: 50%;
 }
 
+.notice-icon-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .notice-btn:hover {
     background-color: #F9FAFB;
+}
+
+.notice-btn-active:hover {
+    background-color: var(--blue-2);
 }
 
 .notice .dropdown-items {
@@ -187,7 +242,11 @@
 .notice-item {
     display: flex;
     padding: 16px 20px;
-    border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 0.8px solid rgba(0, 0, 0, 0.05);
+}
+
+.notice .dropdown-items > div:last-child .notice-item {
+    border-bottom: none;
 }
 
 .notice-item:hover {
@@ -209,6 +268,10 @@
 
 .notice-item .approved {
     background-color: #D0FAE5;
+}
+
+.notice-item .reject {
+    background-color: #FEE2E2;
 }
 
 .notice-item-info {
