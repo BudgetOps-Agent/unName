@@ -15,6 +15,16 @@
     max-width: 120px;
 }
 
+.chart-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 166px;
+    color: #99A1AF;
+    font-size: 13px;
+    font-weight: 600;
+}
+
 .progress-content {
     display: flex;
     align-items: flex-end;

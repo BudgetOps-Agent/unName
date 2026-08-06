@@ -87,6 +87,8 @@ const Dashboard = () => {
                         <p>{statsError}</p>
                         <Button text="다시 시도" onClick={() => refetchStats()} style="tertiary" />
                     </div>
+                ) : barData.length === 0 ? (
+                    <p className="chart-empty">지출 내역이 없어요</p>
                 ) : (
                     <MainBarChart data={barData} />
                 )}
