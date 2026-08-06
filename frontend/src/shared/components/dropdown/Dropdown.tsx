@@ -16,10 +16,12 @@ interface DropdownProps {
     value?: string | number | string[];
     getItemValue?: (item: any) => string | number;
     footerContent?: React.ReactNode;
+    badge?: React.ReactNode;
+    emptyContent?: React.ReactNode;
 }
 
 const Dropdown = ({
-    id, className, text, blind, disabled, iconLeft, iconRight, iconOnly, headerContent, items, renderItem, value, getItemValue, footerContent
+    id, className, text, blind, disabled, iconLeft, iconRight, iconOnly, headerContent, items, renderItem, value, getItemValue, footerContent, badge, emptyContent
 }: DropdownProps) => {
 
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -56,7 +58,7 @@ const Dropdown = ({
             <button
                 type="button"
                 id={id}
-                className={`${className}-btn ${iconOnly ? `${className}-btn-icon` : ''}`}
+                className={`${className}-btn ${iconOnly ? `${className}-btn-icon` : ''} ${isDropdownOpen ? `${className}-btn-active` : ''}`}
                 onClick={toggleDropdown}
                 disabled={disabled}
             >
@@ -65,24 +67,30 @@ const Dropdown = ({
                 {iconRight && <span className={`${className}-icon-right ${isDropdownOpen ? 'rotate' : ''}`}>{iconRight}</span>}
             </button>
 
+            {badge}
+
             {isDropdownOpen && (
                 <div className="dropdown-container">
                     {headerContent && <div className="dropdown-header">{headerContent}</div>}
 
                     {items && renderItem && (
-                        <div className="dropdown-items" onClick={closeDropdown}>
-                            {items.map((item, index) => {
-                                const isSelected = dropdownValue !== undefined && getItemValue
-                                    ? String(getItemValue(item)) === String(dropdownValue)
-                                    : false;
+                        items.length === 0 && emptyContent ? (
+                            emptyContent
+                        ) : (
+                            <div className="dropdown-items" onClick={closeDropdown}>
+                                {items.map((item, index) => {
+                                    const isSelected = dropdownValue !== undefined && getItemValue
+                                        ? String(getItemValue(item)) === String(dropdownValue)
+                                        : false;
 
-                                return (
-                                    <div key={index} className={isSelected ? styles.active : undefined}>
-                                        {renderItem(item, index)}
-                                    </div>
-                                );
-                            })}
-                        </div>
+                                    return (
+                                        <div key={index} className={isSelected ? styles.active : undefined}>
+                                            {renderItem(item, index)}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )
                     )}
 
                     {footerContent && <div className="dropdown-footer" onClick={closeDropdown}>{footerContent}</div>}
