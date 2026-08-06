@@ -4,6 +4,7 @@ package com.example.backend.global.exception;
 import com.example.backend.budget.exception.BudgetException;
 import com.example.backend.expense.exception.ExpenseException;
 import com.example.backend.member.exception.MemberException;
+import com.example.backend.policy.exception.PolicyException;
 import com.example.backend.team.exception.TeamException;
 import com.example.backend.teamMember.exception.TeamMemberException;
 import lombok.extern.slf4j.Slf4j;
@@ -183,6 +184,32 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    // 회칙(정책) 관련 예외 처리 (관리자 아님 403, 방식별 필수값 누락 400 등)
+    @ExceptionHandler(PolicyException.class)
+    public ResponseEntity<ErrorResponse> handlePolicyException(
+            PolicyException e
+    ) {
+
+        log.warn(
+                "Policy Exception : {}",
+                e.getMessage()
+        );
+
+        return ResponseEntity
+                .status(
+                        e.getErrorCode().getStatus()
+                )
+                .body(
+                        ErrorResponse.builder()
+                                .success(false)
+                                .code(e.getErrorCode().name())
+                                .message(
+                                        e.getErrorCode().getMessage()
+                                )
+                                .build()
+                );
+    }
+
     // 동시 승인/반려 충돌 처리 (version 낙관적 락)
     // 두 명이 동시에 같은 지출을 처리하면 늦은 쪽에서 이 예외 발생 → 409로 안내
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)

@@ -1,0 +1,74 @@
+package com.example.backend.policy.controller;
+
+import com.example.backend.policy.dto.PolicyCreateRequest;
+import com.example.backend.policy.dto.PolicyCreateResponse;
+import com.example.backend.policy.service.PolicyService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+@Tag(name = "Policy", description = "회칙(정책) 등록/조회/수정/삭제 API")
+@RestController // JSON 반환하는 REST API 컨트롤러
+@RequiredArgsConstructor // final 필드 생성자 자동 생성
+public class PolicyController {
+
+    // Service 주입
+    private final PolicyService policyService;
+
+    // 회칙 등록 (API-031)
+    // POST /api/teams/{teamId}/policies
+    // multipart/form-data로 받음 (JSON 값 + 회칙 파일 같이 오니까)
+    //
+    // 지출 등록(API-016)은 @ModelAttribute로 폼 필드를 하나씩 받았지만,
+    // 회칙은 프론트랑 "request 파트에 JSON 통째로" 형식으로 합의해서 @RequestPart를 씀
+    @Operation(
+            summary = "회칙 등록 (API-031)",
+            description = "관리자가 모임의 회칙을 등록합니다. 회칙은 팀당 1개이며, 이미 등록된 회칙이 있으면 덮어씁니다. "
+                    + "policyType=FILE이면 file 파트가 필수(PDF/docx, 최대 10MB), "
+                    + "policyType=TEXT이면 content가 필수입니다(직접 입력·AI 초안 공통)."
+    )
+    @Parameter(name = "teamId", description = "팀 ID", required = true, example = "1")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "등록 성공",
+                    content = @Content(schema = @Schema(implementation = PolicyCreateResponse.class))),
+            @ApiResponse(responseCode = "400", description = "요청 값 검증 실패 (제목 누락, FILE인데 파일 없음, TEXT인데 내용 없음, 허용 안 되는 확장자 등)"),
+            @ApiResponse(responseCode = "403", description = "관리자가 아니거나 해당 팀 소속이 아님"),
+            @ApiResponse(responseCode = "404", description = "사용자 또는 팀을 찾을 수 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @PostMapping(
+            value = "/api/teams/{teamId}/policies",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE  // "나 multipart로 받을게" 표시
+    )
+    public ResponseEntity<PolicyCreateResponse> createPolicy(
+            // URL의 {teamId} 부분을 꺼냄
+            @PathVariable("teamId") Long teamId,
+
+            // title/policyType/content를 JSON 한 덩어리로 받음
+            // @Valid → DTO에 붙인 @NotBlank/@NotNull 검증 실행
+            // 주의: 이 파트는 Content-Type이 application/json이어야 함
+            //       (Postman에서 파트 타입을 Text로만 두면 415 남 → 파트 Content-Type을 application/json으로 지정)
+            @Valid @RequestPart("request") PolicyCreateRequest request,
+
+            // 회칙 파일 파트 (TEXT 방식일 땐 안 보내므로 required = false)
+            // "FILE인데 파일 없음" 체크는 Service에서 처리 (400)
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
+        // Service 호출 → 저장하고 응답 DTO 받음
+        PolicyCreateResponse response = policyService.createPolicy(teamId, request, file);
+
+        // 201 CREATED 상태로 응답 (명세: 등록 성공 = 201)
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+}

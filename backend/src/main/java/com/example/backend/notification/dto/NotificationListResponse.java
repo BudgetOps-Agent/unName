@@ -16,9 +16,10 @@ public class NotificationListResponse {
     @Builder
     public static class NotificationInfo {
         private Long id;
-        private String type;        // APPROVAL_REQUEST / APPROVED / REJECTED (프론트 아이콘 구분용)
+        private String type;          // APPROVAL_REQUEST / APPROVED / REJECTED
         private Long expenseId;
-        private String message;     // 서버가 조립한 문구
+        private String expenseTitle;  // 지출 제목 (예: "해커톤 참가비")
+        private String actorName;     // 관련 사람 이름 (요청=작성자, 승인/반려=처리자, AI면 null)
         private Boolean isRead;
         private String createdAt;
     }

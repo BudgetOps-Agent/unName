@@ -106,20 +106,22 @@ public class NotificationService {
     // 알림 목록 조회 (API-036) — 로그인 유저의 안읽은 알림 전체, 최신순
     @Transactional(readOnly = true)
     public NotificationListResponse getNotifications(Long userId) {
-        // 안읽은 알림 전체 조회 (최신순)
         List<Notification> notifications =
                 notificationRepository.findByUserIdAndIsReadFalseOrderByCreatedAtDesc(userId);
 
-        // 엔티티 → 응답 DTO 변환 (이때 message 조립)
         List<NotificationListResponse.NotificationInfo> infos = notifications.stream()
-                .map(n -> NotificationListResponse.NotificationInfo.builder()
-                        .id(n.getId())
-                        .type(n.getType().name())
-                        .expenseId(n.getExpense() != null ? n.getExpense().getId() : null)
-                        .message(buildMessage(n))       // ← 문구 조립
-                        .isRead(n.getIsRead())
-                        .createdAt(n.getCreatedAt().toString())
-                        .build())
+                .map(n -> {
+                    Expense expense = n.getExpense();
+                    return NotificationListResponse.NotificationInfo.builder()
+                            .id(n.getId())
+                            .type(n.getType().name())
+                            .expenseId(expense != null ? expense.getId() : null)
+                            .expenseTitle(expense != null ? expense.getTitle() : null)
+                            .actorName(resolveActorName(n))     // 관련 사람 이름
+                            .isRead(n.getIsRead())
+                            .createdAt(n.getCreatedAt().toString())
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         return NotificationListResponse.builder()
@@ -128,16 +130,16 @@ public class NotificationService {
                 .build();
     }
 
-    // type + 지출 정보로 알림 문구 조립
-    private String buildMessage(Notification n) {
+    // 알림 종류에 따라 관련 사람 이름 반환
+    // 요청 → 작성자 / 승인·반려 → 처리자 (AI면 null)
+    private String resolveActorName(Notification n) {
         Expense expense = n.getExpense();
-        String title = (expense != null) ? expense.getTitle() : "지출";
+        if (expense == null) return null;
 
-        // type에 따라 문구 다르게
         return switch (n.getType()) {
-            case APPROVAL_REQUEST -> title + " 승인 요청";
-            case APPROVED -> title + " 승인됐어요";
-            case REJECTED -> title + " 반려됐어요";
+            case APPROVAL_REQUEST -> expense.getUser().getName();          // 작성자
+            case APPROVED, REJECTED -> expense.getApprovedBy() != null
+                    ? expense.getApprovedBy().getName() : null;            // 처리자 (AI면 null)
         };
     }
 
