@@ -151,7 +151,10 @@ public class ExpenseService {
                     ReportExpenseListResponse.ExpenseInfo.builder()
                         .id(expense.getId())
                         .title(expense.getTitle())
-                        .category(expense.getCategory().name())
+                        // 카테고리는 AI 심사 전이면 null이라 그대로 .name() 부르면 터짐
+                        .category(expense.getCategory() == null
+                                ? null
+                                : expense.getCategory().name())
                         .requesterName(expense.getUser().getName())
                         .date(expense.getApprovedAt() == null
                                 ? null
