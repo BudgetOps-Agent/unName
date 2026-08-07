@@ -1,10 +1,29 @@
 import api from "@/shared/api/api";
-import { AcceptInviteResponse, RejectInviteResponse, InviteMemberResponse, TransferAdminResponse, RemoveMemberResponse, ChangeRoleResponse, ResponseMyTeams } from "@/types/team";
+import { AcceptInviteResponse, RejectInviteResponse, InviteMemberResponse, TransferAdminResponse, RemoveMemberResponse, ChangeRoleResponse, ResponseMyTeams, CreateTeamRequest, CreateTeamResponse, UpdateTeamSettingsRequest, UpdateTeamSettingsResponse } from "@/types/team";
 import { ResponseExpenses, ExpenseCreateResponse, ExpenseDetailResponse, ExpenseApproveResponse, ExpenseRejectResponse } from "@/types/expense";
 import { Member, ResponseTeamMembers } from "@/types/member";
 import { DashboardResponse, MonthlyStatsResponse } from "@/types/dashboard";
 import { BudgetResponse } from "@/types/budget";
+import { PolicyCreateResponse, PolicyRecommendResponse } from "@/types/policy";
 import { AxiosResponse } from "axios";
+
+export const createTeam = (data: CreateTeamRequest): Promise<AxiosResponse<CreateTeamResponse>> => {
+  return api.post<CreateTeamResponse>('/api/teams', data);
+}
+
+export const updateTeamSettings = (teamId: string, data: UpdateTeamSettingsRequest): Promise<AxiosResponse<UpdateTeamSettingsResponse>> => {
+  return api.patch<UpdateTeamSettingsResponse>(`/api/teams/${teamId}/settings`, data);
+}
+
+export const createPolicy = (teamId: string, formData: FormData): Promise<AxiosResponse<PolicyCreateResponse>> => {
+  return api.post<PolicyCreateResponse>(`/api/teams/${teamId}/policies`, formData, {
+    headers: { 'Content-Type': undefined },
+  });
+}
+
+export const recommendPolicy = (teamId: number): Promise<AxiosResponse<PolicyRecommendResponse>> => {
+  return api.post<PolicyRecommendResponse>('/api/policies/recommend', { teamId });
+}
 
 export const getMyTeams = (): Promise<AxiosResponse<ResponseMyTeams>> => {
     return api.get<ResponseMyTeams>("api/teams/my");
