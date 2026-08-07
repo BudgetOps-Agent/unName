@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
@@ -66,4 +67,26 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Object[]> findMonthlyTotals(@Param("teamId") Long teamId,
                                      @Param("status") ExpenseStatus status,
                                      @Param("startDate") LocalDate startDate);
+
+    // 카테고리별 지출 통계 (도넛차트용, API-048)
+    // 이번 달에 "승인된" 지출을 카테고리별로 묶어서(GROUP BY) 금액 합산
+    // - 승인일(approvedAt) 기준: 이번 달 안에 승인 확정된 것만 (start <= approvedAt < end)
+    // - category가 NULL인 건 제외 (AI 심사 전이라 분류가 안 된 지출 — 도넛 범례에 빈칸 뜨는 것 방지)
+    // 단순 메서드 이름으로는 GROUP BY + SUM이 안 돼서 직접 쿼리 작성
+    @Query("""
+        SELECT e.category AS category,
+               SUM(e.amount) AS total
+        FROM Expense e
+        WHERE e.team.id = :teamId
+        AND e.status = :status
+        AND e.category IS NOT NULL
+        AND e.approvedAt >= :start
+        AND e.approvedAt < :end
+        GROUP BY e.category
+        ORDER BY total DESC
+        """)
+    List<Object[]> findCategoryTotals(@Param("teamId") Long teamId,
+                                      @Param("status") ExpenseStatus status,
+                                      @Param("start") LocalDateTime start,
+                                      @Param("end") LocalDateTime end);
 }

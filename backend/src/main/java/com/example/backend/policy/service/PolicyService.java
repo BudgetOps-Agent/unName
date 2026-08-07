@@ -1,12 +1,18 @@
 package com.example.backend.policy.service;
 
+import com.example.backend.budget.entity.Budget;
+import com.example.backend.budget.repository.BudgetRepository;
 import com.example.backend.global.file.FileStorageService;
+import com.example.backend.global.llm.LlmClient;
+import com.example.backend.global.llm.dto.PolicyDraftRequest;
+import com.example.backend.global.llm.dto.PolicyDraftResponse;
 import com.example.backend.member.entity.User;
 import com.example.backend.member.exception.MemberErrorCode;
 import com.example.backend.member.exception.MemberException;
 import com.example.backend.member.repository.UserRepository;
 import com.example.backend.policy.dto.PolicyCreateRequest;
 import com.example.backend.policy.dto.PolicyCreateResponse;
+import com.example.backend.policy.dto.PolicyRecommendResponse;
 import com.example.backend.policy.entity.Policy;
 import com.example.backend.policy.entity.PolicyType;
 import com.example.backend.policy.exception.PolicyErrorCode;
@@ -14,8 +20,11 @@ import com.example.backend.policy.exception.PolicyException;
 import com.example.backend.policy.repository.PolicyRepository;
 import com.example.backend.team.entity.Team;
 import com.example.backend.team.repository.TeamRepository;
+import com.example.backend.team.entity.TeamSettings;
+import com.example.backend.team.repository.TeamSettingsRepository;
 import com.example.backend.teamMember.entity.TeamMember;
 import com.example.backend.teamMember.entity.TeamRole;
+import com.example.backend.teamMember.entity.TeamStatus;
 import com.example.backend.teamMember.exception.TeamMemberErrorCode;
 import com.example.backend.teamMember.exception.TeamMemberException;
 import com.example.backend.teamMember.repository.TeamMemberRepository;
@@ -36,6 +45,11 @@ public class PolicyService {
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService; // 회칙 파일 저장 담당 부품
+
+    // AI 정책 추천 (API-044) — LLM-005 호출용
+    private final BudgetRepository budgetRepository;           // initial_budget 조회
+    private final TeamSettingsRepository teamSettingsRepository; // dues, force_escalation_amount 조회
+    private final LlmClient llmClient;                          // LLM 서버 호출 담당
 
     // 회칙 등록 (API-031)
     //
@@ -159,6 +173,82 @@ public class PolicyService {
         return PolicyCreateResponse.builder()
                 .success(true)
                 .policyId(policy.getId())
+                .build();
+    }
+
+    // AI 정책 추천 (API-044) — 마법사 회칙 단계의 "AI 초안 생성하기" 버튼
+    //
+    // 우리 DB에 있는 모임 정보(유형·이름·예산·회비·인원 등)를 모아서 LLM-005로 보내고,
+    // 돌려받은 회칙 초안을 그대로 프론트에 내려준다.
+    //
+    // 여기서는 저장을 안 한다 — 사용자가 초안을 보고 편집한 뒤
+    // API-031(policyType=TEXT)로 저장하는 흐름이라 조회만 하면 됨.
+    // 그래서 readOnly = true
+    @Transactional(readOnly = true)
+    public PolicyRecommendResponse recommendPolicies(Long teamId) {
+
+        // 1. 토큰에서 로그인한 사람 이메일 꺼내기
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        // 2. 요청자 조회 (없으면 404)
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 3. 팀 조회 (없으면 404)
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.TEAM_NOT_FOUND));
+
+        // 4. 요청자가 이 모임 소속인지 확인 (아니면 403)
+        TeamMember teamMember = teamMemberRepository
+                .findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        // 5. 관리자인지 확인 (아니면 403) — 회칙 등록(API-031)과 동일한 기준
+        if (teamMember.getRole() != TeamRole.ADMIN) {
+            throw new PolicyException(PolicyErrorCode.NOT_ADMIN_FOR_POLICY);
+        }
+
+        // 6. LLM에 보낼 재료 모으기
+        Budget budget = budgetRepository.findByTeamId(teamId)
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.TEAM_NOT_FOUND));
+
+        TeamSettings settings = teamSettingsRepository.findByTeamId(teamId)
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.TEAM_NOT_FOUND));
+
+        // 실제 가입한(ACCEPTED) 인원만 셈. 초대 대기(PENDING)는 제외
+        long memberCount = teamMemberRepository.countByTeamIdAndStatus(teamId, TeamStatus.ACCEPTED);
+
+        // 관리자 확인 설정 금액. autoApprove=false면 null로 저장돼 있는데
+        // LLM 쪽에선 필수 값이라, 이 경우 0을 보냄 (= 모든 금액이 관리자 확인 대상)
+        Long forceEscalationAmount = settings.getAutoApproveLimit() != null
+                ? settings.getAutoApproveLimit()
+                : 0L;
+
+        // 7. 요청 조립 후 LLM-005 호출
+        //    rule_source="ai" — 사용자가 "AI 초안" 탭에서 생성 버튼을 누른 경우
+        //    파일 업로드·직접 입력·건너뛰기는 초안을 만들 필요가 없어서 이 API를 안 탐
+        PolicyDraftRequest request = PolicyDraftRequest.builder()
+                .teamId(teamId)
+                .teamType(team.getTeamType().name())
+                .teamName(team.getName())
+                .initialBudget(budget.getTotalBudget())
+                .forceEscalationAmount(forceEscalationAmount)
+                .ruleSource("ai")
+                .memberCount((int) memberCount)
+                .description(team.getDescription())
+                .dues(settings.getMembershipFee())
+                .build();
+
+        PolicyDraftResponse llmResponse = llmClient.policyDraft(request);
+
+        // 8. 응답 변환해서 반환
+        return PolicyRecommendResponse.builder()
+                .success(true)
+                .rules(llmResponse.getRules())
+                .recommendedCategories(llmResponse.getRecommendedCategories())
+                .notes(llmResponse.getNotes())
                 .build();
     }
 }

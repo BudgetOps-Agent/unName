@@ -2,6 +2,8 @@ package com.example.backend.policy.controller;
 
 import com.example.backend.policy.dto.PolicyCreateRequest;
 import com.example.backend.policy.dto.PolicyCreateResponse;
+import com.example.backend.policy.dto.PolicyRecommendRequest;
+import com.example.backend.policy.dto.PolicyRecommendResponse;
 import com.example.backend.policy.service.PolicyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -69,5 +71,32 @@ public class PolicyController {
 
         // 201 CREATED 상태로 응답 (명세: 등록 성공 = 201)
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    // AI 정책 추천 (API-044)
+    // POST /api/policies/recommend
+    // 마법사 회칙 단계의 "AI 초안 생성하기" 버튼에 대응.
+    // 백엔드가 모임 정보를 모아 LLM-005(/v1/policy-draft)를 부르고 초안을 그대로 내려줌.
+    //
+    // 여기서 저장은 안 함 — 사용자가 초안을 편집한 뒤 API-031로 저장하는 흐름
+    @Operation(
+            summary = "AI 정책 추천 (API-044)",
+            description = "모임 유형·예산·회비·인원 정보를 바탕으로 AI가 회칙 초안을 생성합니다. "
+                    + "동기 응답이며, 초안은 저장되지 않으므로 사용자가 확인·편집 후 API-031로 저장해야 합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "초안 생성 성공",
+                    content = @Content(schema = @Schema(implementation = PolicyRecommendResponse.class))),
+            @ApiResponse(responseCode = "400", description = "teamId 누락"),
+            @ApiResponse(responseCode = "403", description = "관리자가 아니거나 해당 팀 소속이 아님"),
+            @ApiResponse(responseCode = "404", description = "사용자·팀·예산 정보를 찾을 수 없음"),
+            @ApiResponse(responseCode = "502", description = "AI 서버 응답 실패")
+    })
+    @PostMapping("/api/policies/recommend")
+    public ResponseEntity<PolicyRecommendResponse> recommendPolicies(
+            @Valid @RequestBody PolicyRecommendRequest request
+    ) {
+        PolicyRecommendResponse response = policyService.recommendPolicies(request.getTeamId());
+        return ResponseEntity.ok(response); // 200 OK
     }
 }

@@ -30,6 +30,7 @@ import com.example.backend.team.repository.TeamRepository;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -452,6 +453,39 @@ public class ExpenseService {
 
         // 5. 응답 반환
         return MonthlyStatsResponse.builder()
+                .success(true)
+                .statistics(statistics)
+                .build();
+    }
+
+    // 카테고리별 지출 통계 (API-048)
+    // 예산 관리 화면 도넛차트용 — "이번 달"에 승인된 지출을 카테고리별로 합산
+    //
+    // 기준: 승인일(approvedAt)이 이번 달 안에 든 것만 (막대그래프는 지출발생일 기준이라 서로 다른 차트)
+    // 분류(category) 없는 지출은 쿼리에서 제외 (AI 심사 전이라 도넛 조각으로 넣을 게 없음)
+    @Transactional(readOnly = true)
+    public CategoryStatsResponse getCategoryStats(Long teamId) {
+
+        // 1. 이번 달 범위 계산 (이번 달 1일 00:00 ~ 다음 달 1일 00:00 직전)
+        //    approvedAt이 LocalDateTime이라 [start, end) 반열린 구간으로 걸러야 경계가 깔끔함
+        LocalDateTime start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime end = start.plusMonths(1);
+
+        // 2. Repository에서 카테고리별 합계 조회 (승인된 것만, 이번 달 승인분)
+        List<Object[]> results = expenseRepository.findCategoryTotals(
+                teamId, ExpenseStatus.APPROVED, start, end);
+
+        // 3. Object[] 결과를 DTO로 변환
+        //    result[0] = ExpenseCategory enum, result[1] = 합계(Number로 받아 Long 변환)
+        List<CategoryStatsResponse.CategoryData> statistics = results.stream()
+                .map(result -> CategoryStatsResponse.CategoryData.builder()
+                        .category(((ExpenseCategory) result[0]).name())
+                        .amount(((Number) result[1]).longValue())
+                        .build())
+                .collect(Collectors.toList());
+
+        // 4. 응답 반환
+        return CategoryStatsResponse.builder()
                 .success(true)
                 .statistics(statistics)
                 .build();

@@ -222,4 +222,15 @@ public class ExpenseController {
         MonthlyStatsResponse response = expenseService.getMonthlyStats(teamId, months);
         return ResponseEntity.ok(response); // 200 OK
     }
+
+    // 카테고리별 지출 통계 (API-048)
+    // GET /api/teams/{teamId}/statistics/category
+    // 이번 달 승인된 지출의 카테고리별 합계 (예산 관리 화면 도넛차트용)
+    @GetMapping("/api/teams/{teamId}/statistics/category")
+    public ResponseEntity<CategoryStatsResponse> getCategoryStats(
+            @PathVariable("teamId") Long teamId
+    ) {
+        CategoryStatsResponse response = expenseService.getCategoryStats(teamId);
+        return ResponseEntity.ok(response); // 200 OK
+    }
 }

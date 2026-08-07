@@ -3,6 +3,7 @@ package com.example.backend.global.exception;
 
 import com.example.backend.budget.exception.BudgetException;
 import com.example.backend.expense.exception.ExpenseException;
+import com.example.backend.global.llm.LlmException;
 import com.example.backend.member.exception.MemberException;
 import com.example.backend.policy.exception.PolicyException;
 import com.example.backend.team.exception.TeamException;
@@ -234,6 +235,34 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    // LLM(Agent) 서버 연동 실패 처리 (502 / 503)
+    // 우리 서버 잘못이 아니라 바깥 서버가 문제인 경우라 500과 구분해서 내려줌.
+    // 상세 원인(스택트레이스)은 LlmClient에서 이미 error 로그로 남김
+    @ExceptionHandler(LlmException.class)
+    public ResponseEntity<ErrorResponse> handleLlmException(
+            LlmException e
+    ) {
+
+        log.warn(
+                "LLM Exception : {}",
+                e.getMessage()
+        );
+
+        return ResponseEntity
+                .status(
+                        e.getErrorCode().getStatus()
+                )
+                .body(
+                        ErrorResponse.builder()
+                                .success(false)
+                                .code(e.getErrorCode().name())
+                                .message(
+                                        e.getErrorCode().getMessage()
+                                )
+                                .build()
+                );
+    }
+
     // 잘못된 값이 들어왔을 때 400 처리
     //
     // Service에서 throw new IllegalArgumentException("회비는 0 이상이어야 합니다.") 같이 던지는 것들.
