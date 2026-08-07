@@ -4,7 +4,7 @@
 }
 
 .filterBtn {
-    max-width: 75px;
+    min-width: 75px;
     padding: 8px 16px;
     border: 0.8px solid var(--gray-5);
     color: var(--gray-8);

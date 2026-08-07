@@ -3,6 +3,9 @@ import styles from './memberlist.module.css';
 import Button from '@/shared/components/button/Button';
 import { Badge } from "@/shared/components/badge/Badge";
 import { Member } from '@/types/member';
+import ChangeRoleCard from '@/features/teams/components/MemberManageCard/ChangeRoleCard';
+import RemoveMemberCard from '@/features/teams/components/MemberManageCard/RemoveMemberCard';
+import MandateRoleCard from '@/features/teams/components/MemberManageCard/MandateRoleCard'; 
 
 interface MemberListProps {
     teamId: string | undefined;
@@ -60,7 +63,7 @@ const MemberList = ({ teamId, members, refetch }: MemberListProps) => {
 
                                 {isMandateModalOpen && (
                                     <div className={styles.modalOverlay}>
-                                        {/* <MandateRoleCard
+                                        <MandateRoleCard
                                             teamId={teamId}
                                             members={members}
                                             onClick={closeMandateModal}
@@ -68,7 +71,7 @@ const MemberList = ({ teamId, members, refetch }: MemberListProps) => {
                                                 closeMandateModal();
                                                 refetch();
                                             }}
-                                        /> */}
+                                        />
                                     </div>
                                 )}
                             </>
@@ -78,14 +81,14 @@ const MemberList = ({ teamId, members, refetch }: MemberListProps) => {
 
                                 {changeTargetId === member.id && (
                                     <div className={styles.modalOverlay}>
-                                        {/* <ChangeRoleCard
+                                        <ChangeRoleCard
                                             memberId={changeTargetId}
                                             onClick={closeChangeModal}
                                             onSuccess={() => {
                                                 closeChangeModal();
                                                 refetch();
                                             }}
-                                        /> */}
+                                        />
                                     </div>
                                 )}
 
@@ -93,14 +96,14 @@ const MemberList = ({ teamId, members, refetch }: MemberListProps) => {
 
                                 {removeTargetId === member.id && (
                                     <div className={styles.modalOverlay}>
-                                        {/* <RemoveMemberCard
+                                        <RemoveMemberCard
                                             memberId={removeTargetId}
                                             onClick={closeRemoveModal}
                                             onSuccess={() => {
                                                 closeRemoveModal();
                                                 refetch();
                                             }}
-                                        /> */}
+                                        />
                                     </div>
                                 )}
                             </>
