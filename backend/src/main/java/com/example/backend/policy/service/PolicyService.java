@@ -138,7 +138,6 @@ public class PolicyService {
             //       지금은 그냥 두고, 파일 삭제 기능(API-034)에서 같이 정리할 예정
             policy = existing.get();
             policy.update(
-                    request.getTitle(),
                     request.getPolicyType(),
                     content,
                     fileName,
@@ -153,7 +152,6 @@ public class PolicyService {
             policy = Policy.builder()
                     .team(team)
                     .createdBy(requester)
-                    .title(request.getTitle())
                     .policyType(request.getPolicyType())
                     .content(content)
                     .fileName(fileName)
