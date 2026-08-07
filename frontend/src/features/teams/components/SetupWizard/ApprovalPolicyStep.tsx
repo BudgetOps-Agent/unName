@@ -5,7 +5,7 @@ import Button from '@/shared/components/button/Button';
 
 export interface ApprovalPolicyValue {
     autoApprove: boolean;
-    escalationThreshold: number;
+    autoApproveLimit: number;
 }
 
 interface ApprovalPolicyStepProps {
@@ -15,6 +15,7 @@ interface ApprovalPolicyStepProps {
     setThreshold: (value: string) => void;
     onPrev: () => void;
     onNext: (value: ApprovalPolicyValue) => void;
+    isSubmitting?: boolean;
 }
 
 const ApprovalPolicyStep = ({
@@ -24,6 +25,7 @@ const ApprovalPolicyStep = ({
     setThreshold,
     onPrev,
     onNext,
+    isSubmitting = false,
 }: ApprovalPolicyStepProps) => {
     const handleThresholdChange = (e: ChangeEvent<HTMLInputElement>) => {
         setThreshold(e.target.value.replace(/[^0-9]/g, ''));
@@ -37,7 +39,7 @@ const ApprovalPolicyStep = ({
     const handleNext = () => {
         onNext({
             autoApprove: !alwaysReviewManually,
-            escalationThreshold: thresholdNumber,
+            autoApproveLimit: thresholdNumber,
         });
     };
 
@@ -118,8 +120,8 @@ const ApprovalPolicyStep = ({
             </div>
 
             <div className={styles.buttonSection}>
-                <Button className={styles.prevBtn} text="이전" style="secondary" size="lg" onClick={onPrev} />
-                <Button className={styles.nextBtn} text="다음" style="tertiary" size="lg" onClick={handleNext} disabled={!isFormValid} />
+                <Button className={styles.prevBtn} text="이전" style="secondary" size="lg" onClick={onPrev} disabled={isSubmitting} />
+                <Button className={styles.nextBtn} text={isSubmitting ? "저장하는 중..." : "다음"} style="tertiary" size="lg" onClick={handleNext} disabled={!isFormValid || isSubmitting} />
             </div>
         </Card>
     );
