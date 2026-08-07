@@ -172,11 +172,8 @@ const Header = () => {
                         const icon = NOTIFICATION_ICON[item.type as NotificationType];
                         const { title, content } = NOTIFICATION_TEXT[item.type as NotificationType](item.expenseTitle, item.actorName);
 
-                        return (
-                            <div
-                                className={`notice-item ${!item.isRead ? 'pending' : ''}`}
-                                onClick={() => markAsRead(item.id)}
-                            >
+                        const itemBody = (
+                            <>
                                 <span className={`notice-item-icon ${icon.className}`}>
                                     <img className={icon.className} src={icon.src} alt={item.type} />
                                 </span>
@@ -187,15 +184,26 @@ const Header = () => {
                                     <span className="notice-item-time">{formatNotificationTime(item.createdAt)}</span>
                                 </div>
 
-                                {item.type === 'APPROVAL_REQUEST' && item.expenseId && (
-                                    <Link
-                                        key={index}
-                                        href={`/teams/${effectiveTeamId ?? ''}/expenses/${item.expenseId}`}
-                                        className="btn-primary btn-sm"
-                                    >
-                                        검토하기
-                                    </Link>
+                                {item.type === 'APPROVAL_REQUEST' && (
+                                    <span className="btn-primary btn-sm">검토하기</span>
                                 )}
+                            </>
+                        );
+
+                        return item.expenseId ? (
+                            <Link
+                                href={`/teams/${effectiveTeamId ?? ''}/expenses/${item.expenseId}`}
+                                className={`notice-item ${!item.isRead ? 'pending' : ''}`}
+                                onClick={() => markAsRead(item.id)}
+                            >
+                                {itemBody}
+                            </Link>
+                        ) : (
+                            <div
+                                className={`notice-item ${!item.isRead ? 'pending' : ''}`}
+                                onClick={() => markAsRead(item.id)}
+                            >
+                                {itemBody}
                             </div>
                         );
                     }}
