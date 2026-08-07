@@ -9,6 +9,7 @@ import com.example.backend.expense.exception.ExpenseException;
 import com.example.backend.expense.repository.ExpenseRepository;
 import com.example.backend.expense.repository.ExpensesReviewRepository;
 import com.example.backend.member.repository.UserRepository;
+import com.example.backend.notification.repository.NotificationRepository;
 import com.example.backend.notification.service.NotificationService;
 import com.example.backend.teamMember.entity.TeamMember;
 import com.example.backend.teamMember.entity.TeamRole;
@@ -53,6 +54,9 @@ public class ExpenseService {
 
     private final NotificationService notificationService;
 
+    // 지출 삭제(API-021) 시 자식 알림 정리용
+    private final NotificationRepository notificationRepository;
+
     // 지출 목록 조회 (API-014)
     //
     // status=null 또는 "ALL"이면 전체 조회
@@ -67,40 +71,59 @@ public class ExpenseService {
     @Transactional(readOnly = true)
     public ExpenseListResponse getExpenses(Long teamId, String status) {
 
-        // 1. 요청받은 status에 따라 실제로 조회할 상태 리스트를 결정
+        // 1. 요청자 조회 + 팀 소속/권한 확인
+        //    MEMBER는 자기가 요청한 지출만, ADMIN/ACCOUNTANT는 팀 전체를 봄 (프론트 요청, 2026-08-07)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+        TeamMember teamMember = teamMemberRepository
+                .findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        // MEMBER면 본인 것만 → 카운트·목록 모두 본인 userId로 거름 (관리자/총무는 null = 전체)
+        Long scopeUserId = (teamMember.getRole() == TeamRole.MEMBER) ? requester.getId() : null;
+
+        // 2. 요청받은 status에 따라 실제로 조회할 상태 리스트를 결정
         List<ExpenseStatus> statusFilter = resolveStatusFilter(status);
 
-        // 2. 그 조건으로 지출 목록 조회
-        List<Expense> expenses =
-                expenseRepository.findByTeamIdAndStatusInOrderByExpenseDateDesc(
-                        teamId,
-                        statusFilter
-                );
+        // 3. 그 조건으로 지출 목록 조회 (권한에 따라 본인 것만/전체)
+        List<Expense> expenses = (scopeUserId == null)
+                ? expenseRepository.findByTeamIdAndStatusInOrderByExpenseDateDesc(teamId, statusFilter)
+                : expenseRepository.findByTeamIdAndUserIdAndStatusInOrderByExpenseDateDesc(
+                        teamId, scopeUserId, statusFilter);
 
-        // 3. Expense 엔티티 → ExpenseInfo(DTO)로 변환
+        // 4. Expense 엔티티 → ExpenseInfo(DTO)로 변환
         List<ExpenseListResponse.ExpenseInfo> expenseInfos = expenses.stream()
                 .map(ExpenseListResponse.ExpenseInfo::fromEntity)
                 .collect(Collectors.toList());
 
-        // 4. 탭에 표시할 상태별 개수 계산
+        // 5. 탭에 표시할 상태별 개수 계산 (MEMBER면 본인 것 기준)
         ExpenseListResponse.Counts counts = ExpenseListResponse.Counts.builder()
-                .all(expenseRepository.countByTeamIdAndStatusIn(teamId,
+                .all(countByStatuses(teamId, scopeUserId,
                         List.of(ExpenseStatus.SUBMITTED, ExpenseStatus.ESCALATED,
                                 ExpenseStatus.APPROVED, ExpenseStatus.REJECTED)))
-                .pending(expenseRepository.countByTeamIdAndStatusIn(teamId,
+                .pending(countByStatuses(teamId, scopeUserId,
                         List.of(ExpenseStatus.SUBMITTED, ExpenseStatus.ESCALATED)))
-                .approved(expenseRepository.countByTeamIdAndStatusIn(teamId,
+                .approved(countByStatuses(teamId, scopeUserId,
                         List.of(ExpenseStatus.APPROVED)))
-                .rejected(expenseRepository.countByTeamIdAndStatusIn(teamId,
+                .rejected(countByStatuses(teamId, scopeUserId,
                         List.of(ExpenseStatus.REJECTED)))
                 .build();
 
-        // 5. 응답 반환
+        // 6. 응답 반환
         return ExpenseListResponse.builder()
                 .success(true)
                 .counts(counts)
                 .expenses(expenseInfos)
                 .build();
+    }
+
+    // 상태별 개수 세기 헬퍼
+    // scopeUserId == null이면 팀 전체, 값이 있으면 그 사람이 요청한 지출만 카운트
+    private long countByStatuses(Long teamId, Long scopeUserId, List<ExpenseStatus> statuses) {
+        return (scopeUserId == null)
+                ? expenseRepository.countByTeamIdAndStatusIn(teamId, statuses)
+                : expenseRepository.countByTeamIdAndUserIdAndStatusIn(teamId, scopeUserId, statuses);
     }
 
     // status 파라미터 값에 따라 실제 조회할 상태 리스트를 정하는 메서드
@@ -489,5 +512,94 @@ public class ExpenseService {
                 .success(true)
                 .statistics(statistics)
                 .build();
+    }
+
+    // 지출 수정 (API-018)
+    // 작성자 본인이, 승인 대기(SUBMITTED/ESCALATED) 상태인 자기 지출만 수정 가능
+    // 영수증 파일을 새로 올리면 교체하고, 안 올리면 기존 영수증을 그대로 둠
+    @Transactional
+    public ExpenseUpdateResponse updateExpense(Long expenseId, ExpenseUpdateRequest request,
+                                               MultipartFile receiptFile) {
+
+        // 1. 로그인한 사람 이메일 → 요청자 조회 (없으면 404)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 2. 수정할 지출 조회 (없으면 404)
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new ExpenseException(ExpenseErrorCode.EXPENSE_NOT_FOUND));
+
+        // 3. 작성자 본인인지 확인 (아니면 403)
+        if (!expense.getUser().getId().equals(requester.getId())) {
+            throw new ExpenseException(ExpenseErrorCode.NOT_EXPENSE_OWNER);
+        }
+
+        // 4. 승인 대기 상태만 수정 가능 (승인·반려로 처리 끝난 건 불가)
+        if (!isPending(expense)) {
+            throw new ExpenseException(ExpenseErrorCode.CANNOT_MODIFY_NOT_PENDING);
+        }
+
+        // 5. 영수증: 새로 올렸으면 저장해서 새 경로, 안 올렸으면 기존 경로 유지
+        String receiptUrl = (receiptFile != null && !receiptFile.isEmpty())
+                ? fileStorageService.store(receiptFile)
+                : expense.getReceiptUrl();
+
+        // 6. 값 변경 (카테고리는 AI가 채우는 값이라 제외) — 더티 체킹으로 자동 UPDATE
+        expense.update(request.getTitle(), request.getAmount(),
+                request.getDescription(), receiptUrl);
+
+        // 7. 응답 반환
+        return ExpenseUpdateResponse.fromEntity(expense);
+    }
+
+    // 지출 삭제 (API-021)
+    // 작성자 본인이, 승인 대기(SUBMITTED/ESCALATED) 상태인 자기 지출만 DB에서 완전 삭제(hard delete)
+    // 자식 테이블(알림·심사기록)이 지출을 FK로 참조하므로 먼저 지우고 지출을 삭제함
+    @Transactional
+    public ExpenseDeleteResponse deleteExpense(Long expenseId) {
+
+        // 1. 로그인한 사람 이메일 → 요청자 조회 (없으면 404)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 2. 삭제할 지출 조회 (없으면 404)
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new ExpenseException(ExpenseErrorCode.EXPENSE_NOT_FOUND));
+
+        // 3. 작성자 본인 또는 관리자만 삭제 가능 (명세 API-021)
+        //    본인이 아니면, 이 지출이 속한 팀의 ADMIN인지 확인 (아니면 403)
+        boolean isOwner = expense.getUser().getId().equals(requester.getId());
+        if (!isOwner) {
+            TeamMember teamMember = teamMemberRepository
+                    .findByTeamIdAndUserId(expense.getTeam().getId(), requester.getId())
+                    .orElseThrow(() -> new ExpenseException(ExpenseErrorCode.NOT_EXPENSE_OWNER));
+            if (teamMember.getRole() != TeamRole.ADMIN) {
+                throw new ExpenseException(ExpenseErrorCode.NOT_EXPENSE_OWNER);
+            }
+        }
+
+        // 4. 승인 대기 상태만 삭제 가능 (승인·반려로 처리 끝난 건 불가)
+        if (!isPending(expense)) {
+            throw new ExpenseException(ExpenseErrorCode.CANNOT_DELETE_NOT_PENDING);
+        }
+
+        // 5. 자식부터 삭제 (FK 제약) → 알림, 심사기록
+        notificationRepository.deleteByExpenseId(expenseId);
+        expensesReviewRepository.deleteByExpenseId(expenseId);
+
+        // 6. 지출 완전 삭제
+        expenseRepository.delete(expense);
+
+        // 7. 응답 반환
+        return ExpenseDeleteResponse.of();
+    }
+
+    // 승인 대기 상태인지 판별 (SUBMITTED 또는 ESCALATED)
+    // 수정·삭제 둘 다 "대기 건만 허용"이라 공통으로 뺌
+    private boolean isPending(Expense expense) {
+        ExpenseStatus status = expense.getStatus();
+        return status == ExpenseStatus.SUBMITTED || status == ExpenseStatus.ESCALATED;
     }
 }

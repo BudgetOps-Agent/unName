@@ -52,6 +52,20 @@ public enum ExpenseErrorCode {
             "승인된 지출은 수정할 수 없습니다."
     ),
 
+    // 승인 대기(SUBMITTED/ESCALATED)가 아닌 지출을 수정하려 할 때 (018)
+    // 승인·반려로 이미 처리가 끝난 건은 수정 불가
+    CANNOT_MODIFY_NOT_PENDING(
+            HttpStatus.BAD_REQUEST,
+            "승인 대기 상태의 지출만 수정할 수 있습니다."
+    ),
+
+    // 승인 대기(SUBMITTED/ESCALATED)가 아닌 지출을 삭제하려 할 때 (021)
+    // 승인·반려로 이미 처리가 끝난 건은 삭제 불가
+    CANNOT_DELETE_NOT_PENDING(
+            HttpStatus.BAD_REQUEST,
+            "승인 대기 상태의 지출만 삭제할 수 있습니다."
+    ),
+
     // 관리자 권한이 없는데 승인/반려하려 할 때 (019, 020)
     NOT_AUTHORIZED_TO_APPROVE(
             HttpStatus.FORBIDDEN,

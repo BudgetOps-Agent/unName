@@ -30,6 +30,17 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             List<ExpenseStatus> statuses
     );
 
+    // 지출 목록 조회(API-015) — MEMBER 권한용: 본인이 요청한 지출만 상태 필터로 조회
+    // (관리자/총무는 위의 팀 전체 조회를 쓰고, 일반 멤버는 이 메서드로 자기 것만 봄)
+    List<Expense> findByTeamIdAndUserIdAndStatusInOrderByExpenseDateDesc(
+            Long teamId,
+            Long userId,
+            List<ExpenseStatus> statuses
+    );
+
+    // MEMBER 권한용 상태별 개수 — 본인 지출만 카운트 (탭 숫자도 본인 것 기준)
+    long countByTeamIdAndUserIdAndStatusIn(Long teamId, Long userId, List<ExpenseStatus> statuses);
+
     // 상태별 개수 세기 - 탭에 표시할 카운트(전체/대기/승인/반려) 계산할 때 씀
     // 상태별 개수 셀때 마다 findByTeamIdAndStatusIn() 바로 위에 있는 이 메서드를 사용하면
     // 전체 목록을 가져와서 .size()해서 조회하는거라 비효율적인거 같고 불필요한것들이 같이 조회 될 수도 있어서 이 메서드 씀(안쓰는 데이터까지 가져와서 보여주고 계산함)
