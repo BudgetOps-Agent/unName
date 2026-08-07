@@ -1,0 +1,22 @@
+.chartError {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px 0;
+}
+
+.chartError button {
+    max-width: 120px;
+}
+
+.chartEmpty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 166px;
+    color: #99A1AF;
+    font-size: 13px;
+    font-weight: 600;
+}
