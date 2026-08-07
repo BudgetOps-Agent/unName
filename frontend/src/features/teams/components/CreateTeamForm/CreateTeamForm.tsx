@@ -3,8 +3,18 @@ import { useRouter } from 'next/router';
 import styles from './createteamform.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
+import useCreateTeam from '@/features/teams/hooks/useCreateTeam';
+import { TeamType } from '@/types/team';
 
 const teamTypes = ['동아리/학생회', '스터디', '친목', '동호회', '회사'];
+
+const TEAM_TYPE_MAP: Record<string, TeamType> = {
+    '동아리/학생회': '동아리_학생회',
+    '스터디': '스터디',
+    '친목': '친목',
+    '동호회': '동호회',
+    '회사': '회사',
+};
 
 const CreateTeamForm = () => {
 
@@ -15,19 +25,33 @@ const CreateTeamForm = () => {
     const [budget, setBudget] = useState('');
     const [description, setDescription] = useState('');
 
+    const { isSubmitting, submitTeam } = useCreateTeam();
+
     const handleBudgetChange = (e: ChangeEvent<HTMLInputElement>) => {
         setBudget(e.target.value.replace(/[^0-9]/g, ''));
     };
 
     const isFormValid = teamType !== null && name.trim() !== '' && budget.trim() !== '';
 
-    const handleSubmit = (e: SubmitEvent) => {
+    const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
-        console.log('POST /api/teams', { teamType, name, budget, description });
-        router.push({
-            pathname: '/teams/new/setup',
-            query: { step: 1, teamType },
+        if (!teamType) return;
+
+        const result = await submitTeam({
+            name,
+            teamType: TEAM_TYPE_MAP[teamType],
+            totalBudget: Number(budget),
+            description: description || undefined,
         });
+
+        if (result.success) {
+            router.push({
+                pathname: '/teams/new/setup',
+                query: { step: 1, teamType, teamId: result.team.id },
+            });
+        } else {
+            alert(result.message);
+        }
     };
 
     return (
@@ -100,7 +124,7 @@ const CreateTeamForm = () => {
                 </div>
             </Card>
 
-            <Button className={styles.submitBtn} type="submit" text="모임 만들고 설정 시작하기 →" style="tertiary" size="lg" disabled={!isFormValid} />
+            <Button className={styles.submitBtn} type="submit" text={isSubmitting ? "만드는 중..." : "모임 만들고 설정 시작하기 →"} style="tertiary" size="lg" disabled={!isFormValid || isSubmitting} />
         </form>
     )
 }

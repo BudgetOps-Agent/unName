@@ -1,6 +1,7 @@
 import styles from './policyregisterstep.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
+import useRecommendPolicy from '@/features/teams/hooks/useRecommendPolicy';
 
 export type RegisterMethod = 'upload' | 'text' | 'ai';
 
@@ -17,6 +18,7 @@ export interface PolicyRegisterValue {
 }
 
 interface PolicyRegisterStepProps {
+    teamId: number | undefined;
     method: RegisterMethod;
     setMethod: (method: RegisterMethod) => void;
     file: File | null;
@@ -26,9 +28,11 @@ interface PolicyRegisterStepProps {
     onPrev: () => void;
     onSkip: () => void;
     onComplete: (value: PolicyRegisterValue) => void;
+    isSubmitting?: boolean;
 }
 
 const PolicyRegisterStep = ({
+    teamId,
     method,
     setMethod,
     file,
@@ -38,14 +42,28 @@ const PolicyRegisterStep = ({
     onPrev,
     onSkip,
     onComplete,
+    isSubmitting = false,
 }: PolicyRegisterStepProps) => {
+    const { isLoading: isGeneratingDraft, fetchRecommendation } = useRecommendPolicy();
+
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFile(e.target.files?.[0] ?? null);
     };
 
+    const handleGenerateDraft = async () => {
+        if (!teamId) return;
+
+        const result = await fetchRecommendation(teamId);
+        if (result.success) {
+            setText(result.rules.map((rule, index) => `${index + 1}. ${rule}`).join('\n'));
+        } else {
+            alert(result.message);
+        }
+    };
+
     const isCompleteDisabled =
         (method === 'upload' && file === null) ||
-        (method === 'text' && text.trim() === '');
+        ((method === 'text' || method === 'ai') && text.trim() === '');
 
     const handleComplete = () => {
         onComplete({ method, file, text });
@@ -101,15 +119,28 @@ const PolicyRegisterStep = ({
 
             {method === 'ai' && (
                 <div className={styles.aiBox}>
-                    <p className={styles.aiTitle}>AI가 회칙 초안을 만들어요</p>
-                    <p className={styles.aiText}>모임 정보를 바탕으로 적합한 회칙 초안을 자동 생성해요</p>
+                    {text ? (
+                        <pre className={styles.aiDraftText}>{text}</pre>
+                    ) : (
+                        <>
+                            <p className={styles.aiTitle}>AI가 회칙 초안을 만들어요</p>
+                            <p className={styles.aiText}>모임 정보를 바탕으로 적합한 회칙 초안을 자동 생성해요</p>
+                            <Button
+                                className={styles.aiButton}
+                                text={isGeneratingDraft ? "생성하는 중..." : "초안 생성하기"}
+                                style="tertiary"
+                                onClick={handleGenerateDraft}
+                                disabled={isGeneratingDraft}
+                            />
+                        </>
+                    )}
                 </div>
             )}
 
             <div className={styles.buttonSection}>
-                <Button className={styles.prevBtn} text="이전" style="secondary" size="lg" onClick={onPrev} />
-                <Button className={styles.skipBtn} text="건너뛰기" style="secondary" size="lg" onClick={onSkip} />
-                <Button className={styles.completeBtn} text="설정 완료" style="tertiary" size="lg" onClick={handleComplete} disabled={isCompleteDisabled} />
+                <Button className={styles.prevBtn} text="이전" style="secondary" size="lg" onClick={onPrev} disabled={isSubmitting} />
+                <Button className={styles.skipBtn} text="건너뛰기" style="secondary" size="lg" onClick={onSkip} disabled={isSubmitting} />
+                <Button className={styles.completeBtn} text={isSubmitting ? "등록하는 중..." : "설정 완료"} style="tertiary" size="lg" onClick={handleComplete} disabled={isCompleteDisabled || isSubmitting} />
             </div>
         </Card>
     );
