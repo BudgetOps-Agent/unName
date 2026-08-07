@@ -14,9 +14,11 @@ export const getTeamMembers = (teamId: string): Promise<AxiosResponse<ResponseTe
     return api.get<ResponseTeamMembers>(`api/teams/${teamId}/members`);
 }
 
-export const getExpenses = (teamId: string): Promise<AxiosResponse<ResponseExpenses>> => {
-    return api.get<ResponseExpenses>(`api/teams/${teamId}/expenses`);
-}
+export const getExpenses = (teamId: string, status?: "ALL" | "SUBMITTED" | "APPROVED" | "REJECTED"): Promise<AxiosResponse<ResponseExpenses>> => {
+  return api.get<ResponseExpenses>(`api/teams/${teamId}/expenses`, {
+    params: status && status !== "ALL" ? { status } : undefined,
+  });
+};
 
 export const acceptInvite = (memberId: number): Promise<AxiosResponse<AcceptInviteResponse>> => {
   return api.post<AcceptInviteResponse>(`/api/members/${memberId}/accept`);

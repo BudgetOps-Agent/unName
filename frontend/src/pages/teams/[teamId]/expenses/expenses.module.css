@@ -4,7 +4,7 @@
 }
 
 .filterBtn {
-    max-width: 75px;
+    min-width: 75px;
     padding: 8px 16px;
     border: 0.8px solid var(--gray-5);
     color: var(--gray-8);
@@ -85,4 +85,17 @@
     padding: 6px 10px;
     font-size: 16px;
     font-weight: 600;
+}
+
+@media screen and (max-width: 768px) {
+    .filterSection {
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+    }
+    .filterSection li {
+        flex: 0 0 auto;
+    }
 }

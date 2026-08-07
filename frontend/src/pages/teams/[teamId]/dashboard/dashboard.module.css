@@ -10,3 +10,13 @@
 .chartError button {
     max-width: 120px;
 }
+
+.chartEmpty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 166px;
+    color: #99A1AF;
+    font-size: 13px;
+    font-weight: 600;
+}

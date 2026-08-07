@@ -24,10 +24,9 @@ public class ExpenseCreateRequest {
     @Positive(message = "금액은 0보다 커야 합니다.") // @Positive는 양수만 허용하는 어노테이션 0보다 큰 값만 통과
     private Long amount;
 
-    // 카테고리 필수. enum이라 @NotNull 사용 (@NotBlank는 String 전용)
-    // 프론트가 "회의","IT_인프라"등 enum 이름 그대로 보내면 Spring이 자동 변환해줌
-    // 카테고리 (회의/IT인프라/행사/교육/식비/디자인/기타)
-    @NotNull(message = "카테고리는 필수입니다.")
+    // 카테고리 - 안 보내도 됨 (8/4 회의 반영)
+    // 사용자가 직접 고르는 기능이 없어져서 등록 시엔 비어있고,
+    // AI 심사 콜백(CB-001)의 suggestedCategory로 나중에 채워짐
     private ExpenseCategory category;
 
     // 지출 발생 날짜 - 필수 (실제로 돈 쓴 날. 등록 시각 createdAt과 다름)

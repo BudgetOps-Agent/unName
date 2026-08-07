@@ -23,7 +23,7 @@ export interface ExpenseDetailResponse {
         id: number;
         title: string;
         amount: number;
-        category: string;
+        category: string | null;
         description: string | null;
         receiptFileUrl: string | null;
         status: 'SUBMITTED' | 'ESCALATED' | 'APPROVED' | 'REJECTED';

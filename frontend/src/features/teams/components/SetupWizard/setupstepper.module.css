@@ -1,0 +1,74 @@
+.stepper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.stepWrap {
+    display: flex;
+    align-items: flex-start;
+    flex: 1;
+}
+
+.stepWrap:last-child {
+    flex: 0;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--gray-4);
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.circle.active {
+    background: var(--blue-8);
+    color: var(--white);
+    box-shadow: 0 0 0 4px rgba(49, 130, 246, 0.2);
+}
+
+.circle.done {
+    background: var(--blue-8);
+    color: var(--white);
+}
+
+.label {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.labelActive {
+    color: var(--blue-8);
+    font-weight: 700;
+}
+
+.line {
+    flex: 1;
+    height: 2px;
+    margin: 13px 8px 0;
+    background: var(--gray-4);
+}
+
+.lineDone {
+    background: var(--blue-8);
+}

@@ -1,5 +1,6 @@
 package com.example.backend.global.file;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,13 @@ public class FileStorageService {
     // 최대 파일 크기 10MB (화면에 "최대 10MB"라고 적혀있음)
     // 10 * 1024 * 1024 = 10485760 바이트
     private final long maxFileSize = 10 * 1024 * 1024;
+
+    // 회칙 파일 허용 확장자 (PDF, Word만)
+    private final List<String> allowedPolicyExtensions = List.of("pdf", "docx");
+
+    // application.properties의 file.base-url 값 주입 (배포 시 이 값만 바꾸면 됨)
+    @Value("${file.base-url}")
+    private String baseUrl;
 
     /**
      * 영수증 파일을 uploads 폴더에 저장하고, 저장된 경로(receiptUrl에 넣을 값)를 돌려줌
@@ -76,9 +84,51 @@ public class FileStorageService {
         }
     }
 
+    // 회칙 파일 저장 (2단계) — pdf, docx만 허용
+    // 반환값: LLM한테 넘길 완성 URL (예: http://localhost:8080/api/files/xxx.pdf)
+    public String storePolicy(MultipartFile file) {
+        // 1. 파일 없으면 예외
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("회칙 파일이 없습니다.");
+        }
 
-     // 파일 이름에서 확장자만 뽑는 도우미 메서드
-     // "영수증.jpg" → "jpg" / 점이 없으면 예외
+        // 2. 크기 검사 (10MB)
+        if (file.getSize() > maxFileSize) {
+            throw new IllegalArgumentException("파일 크기는 10MB를 넘을 수 없습니다.");
+        }
+
+        // 3. 확장자 검사 (pdf, docx만)
+        String originalName = file.getOriginalFilename();
+        String extension = extractExtension(originalName);
+        if (!allowedPolicyExtensions.contains(extension.toLowerCase())) {
+            throw new IllegalArgumentException("PDF 또는 Word(docx) 파일만 업로드 가능합니다.");
+        }
+
+        // 4. UUID로 파일명 만들기 (중복 방지)
+        String storedName = UUID.randomUUID() + "." + extension;
+
+        try {
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path targetPath = uploadPath.resolve(storedName);
+            file.transferTo(targetPath);
+
+            // 5. 완성 URL 반환 (LLM한테 이 URL 전달)
+            // 로컬: http://localhost:8080/api/files/xxx.pdf
+            // 배포: 실도메인/api/files/xxx.pdf (properties만 바꾸면 됨)
+            return baseUrl + "/api/files/" + storedName;
+
+        } catch (IOException e) {
+            throw new RuntimeException("파일 저장에 실패했습니다.", e);
+        }
+    }
+
+
+        // 파일 이름에서 확장자만 뽑는 도우미 메서드
+        // "영수증.jpg" → "jpg" / 점이 없으면 예외
     private String extractExtension(String filename) {
         if (filename == null || !filename.contains(".")) {
             throw new IllegalArgumentException("잘못된 파일 형식입니다.");
@@ -107,4 +157,5 @@ public class FileStorageService {
             throw new RuntimeException("파일 경로가 잘못되었습니다: " + fileName, e);
         }
     }
+
 }

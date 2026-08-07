@@ -1,6 +1,7 @@
 package com.example.backend.teamMember.repository;
 
 import com.example.backend.teamMember.entity.TeamMember;
+import com.example.backend.teamMember.entity.TeamRole;
 import com.example.backend.teamMember.entity.TeamStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,6 +24,10 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 
     // 특정 팀의 인원 수 세기 (ACCEPTED 상태만) - my-teams에서 memberCount 계산할 때 씀
     long countByTeamIdAndStatus(Long teamId, TeamStatus status);
+
+    // 특정 팀의 특정 역할들 멤버 조회 (알림: 관리자+총무 뽑을 때)
+    // ACCEPTED 상태만, roles에 담긴 역할들(ADMIN, ACCOUNTANT)에 해당하는 멤버
+    List<TeamMember> findByTeamIdAndStatusAndRoleIn(Long teamId, TeamStatus status, List<TeamRole> roles);
 
     // 멤버 목록 조회용 (API-038) - role 우선순위(ADMIN → ACCOUNTANT → MEMBER) → 가입일 순 정렬
     // 단순 메서드 이름으로는 "값마다 다른 우선순위 매기기"가 불가능해서 직접 쿼리 작성

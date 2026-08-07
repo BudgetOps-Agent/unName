@@ -6,7 +6,6 @@ import { ErrorResponse } from '@/types/auth';
 export interface CreateExpenseInput {
     title: string;
     amount: string;
-    category: string;
     expenseDate: string;
     description: string;
     receipt: File;
@@ -21,7 +20,6 @@ const useCreateExpense = (teamId: string | undefined) => {
         const formData = new FormData();
         formData.append('title', input.title);
         formData.append('amount', input.amount);
-        formData.append('category', input.category);
         formData.append('expenseDate', input.expenseDate);
         formData.append('description', input.description);
         formData.append('receiptFile', input.receipt);

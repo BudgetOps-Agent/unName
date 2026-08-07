@@ -24,6 +24,11 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     // 반려 탭 -> List.of("REJECTED")만 넘기면 반려만 조회 됨
     List<Expense> findByTeamIdAndStatusIn(Long teamId, List<ExpenseStatus> statuses);
 
+    List<Expense> findByTeamIdAndStatusInOrderByExpenseDateDesc(
+            Long teamId,
+            List<ExpenseStatus> statuses
+    );
+
     // 상태별 개수 세기 - 탭에 표시할 카운트(전체/대기/승인/반려) 계산할 때 씀
     // 상태별 개수 셀때 마다 findByTeamIdAndStatusIn() 바로 위에 있는 이 메서드를 사용하면
     // 전체 목록을 가져와서 .size()해서 조회하는거라 비효율적인거 같고 불필요한것들이 같이 조회 될 수도 있어서 이 메서드 씀(안쓰는 데이터까지 가져와서 보여주고 계산함)
