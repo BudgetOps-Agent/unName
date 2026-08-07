@@ -22,7 +22,7 @@ const Budget = () => {
 
     return (
         <>
-            <ContentTitle title="예산 관리" subTitle="예산과 회칙·정책을 관리해요" onClick={() => setIsEditModalOpen(true)} btnText="예산 수정" />
+            <ContentTitle title="모임 관리" subTitle="예산과 회칙·정책을 관리해요" onClick={() => setIsEditModalOpen(true)} btnText="예산 수정" />
 
             {isEditModalOpen && (
                 <BudgetEditModal
@@ -51,7 +51,7 @@ const Budget = () => {
                 )}
 
                 {activeTab === 'policy' && (
-                    <PolicyManageCard />
+                    <PolicyManageCard teamId={validTeamId} />
                 )}
             </Card>
         </>

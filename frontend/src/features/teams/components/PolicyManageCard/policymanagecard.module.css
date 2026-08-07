@@ -154,10 +154,68 @@
     background-color: #7C3AED;
 }
 
+.aiDraftText {
+    max-height: 260px;
+    margin: 0 0 16px;
+    overflow-y: auto;
+    color: var(--gray-8);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
 .paramSection {
     margin-top: 24px;
     padding-top: 20px;
     border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+}
+
+.feeSectionHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--gray-7);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.checkbox {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--white);
+    border: 1px solid var(--blue-8);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.checkbox:checked {
+    background-color: var(--blue-8);
+}
+
+.checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid var(--white);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
 }
 
 .sectionTitle {
@@ -216,6 +274,10 @@
     outline: none;
 }
 
+.amountInput input:disabled {
+    color: var(--gray-6);
+}
+
 .amountInput input::placeholder {
     color: var(--gray-6);
     font-weight: 600;
@@ -254,6 +316,95 @@
     color: var(--gray-6);
     font-size: 12px;
     font-weight: 500;
+}
+
+.collapsible {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.25s ease;
+}
+
+.collapsible.collapsed {
+    grid-template-rows: 0fr;
+}
+
+.collapsibleInner {
+    min-height: 0;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.collapsible.collapsed .collapsibleInner {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.toggleRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: var(--gray-3);
+}
+
+.toggleTitle {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.toggleDesc {
+    margin-top: 2px;
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.switch {
+    position: relative;
+    flex-shrink: 0;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background-color: var(--gray-5);
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--white);
+    transition: transform 0.15s ease;
+}
+
+.switch input:checked + .slider {
+    background-color: var(--blue-8);
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(18px);
 }
 
 .saveButton {
