@@ -230,6 +230,7 @@
 .notice .dropdown-items {
     display: flex;
     flex-direction: column;
+    width: 340px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -277,7 +278,8 @@
 .notice-item-info {
     display: flex;
     flex-direction: column;
-    width: 210px;
+    flex: 1;
+    min-width: 0;
     padding: 0 14px;
 }
 

@@ -10,9 +10,10 @@ interface FeeBudgetStepProps {
     noFee: boolean;
     setNoFee: (noFee: boolean) => void;
     onNext: (membershipFee: number | null) => void;
+    isSubmitting?: boolean;
 }
 
-const FeeBudgetStep = ({ teamType, fee, setFee, noFee, setNoFee, onNext }: FeeBudgetStepProps) => {
+const FeeBudgetStep = ({ teamType, fee, setFee, noFee, setNoFee, onNext, isSubmitting = false }: FeeBudgetStepProps) => {
     const handleFeeChange = (e: ChangeEvent<HTMLInputElement>) => {
         setFee(e.target.value.replace(/[^0-9]/g, ''));
     };
@@ -70,7 +71,7 @@ const FeeBudgetStep = ({ teamType, fee, setFee, noFee, setNoFee, onNext }: FeeBu
                 <p>{`모임 유형 ${teamType || '○○'}에 맞는 지출 카테고리를 AI가 자동으로 추천해 드려요`}</p>
             </div>
 
-            <Button className={styles.nextBtn} text="다음" style="tertiary" size="lg" onClick={handleNext} disabled={!isFormValid} />
+            <Button className={styles.nextBtn} text={isSubmitting ? "저장하는 중..." : "다음"} style="tertiary" size="lg" onClick={handleNext} disabled={!isFormValid || isSubmitting} />
         </Card>
     );
 };

@@ -152,6 +152,19 @@
     font-weight: 700;
 }
 
+.aiDraftText {
+    max-height: 260px;
+    margin: 0;
+    overflow-y: auto;
+    color: var(--gray-8);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
 .buttonSection {
     display: flex;
     gap: 10px;
