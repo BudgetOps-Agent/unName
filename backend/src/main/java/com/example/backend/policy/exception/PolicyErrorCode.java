@@ -39,6 +39,12 @@ public enum PolicyErrorCode {
     NOT_ADMIN_FOR_POLICY(
             HttpStatus.FORBIDDEN,
             "관리자만 회칙을 등록할 수 있습니다."
+    ),
+
+    // 팀에 등록된 회칙이 없을 때 (BE-005 회칙 원본 조회)
+    POLICY_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "등록된 회칙을 찾을 수 없습니다."
     );
 
     private final HttpStatus status;
