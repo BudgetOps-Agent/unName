@@ -161,6 +161,28 @@ public class ExpenseController {
         return ResponseEntity.ok(response); // 200 OK
     }
 
+    // AI 심사 결과 조회 (API-046)
+    // GET /api/expenses/{expenseId}/review-result
+    // 지출 상세 화면의 "AI 심사 결과" 카드(심사관별 소견/최종판정/처리주체/자동분류)에 대응
+    // CB-001 콜백으로 저장된 심사기록을 프론트가 바로 렌더링할 수 있는 형태로 변환해서 내려줌
+    @Operation(
+            summary = "AI 심사 결과 조회 (API-046)",
+            description = "AI 지출 심사 결과를 조회합니다. 아직 심사가 끝나지 않은(SUBMITTED) 지출은 review가 null로 내려갑니다."
+    )
+    @Parameter(name = "expenseId", description = "지출 ID", required = true, example = "100")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공(심사 전이면 review:null)",
+                    content = @Content(schema = @Schema(implementation = ExpenseReviewResultResponse.class))),
+            @ApiResponse(responseCode = "404", description = "지출을 찾을 수 없음")
+    })
+    @GetMapping("/api/expenses/{expenseId}/review-result")
+    public ResponseEntity<ExpenseReviewResultResponse> getReviewResult(
+            @PathVariable("expenseId") Long expenseId
+    ) {
+        ExpenseReviewResultResponse response = expenseService.getReviewResult(expenseId);
+        return ResponseEntity.ok(response); // 200 OK
+    }
+
     // 지출 수정 (API-018)
     // PUT /api/expenses/{expenseId}
     // 작성자 본인이, 승인 대기(SUBMITTED/ESCALATED) 상태인 자기 지출만 수정 가능

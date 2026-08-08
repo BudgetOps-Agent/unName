@@ -1,7 +1,9 @@
 package com.example.backend.global.llm;
 
+import com.example.backend.global.llm.dto.AnalyzeRequest;
 import com.example.backend.global.llm.dto.PolicyDraftRequest;
 import com.example.backend.global.llm.dto.PolicyDraftResponse;
+import com.example.backend.global.llm.dto.PrecedentRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -78,6 +80,58 @@ public class LlmClient {
             // 원인은 로그로만 남기고, 사용자에겐 LlmErrorCode의 안내 문구만 나감
             log.error("[LLM-005] 호출 실패 - teamId={}", request.getTeamId(), e);
             throw new LlmException(LlmErrorCode.LLM_SERVER_ERROR, e);
+        }
+    }
+
+    /**
+     * LLM-007 판례 저장
+     * POST /v1/precedents — 관리자의 승인/반려 결정을 판례로 적재
+     *
+     * ★ 실패해도 예외를 던지지 않는다.
+     * 판례 저장은 부가 기능이라, 여기서 실패했다고 사용자의 승인/반려 처리(이미 커밋됨)를
+     * 막거나 롤백시키면 안 된다. 실패는 로그로만 남기고 조용히 넘어간다.
+     */
+    public void savePrecedent(PrecedentRequest request) {
+
+        log.info("[LLM-007] 판례 저장 요청 - expenseId={}, decision={}, isOverride={}",
+                request.getExpenseId(), request.getDecision(), request.getIsOverride());
+
+        try {
+            restClient.post()
+                    .uri("/v1/precedents")
+                    .body(request)
+                    .retrieve()
+                    .toBodilessEntity();
+
+        } catch (RestClientException e) {
+            log.warn("[LLM-007] 판례 저장 실패 (승인/반려 자체는 정상 처리됨) - expenseId={}",
+                    request.getExpenseId(), e);
+        }
+    }
+
+    /**
+     * LLM-003 AI 지출 심사 요청
+     * POST /v1/analyze — 202 접수. 결과는 CB-001 콜백으로 나중에 발신됨
+     *
+     * ★ 실패해도 예외를 던지지 않는다.
+     * 심사 요청은 지출 등록의 부가 동작이라, 여기서 실패했다고 사용자의 지출 등록(이미 저장됨)을
+     * 막거나 롤백시키면 안 된다. 실패 시 지출은 SUBMITTED로 남고, 실패는 로그로만 남긴다.
+     */
+    public void analyze(AnalyzeRequest request) {
+
+        log.info("[LLM-003] 심사 요청 - expenseId={}, jobId={}",
+                request.getExpenseId(), request.getJobId());
+
+        try {
+            restClient.post()
+                    .uri("/v1/analyze")
+                    .body(request)
+                    .retrieve()
+                    .toBodilessEntity();
+
+        } catch (RestClientException e) {
+            log.warn("[LLM-003] 심사 요청 실패 (지출 등록 자체는 정상 처리됨) - expenseId={}",
+                    request.getExpenseId(), e);
         }
     }
 }
