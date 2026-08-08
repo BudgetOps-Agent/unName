@@ -103,6 +103,54 @@ public class Expense {
         this.updatedAt = LocalDateTime.now();
     }
 
+    // 지출 수정 (API-018)
+    // 승인 대기 상태일 때만 호출됨(권한·상태 검사는 Service에서) — 여기선 값만 바꿈
+    // 카테고리는 사용자가 안 건드림(AI 심사가 채우는 값)이라 수정 대상에서 제외
+    // receiptUrl은 영수증 새로 올리면 새 경로, 안 올리면 기존 경로 그대로(Service에서 판단)
+    // @Transactional 안에서 호출하면 더티 체킹으로 자동 UPDATE 나감
+    public void update(String title, Long amount, String description, String receiptUrl) {
+        this.title = title;
+        this.amount = amount;
+        this.description = description;
+        this.receiptUrl = receiptUrl;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // ── AI 심사 결과 반영 (CB-001 콜백) ─────────────────────────
+    // LLM 심사요청(LLM-003) 보낼 때 job_id·발신시각 기록 (콜백 매칭·타임아웃 판단용)
+    public void markAiDispatched(String aiJobId) {
+        this.aiJobId = aiJobId;
+        this.aiDispatchedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // AI 자동 승인 — 처리자는 AI, 승인자(approvedBy)는 없음(null)
+    public void aiApprove(ExpenseCategory category) {
+        this.status = ExpenseStatus.APPROVED;
+        this.category = category;
+        this.processedBy = ProcessedBy.AI;
+        this.approvedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // AI 반려 — 사유 포함
+    public void aiReject(ExpenseCategory category, String rejectReason) {
+        this.status = ExpenseStatus.REJECTED;
+        this.category = category;
+        this.processedBy = ProcessedBy.AI;
+        this.rejectReason = rejectReason;
+        this.approvedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // AI 에스컬레이션 — 최종 처리가 아니라 "관리자 확인 필요" 상태로만 올림
+    // 카테고리는 AI가 분류한 값으로 채우되, 승인/처리자·시각은 사람이 나중에 처리할 때 채워짐
+    public void aiEscalate(ExpenseCategory category) {
+        this.status = ExpenseStatus.ESCALATED;
+        this.category = category;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     // 지출 반려 처리 (API-020)
     // 반려 시 상태/사유/처리자/처리시각을 한 번에 바꿈
     // Service에서 이 메서드를 호출하면 JPA 변경감지(dirty checking)로 자동 UPDATE 됨

@@ -9,4 +9,8 @@ public interface ExpensesReviewRepository extends JpaRepository<ExpensesReview, 
     // (JpaRepository가 save/findById 등 기본 제공)
     // 나중에 API-022(처리 이력 조회)에서 특정 지출의 심사 목록 조회 메서드 추가 예정
     // 예: List<ExpensesReview> findByExpenseIdOrderByCreatedAtDesc(Long expenseId);
+
+    // 지출 삭제(API-021)용 — 해당 지출의 심사 기록을 먼저 지움
+    // expenses_reviews.expense_id가 NOT NULL FK라, 지출을 hard delete 하기 전에 자식부터 정리해야 함
+    void deleteByExpenseId(Long expenseId);
 }
