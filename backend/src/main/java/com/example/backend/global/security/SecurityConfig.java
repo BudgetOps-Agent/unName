@@ -41,6 +41,7 @@ public class SecurityConfig {
                                 "/api/user/reissue",
                                 "/api/files/**",            // 영수증 조회(jpg,png,pdf)
                                 "/agent-callback",          // LLM 심사결과 콜백(CB-001) — Agent 토큰으로 별도 검증
+                                "/internal/agent/**",       // LLM 내부 조회 API(BE-001~) — Agent 토큰으로 별도 검증
                                 "/swagger-ui/**",           // 스웨거 접속
                                 "/swagger-ui.html",         // 스웨거 접속
                                 "/v3/api-docs/**"           // api-docs
