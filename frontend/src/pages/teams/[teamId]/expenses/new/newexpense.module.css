@@ -206,3 +206,15 @@
     font-weight: 600;
 }
 
+.editSubmitBar {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.editSubmitBar .completeBtn {
+    width: auto;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
