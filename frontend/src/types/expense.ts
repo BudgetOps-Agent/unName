@@ -17,6 +17,11 @@ export interface ExpenseRejectResponse {
     approvedAt: string;
 }
 
+export interface ExpenseDeleteResponse {
+    success: boolean;
+    message: string;
+}
+
 export interface ExpenseDetailResponse {
     success: boolean;
     expense: {
@@ -31,6 +36,21 @@ export interface ExpenseDetailResponse {
         createdAt: string;
         approvedAt: string | null;
         rejectReason: string | null;
+        expenseDate: string;
+    };
+}
+
+export interface ExpenseUpdateResponse {
+    success: boolean;
+    expense: {
+        id: number;
+        title: string;
+        amount: number;
+        category: string | null;
+        description: string | null;
+        receiptFileUrl: string | null;
+        status: 'SUBMITTED' | 'ESCALATED' | 'APPROVED' | 'REJECTED';
+        updatedAt: string;
     };
 }
 
