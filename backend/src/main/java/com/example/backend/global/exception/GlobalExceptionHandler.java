@@ -3,6 +3,7 @@ package com.example.backend.global.exception;
 
 import com.example.backend.budget.exception.BudgetException;
 import com.example.backend.expense.exception.ExpenseException;
+import com.example.backend.global.llm.AgentUnauthorizedException;
 import com.example.backend.global.llm.LlmException;
 import com.example.backend.member.exception.MemberException;
 import com.example.backend.policy.exception.PolicyException;
@@ -259,6 +260,26 @@ public class GlobalExceptionHandler {
                                 .message(
                                         e.getErrorCode().getMessage()
                                 )
+                                .build()
+                );
+    }
+
+    // Agent 서비스 토큰 인증 실패 처리 (401)
+    // LLM이 콜백(CB-001)·내부 API(BE-001~)를 부를 때 토큰이 없거나 틀린 경우
+    @ExceptionHandler(AgentUnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleAgentUnauthorized(
+            AgentUnauthorizedException e
+    ) {
+
+        log.warn("Agent Unauthorized : {}", e.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED) // 401
+                .body(
+                        ErrorResponse.builder()
+                                .success(false)
+                                .code("AGENT_UNAUTHORIZED")
+                                .message(e.getMessage())
                                 .build()
                 );
     }

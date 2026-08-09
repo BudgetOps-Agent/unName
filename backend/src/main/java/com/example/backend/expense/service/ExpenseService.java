@@ -9,6 +9,7 @@ import com.example.backend.expense.exception.ExpenseException;
 import com.example.backend.expense.repository.ExpenseRepository;
 import com.example.backend.expense.repository.ExpensesReviewRepository;
 import com.example.backend.member.repository.UserRepository;
+import com.example.backend.notification.repository.NotificationRepository;
 import com.example.backend.notification.service.NotificationService;
 import com.example.backend.teamMember.entity.TeamMember;
 import com.example.backend.teamMember.entity.TeamRole;
@@ -25,12 +26,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.backend.global.file.FileStorageService;
+import com.example.backend.global.llm.LlmClient;
+import com.example.backend.global.llm.dto.AnalyzeRequest;
+import com.example.backend.global.llm.dto.PrecedentRequest;
 import com.example.backend.team.entity.Team;
 import com.example.backend.team.repository.TeamRepository;
 import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,6 +60,12 @@ public class ExpenseService {
 
     private final NotificationService notificationService;
 
+    // 지출 삭제(API-021) 시 자식 알림 정리용
+    private final NotificationRepository notificationRepository;
+
+    // 승인/반려 결정을 LLM에 판례로 전송(LLM-007)하는 데 사용
+    private final LlmClient llmClient;
+
     // 지출 목록 조회 (API-014)
     //
     // status=null 또는 "ALL"이면 전체 조회
@@ -67,40 +80,59 @@ public class ExpenseService {
     @Transactional(readOnly = true)
     public ExpenseListResponse getExpenses(Long teamId, String status) {
 
-        // 1. 요청받은 status에 따라 실제로 조회할 상태 리스트를 결정
+        // 1. 요청자 조회 + 팀 소속/권한 확인
+        //    MEMBER는 자기가 요청한 지출만, ADMIN/ACCOUNTANT는 팀 전체를 봄 (프론트 요청, 2026-08-07)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+        TeamMember teamMember = teamMemberRepository
+                .findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        // MEMBER면 본인 것만 → 카운트·목록 모두 본인 userId로 거름 (관리자/총무는 null = 전체)
+        Long scopeUserId = (teamMember.getRole() == TeamRole.MEMBER) ? requester.getId() : null;
+
+        // 2. 요청받은 status에 따라 실제로 조회할 상태 리스트를 결정
         List<ExpenseStatus> statusFilter = resolveStatusFilter(status);
 
-        // 2. 그 조건으로 지출 목록 조회
-        List<Expense> expenses =
-                expenseRepository.findByTeamIdAndStatusInOrderByExpenseDateDesc(
-                        teamId,
-                        statusFilter
-                );
+        // 3. 그 조건으로 지출 목록 조회 (권한에 따라 본인 것만/전체)
+        List<Expense> expenses = (scopeUserId == null)
+                ? expenseRepository.findByTeamIdAndStatusInOrderByExpenseDateDesc(teamId, statusFilter)
+                : expenseRepository.findByTeamIdAndUserIdAndStatusInOrderByExpenseDateDesc(
+                        teamId, scopeUserId, statusFilter);
 
-        // 3. Expense 엔티티 → ExpenseInfo(DTO)로 변환
+        // 4. Expense 엔티티 → ExpenseInfo(DTO)로 변환
         List<ExpenseListResponse.ExpenseInfo> expenseInfos = expenses.stream()
                 .map(ExpenseListResponse.ExpenseInfo::fromEntity)
                 .collect(Collectors.toList());
 
-        // 4. 탭에 표시할 상태별 개수 계산
+        // 5. 탭에 표시할 상태별 개수 계산 (MEMBER면 본인 것 기준)
         ExpenseListResponse.Counts counts = ExpenseListResponse.Counts.builder()
-                .all(expenseRepository.countByTeamIdAndStatusIn(teamId,
+                .all(countByStatuses(teamId, scopeUserId,
                         List.of(ExpenseStatus.SUBMITTED, ExpenseStatus.ESCALATED,
                                 ExpenseStatus.APPROVED, ExpenseStatus.REJECTED)))
-                .pending(expenseRepository.countByTeamIdAndStatusIn(teamId,
+                .pending(countByStatuses(teamId, scopeUserId,
                         List.of(ExpenseStatus.SUBMITTED, ExpenseStatus.ESCALATED)))
-                .approved(expenseRepository.countByTeamIdAndStatusIn(teamId,
+                .approved(countByStatuses(teamId, scopeUserId,
                         List.of(ExpenseStatus.APPROVED)))
-                .rejected(expenseRepository.countByTeamIdAndStatusIn(teamId,
+                .rejected(countByStatuses(teamId, scopeUserId,
                         List.of(ExpenseStatus.REJECTED)))
                 .build();
 
-        // 5. 응답 반환
+        // 6. 응답 반환
         return ExpenseListResponse.builder()
                 .success(true)
                 .counts(counts)
                 .expenses(expenseInfos)
                 .build();
+    }
+
+    // 상태별 개수 세기 헬퍼
+    // scopeUserId == null이면 팀 전체, 값이 있으면 그 사람이 요청한 지출만 카운트
+    private long countByStatuses(Long teamId, Long scopeUserId, List<ExpenseStatus> statuses) {
+        return (scopeUserId == null)
+                ? expenseRepository.countByTeamIdAndStatusIn(teamId, statuses)
+                : expenseRepository.countByTeamIdAndUserIdAndStatusIn(teamId, scopeUserId, statuses);
     }
 
     // status 파라미터 값에 따라 실제 조회할 상태 리스트를 정하는 메서드
@@ -279,8 +311,41 @@ public class ExpenseService {
         // 승인 요청 알림 생성 (관리자+총무에게, 작성자 제외)
         notificationService.notifyApprovalRequest(saved);
 
-        // 8. 저장된 Expense → 응답 DTO로 변환해서 return
+        // 8. LLM에 AI 심사 요청 전송 (LLM-003) — 결과는 나중에 CB-001 콜백으로 옴
+        //    실패해도 지출 등록은 그대로 유지 (지출은 SUBMITTED로 남고 로그만 남김)
+        dispatchAiReview(saved, receiptUrl);
+
+        // 9. 저장된 Expense → 응답 DTO로 변환해서 return
         return ExpenseCreateResponse.fromEntity(saved);
+    }
+
+    // 지출 등록 직후 LLM에 AI 심사를 요청 (LLM-003)
+    // 우리가 만든 jobId를 지출에 기록(markAiDispatched)해두고 같은 값을 LLM에 보냄 → 콜백(CB-001) 매칭용
+    // llmClient.analyze()는 실패해도 예외를 안 던지므로 등록 흐름을 막지 않음
+    private void dispatchAiReview(Expense expense, String receiptUrl) {
+
+        // 콜백 매칭용 작업 ID 생성 후 지출에 기록 (더티 체킹으로 aiJobId/aiDispatchedAt 저장됨)
+        String jobId = java.util.UUID.randomUUID().toString();
+        expense.markAiDispatched(jobId);
+
+        AnalyzeRequest request = AnalyzeRequest.builder()
+                .jobId(jobId)
+                .expenseId(expense.getId())
+                .organizationId(expense.getTeam().getId())
+                .receiptPath(toReceiptPath(receiptUrl)) // LLM이 BE-004로 영수증 가져갈 경로
+                .build();
+
+        llmClient.analyze(request);
+    }
+
+    // 저장 경로("uploads/xxx.png")를 LLM이 접근할 파일 통로("/api/files/xxx.png")로 변환
+    // 상세 조회의 receiptFileUrl과 동일 규칙. 파일이 없으면 null
+    private String toReceiptPath(String receiptUrl) {
+        if (receiptUrl == null) {
+            return null;
+        }
+        String fileName = receiptUrl.substring(receiptUrl.lastIndexOf("/") + 1);
+        return "/api/files/" + fileName;
     }
 
     // 지출 상세 조회 (API-017)
@@ -295,6 +360,127 @@ public class ExpenseService {
         // 2. 엔티티 → 상세 응답 DTO로 변환해서 반환
         //    (receiptUrl → receiptFileUrl 변환, 요청자 이름 등은 fromEntity 안에서 처리)
         return ExpenseDetailResponse.fromEntity(expense);
+    }
+
+    // ObjectMapper는 주입 대신 자체 생성 — Spring Boot 4의 Jackson 빈 타입(2 vs 3) 불일치로 인한
+    // "주입 가능한 빈 없음" 시작 오류를 피하려고 인스턴스를 직접 만든다 (AgentCallbackService와 동일 이유)
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    // AI 심사 결과 조회 (API-046)
+    // 지출 상세 화면의 "AI 심사 결과" 카드(심사관별 소견 4개 + 최종판정 + 처리주체 + 자동분류)에 대응
+    // CB-001 콜백으로 저장해둔 expenses_reviews.detail(JSON)을 프론트가 바로 쓸 수 있는 모양으로 변환해서 내려줌
+    @Transactional(readOnly = true)
+    public ExpenseReviewResultResponse getReviewResult(Long expenseId) {
+
+        // 1. 지출 조회 (없으면 404)
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new ExpenseException(ExpenseErrorCode.EXPENSE_NOT_FOUND));
+
+        // 2. 이 지출의 가장 최근 AI 심사기록 조회
+        //    아직 SUBMITTED(AI 심사가 안 끝남)면 기록이 없을 수 있음 → review:null로 응답
+        //    (관리자가 승인/반려해서 HUMAN 기록이 추가로 쌓여도, 심사관별 소견은 항상 AI 기록 기준)
+        return expensesReviewRepository
+                .findTopByExpenseIdAndProcessedByOrderByCreatedAtDesc(expenseId, ProcessedBy.AI)
+                .map(review -> buildReviewResultResponse(expense, review))
+                .orElseGet(() -> ExpenseReviewResultResponse.builder()
+                        .success(true)
+                        .review(null) // 아직 AI 심사 전 — 프론트가 "AI 검토중" 등으로 표시
+                        .build());
+    }
+
+    // ExpensesReview 엔티티 + detail(JSON 문자열)을 파싱해서 응답 DTO로 조립
+    private ExpenseReviewResultResponse buildReviewResultResponse(Expense expense, ExpensesReview review) {
+
+        List<ExpenseReviewResultResponse.Reviewer> reviewers = parseReviewers(review.getDetail());
+
+        // 처리 주체 표시값: 관리자가 최종 승인/반려했으면 그 사람 이름, 아니면 "AI"
+        String processor = (expense.getApprovedBy() != null)
+                ? expense.getApprovedBy().getName()
+                : "AI";
+
+        // 자동처리(AUTO) vs 관리자 확인 필요(ESCALATED) — AI 심사 결과 자체가 에스컬레이션이었는지 기준
+        String processType = (review.getFinalVerdict() == FinalVerdict.ESCALATED) ? "ESCALATED" : "AUTO";
+
+        String category = (expense.getCategory() == null) ? "미분류" : expense.getCategory().name();
+
+        ExpenseReviewResultResponse.ReviewInfo info = ExpenseReviewResultResponse.ReviewInfo.builder()
+                .reviewers(reviewers)
+                .finalVerdict(expense.getStatus().name()) // 현재 지출 상태(관리자 최종 처리 반영된 값)
+                .processType(processType)
+                .processor(processor)
+                .category(category)
+                .build();
+
+        return ExpenseReviewResultResponse.builder()
+                .success(true)
+                .review(info)
+                .build();
+    }
+
+    // detail(JSON 문자열)에서 opinions[]를 꺼내 프론트용 Reviewer 리스트로 변환
+    // opinions 항목 필드는 camelCase(auditor, verdict, summary), 근거는 evidence[] 또는 similar_cases(예외적 snake_case)
+    // LLM verdict(pass/warn/fail/error) → 프론트 verdict(PASS/FAIL/HOLD)로 매핑
+    private List<ExpenseReviewResultResponse.Reviewer> parseReviewers(String detailJson) {
+        List<ExpenseReviewResultResponse.Reviewer> reviewers = new ArrayList<>();
+        if (detailJson == null || detailJson.isBlank()) {
+            return reviewers;
+        }
+
+        try {
+            JsonNode root = objectMapper.readTree(detailJson);
+            JsonNode opinions = root.path("opinions");
+            if (!opinions.isArray()) {
+                return reviewers;
+            }
+
+            int id = 1;
+            for (JsonNode opinion : opinions) {
+                String verdict = mapAuditorVerdict(opinion.path("verdict").asText(""));
+                String summary = opinion.path("summary").asText("");
+                String reason = extractReason(opinion);
+
+                reviewers.add(ExpenseReviewResultResponse.Reviewer.builder()
+                        .id(id++)
+                        .verdict(verdict)
+                        .opinion(summary)
+                        .reason(reason)
+                        .build());
+            }
+        } catch (Exception e) {
+            // detail이 예상과 다른 형식이어도 화면 자체는 떠야 하므로 조용히 빈 리스트 반환
+            return new ArrayList<>();
+        }
+
+        return reviewers;
+    }
+
+    // 심사관 근거 텍스트 조립: evidence[] 우선, 없으면 similar_cases, 둘 다 없으면 소견 재사용
+    private String extractReason(JsonNode opinion) {
+        JsonNode evidence = opinion.path("evidence");
+        if (evidence.isArray() && !evidence.isEmpty()) {
+            List<String> items = new ArrayList<>();
+            evidence.forEach(e -> items.add(e.isTextual() ? e.asText() : e.toString()));
+            return String.join(", ", items);
+        }
+
+        JsonNode similarCases = opinion.path("similar_cases");
+        if (similarCases.isArray() && !similarCases.isEmpty()) {
+            List<String> items = new ArrayList<>();
+            similarCases.forEach(c -> items.add(c.isTextual() ? c.asText() : c.toString()));
+            return String.join(", ", items);
+        }
+
+        return opinion.path("summary").asText("");
+    }
+
+    // LLM 심사관 판정(pass/warn/fail/error) → 프론트 뱃지 값(PASS/FAIL/HOLD)
+    private String mapAuditorVerdict(String raw) {
+        String v = raw == null ? "" : raw.trim().toLowerCase();
+        return switch (v) {
+            case "pass" -> "PASS";
+            case "fail" -> "FAIL";
+            default -> "HOLD"; // warn/error/알 수 없음 → 보류로 안전하게 표시
+        };
     }
 
     // 지출 반려 (API-020)
@@ -348,10 +534,40 @@ public class ExpenseService {
         // 반려 결과 알림 (작성자 + 나머지 승인권자에게)
         notificationService.notifyRejected(expense, requester);
 
-        // LLM팀에게 반려 사유 전달 (URL 확정 후)
-        // @TransactionalEventListener(AFTER_COMMIT)로 커밋 성공 후 비동기 전송 예정
-        // 8. 응답 반환
+        // 8. 관리자 반려 결정을 LLM에 판례로 전송 (LLM-007) — 실패해도 반려는 그대로 유지
+        sendPrecedent(expense, "rejected", request.getRejectReason());
+
+        // 9. 응답 반환
         return ExpenseRejectResponse.fromEntity(expense);
+    }
+
+    // 관리자의 승인/반려 결정을 LLM에 판례로 저장 (LLM-007)
+    // AI 판정을 뒤집었는지(is_override)까지 계산해서 함께 보냄
+    // llmClient.savePrecedent()는 실패해도 예외를 안 던지므로 승인/반려 흐름을 막지 않음
+    private void sendPrecedent(Expense expense, String decision, String reason) {
+
+        // AI가 앞서 확정 판정(APPROVED/REJECTED)을 냈는데 관리자가 반대로 결정했으면 override
+        // (AI가 ESCALATED로 넘긴 건 원래 관리자가 정하는 흐름이라 override 아님)
+        boolean isOverride = expensesReviewRepository
+                .findTopByExpenseIdAndProcessedByOrderByCreatedAtDesc(expense.getId(), ProcessedBy.AI)
+                .map(aiReview -> {
+                    FinalVerdict aiVerdict = aiReview.getFinalVerdict();
+                    return (aiVerdict == FinalVerdict.APPROVED && decision.equals("rejected"))
+                            || (aiVerdict == FinalVerdict.REJECTED && decision.equals("approved"));
+                })
+                .orElse(false);
+
+        PrecedentRequest request = PrecedentRequest.builder()
+                .teamId(expense.getTeam().getId())
+                .expenseId(expense.getId())
+                .claim(expense.getTitle())   // 무엇에 대한 판단인지 — 지출 제목
+                .decision(decision)
+                .reason(reason)
+                .isOverride(isOverride)
+                .ruleVersion(null)           // 팀당 1개(버전 미사용)
+                .build();
+
+        llmClient.savePrecedent(request);
     }
 
     // 지출 승인 (API-019)
@@ -419,7 +635,11 @@ public class ExpenseService {
         // 승인 결과 알림 (작성자 + 나머지 승인권자에게)
         notificationService.notifyApproved(expense, requester);
 
-        // 11. 응답 반환
+        // 11. 관리자 승인 결정을 LLM에 판례로 전송 (LLM-007) — 실패해도 승인은 그대로 유지
+        //     승인은 별도 사유가 없어 reason은 관례적으로 "관리자 승인" 표기
+        sendPrecedent(expense, "approved", "관리자 승인");
+
+        // 12. 응답 반환
         return ExpenseApproveResponse.fromEntity(expense);
     }
 
@@ -489,5 +709,94 @@ public class ExpenseService {
                 .success(true)
                 .statistics(statistics)
                 .build();
+    }
+
+    // 지출 수정 (API-018)
+    // 작성자 본인이, 승인 대기(SUBMITTED/ESCALATED) 상태인 자기 지출만 수정 가능
+    // 영수증 파일을 새로 올리면 교체하고, 안 올리면 기존 영수증을 그대로 둠
+    @Transactional
+    public ExpenseUpdateResponse updateExpense(Long expenseId, ExpenseUpdateRequest request,
+                                               MultipartFile receiptFile) {
+
+        // 1. 로그인한 사람 이메일 → 요청자 조회 (없으면 404)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 2. 수정할 지출 조회 (없으면 404)
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new ExpenseException(ExpenseErrorCode.EXPENSE_NOT_FOUND));
+
+        // 3. 작성자 본인인지 확인 (아니면 403)
+        if (!expense.getUser().getId().equals(requester.getId())) {
+            throw new ExpenseException(ExpenseErrorCode.NOT_EXPENSE_OWNER);
+        }
+
+        // 4. 승인 대기 상태만 수정 가능 (승인·반려로 처리 끝난 건 불가)
+        if (!isPending(expense)) {
+            throw new ExpenseException(ExpenseErrorCode.CANNOT_MODIFY_NOT_PENDING);
+        }
+
+        // 5. 영수증: 새로 올렸으면 저장해서 새 경로, 안 올렸으면 기존 경로 유지
+        String receiptUrl = (receiptFile != null && !receiptFile.isEmpty())
+                ? fileStorageService.store(receiptFile)
+                : expense.getReceiptUrl();
+
+        // 6. 값 변경 (카테고리는 AI가 채우는 값이라 제외) — 더티 체킹으로 자동 UPDATE
+        expense.update(request.getTitle(), request.getAmount(),
+                request.getDescription(), receiptUrl);
+
+        // 7. 응답 반환
+        return ExpenseUpdateResponse.fromEntity(expense);
+    }
+
+    // 지출 삭제 (API-021)
+    // 작성자 본인이, 승인 대기(SUBMITTED/ESCALATED) 상태인 자기 지출만 DB에서 완전 삭제(hard delete)
+    // 자식 테이블(알림·심사기록)이 지출을 FK로 참조하므로 먼저 지우고 지출을 삭제함
+    @Transactional
+    public ExpenseDeleteResponse deleteExpense(Long expenseId) {
+
+        // 1. 로그인한 사람 이메일 → 요청자 조회 (없으면 404)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 2. 삭제할 지출 조회 (없으면 404)
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new ExpenseException(ExpenseErrorCode.EXPENSE_NOT_FOUND));
+
+        // 3. 작성자 본인 또는 관리자만 삭제 가능 (명세 API-021)
+        //    본인이 아니면, 이 지출이 속한 팀의 ADMIN인지 확인 (아니면 403)
+        boolean isOwner = expense.getUser().getId().equals(requester.getId());
+        if (!isOwner) {
+            TeamMember teamMember = teamMemberRepository
+                    .findByTeamIdAndUserId(expense.getTeam().getId(), requester.getId())
+                    .orElseThrow(() -> new ExpenseException(ExpenseErrorCode.NOT_EXPENSE_OWNER));
+            if (teamMember.getRole() != TeamRole.ADMIN) {
+                throw new ExpenseException(ExpenseErrorCode.NOT_EXPENSE_OWNER);
+            }
+        }
+
+        // 4. 승인 대기 상태만 삭제 가능 (승인·반려로 처리 끝난 건 불가)
+        if (!isPending(expense)) {
+            throw new ExpenseException(ExpenseErrorCode.CANNOT_DELETE_NOT_PENDING);
+        }
+
+        // 5. 자식부터 삭제 (FK 제약) → 알림, 심사기록
+        notificationRepository.deleteByExpenseId(expenseId);
+        expensesReviewRepository.deleteByExpenseId(expenseId);
+
+        // 6. 지출 완전 삭제
+        expenseRepository.delete(expense);
+
+        // 7. 응답 반환
+        return ExpenseDeleteResponse.of();
+    }
+
+    // 승인 대기 상태인지 판별 (SUBMITTED 또는 ESCALATED)
+    // 수정·삭제 둘 다 "대기 건만 허용"이라 공통으로 뺌
+    private boolean isPending(Expense expense) {
+        ExpenseStatus status = expense.getStatus();
+        return status == ExpenseStatus.SUBMITTED || status == ExpenseStatus.ESCALATED;
     }
 }

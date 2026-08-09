@@ -161,6 +161,85 @@ public class ExpenseController {
         return ResponseEntity.ok(response); // 200 OK
     }
 
+    // AI 심사 결과 조회 (API-046)
+    // GET /api/expenses/{expenseId}/review-result
+    // 지출 상세 화면의 "AI 심사 결과" 카드(심사관별 소견/최종판정/처리주체/자동분류)에 대응
+    // CB-001 콜백으로 저장된 심사기록을 프론트가 바로 렌더링할 수 있는 형태로 변환해서 내려줌
+    @Operation(
+            summary = "AI 심사 결과 조회 (API-046)",
+            description = "AI 지출 심사 결과를 조회합니다. 아직 심사가 끝나지 않은(SUBMITTED) 지출은 review가 null로 내려갑니다."
+    )
+    @Parameter(name = "expenseId", description = "지출 ID", required = true, example = "100")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공(심사 전이면 review:null)",
+                    content = @Content(schema = @Schema(implementation = ExpenseReviewResultResponse.class))),
+            @ApiResponse(responseCode = "404", description = "지출을 찾을 수 없음")
+    })
+    @GetMapping("/api/expenses/{expenseId}/review-result")
+    public ResponseEntity<ExpenseReviewResultResponse> getReviewResult(
+            @PathVariable("expenseId") Long expenseId
+    ) {
+        ExpenseReviewResultResponse response = expenseService.getReviewResult(expenseId);
+        return ResponseEntity.ok(response); // 200 OK
+    }
+
+    // 지출 수정 (API-018)
+    // PUT /api/expenses/{expenseId}
+    // 작성자 본인이, 승인 대기(SUBMITTED/ESCALATED) 상태인 자기 지출만 수정 가능
+    // multipart/form-data로 받음 (글자값 + 영수증 파일 교체) — 등록(API-016)과 동일 방식
+    // 카테고리는 AI가 채우는 값이라 수정 항목에서 제외 (등록과 동일 정책)
+    @Operation(
+            summary = "지출 수정 (API-018)",
+            description = "작성자 본인이 승인 대기 상태의 지출을 수정합니다. 제목·금액·설명을 수정하고, "
+                    + "영수증 파일을 새로 올리면 교체(안 올리면 기존 유지)합니다. "
+                    + "카테고리는 AI 심사가 채우는 값이라 수정 대상이 아닙니다."
+    )
+    @Parameter(name = "expenseId", description = "수정할 지출 ID", required = true, example = "100")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공",
+                    content = @Content(schema = @Schema(implementation = ExpenseUpdateResponse.class))),
+            @ApiResponse(responseCode = "400", description = "요청 값 검증 실패 또는 승인 대기 상태가 아님"),
+            @ApiResponse(responseCode = "403", description = "작성자 본인이 아님"),
+            @ApiResponse(responseCode = "404", description = "지출을 찾을 수 없음")
+    })
+    @PutMapping(
+            value = "/api/expenses/{expenseId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ExpenseUpdateResponse> updateExpense(
+            @PathVariable("expenseId") Long expenseId,
+            @Valid @ModelAttribute ExpenseUpdateRequest request,
+            // 영수증 교체 안 하면 안 보낼 수 있으므로 required = false
+            @RequestPart(value = "receiptFile", required = false) MultipartFile receiptFile
+    ) {
+        ExpenseUpdateResponse response = expenseService.updateExpense(expenseId, request, receiptFile);
+        return ResponseEntity.ok(response); // 200 OK
+    }
+
+    // 지출 삭제 (API-021)
+    // DELETE /api/expenses/{expenseId}
+    // 작성자 본인이, 승인 대기(SUBMITTED/ESCALATED) 상태인 자기 지출만 DB에서 완전 삭제
+    @Operation(
+            summary = "지출 삭제 (API-021)",
+            description = "작성자 본인이 승인 대기 상태의 지출을 DB에서 완전 삭제(hard delete)합니다. "
+                    + "딸린 알림·심사기록도 함께 삭제됩니다. 승인·반려로 처리된 건은 삭제할 수 없습니다."
+    )
+    @Parameter(name = "expenseId", description = "삭제할 지출 ID", required = true, example = "100")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "삭제 성공",
+                    content = @Content(schema = @Schema(implementation = ExpenseDeleteResponse.class))),
+            @ApiResponse(responseCode = "400", description = "승인 대기 상태가 아님"),
+            @ApiResponse(responseCode = "403", description = "작성자 본인이 아님"),
+            @ApiResponse(responseCode = "404", description = "지출을 찾을 수 없음")
+    })
+    @DeleteMapping("/api/expenses/{expenseId}")
+    public ResponseEntity<ExpenseDeleteResponse> deleteExpense(
+            @PathVariable("expenseId") Long expenseId
+    ) {
+        ExpenseDeleteResponse response = expenseService.deleteExpense(expenseId);
+        return ResponseEntity.ok(response); // 200 OK
+    }
+
     // 지출 반려 (API-020)
     // POST /api/expenses/{expenseId}/reject
     // 관리자/총무가 지출을 반려. rejectReason 필수(body)라 @Valid로 검증

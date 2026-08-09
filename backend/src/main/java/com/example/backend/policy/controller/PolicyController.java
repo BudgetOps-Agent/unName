@@ -57,9 +57,9 @@ public class PolicyController {
             // URL의 {teamId} 부분을 꺼냄
             @PathVariable("teamId") Long teamId,
 
-            // 글자값(title/policyType/content)을 DTO에 담아서 받음
-            // @Valid → DTO에 붙인 @NotBlank/@NotNull 검증 실행
-            // @ModelAttribute → form-data의 title/policyType 등을 각 필드로 자동 매핑 (JSON 안 씀)
+            // 글자값(policyType/content)을 DTO에 담아서 받음
+            // @Valid → DTO에 붙인 @NotNull 검증 실행
+            // @ModelAttribute → form-data의 policyType 등을 각 필드로 자동 매핑 (JSON 안 씀)
             @Valid @ModelAttribute PolicyCreateRequest request,
 
             // 회칙 파일 파트 (TEXT 방식일 땐 안 보내므로 required = false)

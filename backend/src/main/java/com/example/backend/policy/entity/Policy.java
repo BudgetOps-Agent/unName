@@ -30,9 +30,6 @@ public class Policy {
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
-    @Column(nullable = false)
-    private String title; // 정책 제목
-
     // 정책 등록 방식 (TEXT=직접입력/AI초안, FILE=파일업로드)
     @Enumerated(EnumType.STRING)
     @Column(name = "policy_type", nullable = false)
@@ -61,11 +58,10 @@ public class Policy {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Policy(Team team, User createdBy, String title, PolicyType policyType,
+    public Policy(Team team, User createdBy, PolicyType policyType,
                   String content, String fileName, String filePath, String mimeType) {
         this.team = team;
         this.createdBy = createdBy;
-        this.title = title;
         this.policyType = policyType;
         this.content = content;
         this.fileName = fileName;
@@ -76,9 +72,8 @@ public class Policy {
     }
 
     // 정책 내용 수정 (팀당 1개 덮어쓰기)
-    public void update(String title, PolicyType policyType,
+    public void update(PolicyType policyType,
                        String content, String fileName, String filePath, String mimeType) {
-        this.title = title;
         this.policyType = policyType;
         this.content = content;
         this.fileName = fileName;
