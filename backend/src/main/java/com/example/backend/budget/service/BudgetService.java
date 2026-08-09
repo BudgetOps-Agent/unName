@@ -1,11 +1,16 @@
 package com.example.backend.budget.service;
 
+import com.example.backend.budget.dto.BudgetInsightsResponse;
 import com.example.backend.budget.dto.BudgetResponse;
 import com.example.backend.budget.dto.BudgetUpdateRequest;
 import com.example.backend.budget.entity.Budget;
 import com.example.backend.budget.exception.BudgetErrorCode;
 import com.example.backend.budget.exception.BudgetException;
+import com.example.backend.budget.repository.BudgetInsightsCacheRepository;
 import com.example.backend.budget.repository.BudgetRepository;
+import com.example.backend.global.llm.LlmClient;
+import com.example.backend.global.llm.dto.BudgetInsightsRequest;
+import com.example.backend.global.llm.dto.BudgetInsightsResult;
 import com.example.backend.member.entity.User;
 import com.example.backend.member.exception.MemberErrorCode;
 import com.example.backend.member.exception.MemberException;
@@ -20,6 +25,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.YearMonth;
+
 @Service // 비즈니스 로직 담당이라는 표시, Spring이 자동으로 Bean 등록
 @RequiredArgsConstructor // final 필드들 받는 생성자를 Lombok이 자동으로 만들어줌
 public class BudgetService {
@@ -27,6 +34,8 @@ public class BudgetService {
     private final BudgetRepository budgetRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
+    private final LlmClient llmClient;                                   // LLM-016 예산 인사이트 호출용
+    private final BudgetInsightsCacheRepository budgetInsightsCacheRepository; // 인사이트 Redis 캐시
 
     // 예산 조회 (API-026)
     // 예산 관리 화면 상단의 총 예산 / 사용됨 / 잔여 / N% 사용됨에 쓰임
@@ -75,6 +84,41 @@ public class BudgetService {
 
         // 5. 바뀐 값으로 응답 (프론트가 바로 화면 갱신할 수 있게 계산값까지 같이 내려줌)
         return BudgetResponse.fromEntity(budget);
+    }
+
+    // AI 예산 관리 추천 (API-052, LLM-016)
+    // 예산 관리 화면 'AI 추천' 3블록. 캐시에 있으면 바로 주고, 없으면 LLM으로 생성해서 캐시에 저장.
+    //
+    // ※ 일부러 @Transactional 을 안 걸었다 —
+    //    LLM 생성이 최대 수십 초 블로킹이라, 그 시간 동안 DB 커넥션/트랜잭션을 잡고 있으면 낭비.
+    //    멤버 확인 쿼리들은 각자 자기 트랜잭션으로 짧게 돌고 끝난다.
+    public BudgetInsightsResponse getAiInsights(Long teamId, String period) {
+
+        // 1. 이 팀 소속인지 확인 (아니면 403) — 조회/수정과 동일한 접근 제어
+        checkTeamMember(teamId);
+
+        // 2. 캐시 키에 쓸 기간 확정 (미지정이면 당월 YYYY-MM)
+        boolean periodGiven = period != null && !period.isBlank();
+        String targetPeriod = periodGiven ? period : YearMonth.now().toString();
+
+        // 3. 캐시 확인 → 있으면 바로 반환 (화면이 빠르게 뜸)
+        BudgetInsightsResponse.Insights cached = budgetInsightsCacheRepository.find(teamId, targetPeriod);
+        if (cached != null) {
+            return BudgetInsightsResponse.builder().success(true).insights(cached).build();
+        }
+
+        // 4. 캐시 미스 → LLM-016 생성 (접수+폴링 블로킹). 실패 시 LlmException(502) 던짐
+        //    period 미지정이면 null로 보내 LLM이 당월로 처리하게 함
+        BudgetInsightsRequest request = BudgetInsightsRequest.builder()
+                .teamId(teamId)
+                .period(periodGiven ? period : null)
+                .build();
+        BudgetInsightsResult result = llmClient.budgetInsights(request);
+
+        // 5. 응답 변환 + 캐시 저장 (다음 호출부터는 캐시 히트)
+        BudgetInsightsResponse response = BudgetInsightsResponse.from(result);
+        budgetInsightsCacheRepository.save(teamId, targetPeriod, response.getInsights());
+        return response;
     }
 
     // 로그인한 사람이 이 팀 소속인지 확인하는 공통 부분

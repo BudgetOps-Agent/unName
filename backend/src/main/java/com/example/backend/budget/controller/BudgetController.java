@@ -1,5 +1,6 @@
 package com.example.backend.budget.controller;
 
+import com.example.backend.budget.dto.BudgetInsightsResponse;
 import com.example.backend.budget.dto.BudgetResponse;
 import com.example.backend.budget.dto.BudgetUpdateRequest;
 import com.example.backend.budget.service.BudgetService;
@@ -75,6 +76,34 @@ public class BudgetController {
             @Valid @RequestBody BudgetUpdateRequest request
     ) {
         BudgetResponse response = budgetService.updateBudget(teamId, request);
+        return ResponseEntity.ok(response); // 200 OK
+    }
+
+    // AI 예산 관리 추천 (API-052, LLM-016)
+    // GET /api/teams/{teamId}/budget/ai-insights?period=YYYY-MM
+    // 예산 관리 화면 'AI 추천 예산 관리' 3블록. 내부적으로 LLM-016을 호출하고 결과를 캐시해 반환한다.
+    // period는 선택 — 미지정 시 당월. verified=false면 프론트가 '확인 필요' 표시 권장.
+    @Operation(
+            summary = "AI 예산 관리 추천 (API-052)",
+            description = "예산 관리 화면의 'AI 추천' 3블록(카테고리 분석·예산 현황 분석·AI 추천)을 조회합니다. "
+                    + "내부적으로 LLM-016을 호출하며, 결과는 Redis에 캐시됩니다(기본 6시간). "
+                    + "period 미지정 시 당월 기준입니다."
+    )
+    @Parameter(name = "teamId", description = "팀 ID", required = true, example = "1")
+    @Parameter(name = "period", description = "기간(YYYY-MM), 선택. 미지정 시 당월", example = "2026-08")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(schema = @Schema(implementation = BudgetInsightsResponse.class))),
+            @ApiResponse(responseCode = "403", description = "해당 팀 소속이 아님"),
+            @ApiResponse(responseCode = "404", description = "사용자 또는 팀 정보를 찾을 수 없음"),
+            @ApiResponse(responseCode = "502", description = "LLM 서버 호출 실패/타임아웃")
+    })
+    @GetMapping("/api/teams/{teamId}/budget/ai-insights")
+    public ResponseEntity<BudgetInsightsResponse> getAiInsights(
+            @PathVariable("teamId") Long teamId,
+            @RequestParam(value = "period", required = false) String period
+    ) {
+        BudgetInsightsResponse response = budgetService.getAiInsights(teamId, period);
         return ResponseEntity.ok(response); // 200 OK
     }
 }
