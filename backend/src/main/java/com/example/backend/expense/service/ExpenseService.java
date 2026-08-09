@@ -799,4 +799,72 @@ public class ExpenseService {
         ExpenseStatus status = expense.getStatus();
         return status == ExpenseStatus.SUBMITTED || status == ExpenseStatus.ESCALATED;
     }
+
+    @Transactional(readOnly = true)
+    public String getReportCsv(Long teamId) {
+
+        List<Expense> expenses =
+                expenseRepository.findByTeamIdAndStatusOrderByApprovedAtDesc(
+                        teamId,
+                        ExpenseStatus.APPROVED
+                );
+
+        StringBuilder csv = new StringBuilder();
+
+        // UTF-8 BOM
+        csv.append('\uFEFF');
+
+        csv.append("항목,카테고리,요청자,날짜,금액\n");
+
+        for (Expense expense : expenses) {
+
+            String title = escapeCsv(expense.getTitle());
+
+            String category = expense.getCategory() == null
+                    ? ""
+                    : escapeCsv(expense.getCategory().name());
+
+            String requesterName = expense.getUser() == null
+                    ? ""
+                    : escapeCsv(expense.getUser().getName());
+
+            String date = expense.getApprovedAt() == null
+                    ? ""
+                    : expense.getApprovedAt().toLocalDate().toString();
+
+            String amount = expense.getAmount() == null
+                    ? ""
+                    : expense.getAmount().toString();
+
+            csv.append(title)
+                    .append(",")
+                    .append(category)
+                    .append(",")
+                    .append(requesterName)
+                    .append(",")
+                    .append(date)
+                    .append(",")
+                    .append(amount)
+                    .append("\n");
+        }
+
+        return csv.toString();
+    }
+
+    private String escapeCsv(String value) {
+
+        if (value == null) {
+            return "";
+        }
+
+        if (value.contains(",")
+                || value.contains("\"")
+                || value.contains("\n")
+                || value.contains("\r")) {
+
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+
+        return value;
+    }
 }

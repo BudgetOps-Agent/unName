@@ -101,6 +101,41 @@ public class ExpenseController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping(
+            value = "/api/teams/{teamId}/statistics/report/csv",
+            produces = "text/csv"
+    )
+    public ResponseEntity<byte[]> downloadReportCsv(
+            @PathVariable("teamId") Long teamId
+    ) {
+
+        String csv = expenseService.getReportCsv(teamId);
+
+        byte[] csvBytes = ("\uFEFF" + csv)
+                .getBytes(java.nio.charset.StandardCharsets.UTF_8);
+
+        String fileName = "정산리포트_" + teamId + ".csv";
+
+        return ResponseEntity.ok()
+                .header(
+                        org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename*=UTF-8''"
+                                + java.net.URLEncoder
+                                .encode(
+                                        fileName,
+                                        java.nio.charset.StandardCharsets.UTF_8
+                                )
+                                .replace("+", "%20")
+                )
+                .contentType(
+                        org.springframework.http.MediaType.parseMediaType(
+                                "text/csv; charset=UTF-8"
+                        )
+                )
+                .body(csvBytes);
+    }
+
+
     // 지출 등록 (API-016)
     // POST /api/teams/{teamId}/expenses
     // multipart/form-data로 받음 (글자값 + 영수증 파일 같이 오니까)
