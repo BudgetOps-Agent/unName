@@ -5,12 +5,11 @@ import AIBudgetRecommendCard from '@/features/teams/components/AIBudgetRecommend
 interface BudgetManagementCardProps {
     totalBudget: number;
     usedBudget: number;
+    remainingBudget: number;
+    usagePercentage: number;
 }
 
-const BudgetManagementCard = ({ totalBudget, usedBudget }: BudgetManagementCardProps) => {
-    const remainingBudget = totalBudget - usedBudget;
-    const usagePercentage = totalBudget > 0 ? Math.round((usedBudget / totalBudget) * 100) : 0;
-
+const BudgetManagementCard = ({ totalBudget, usedBudget, remainingBudget, usagePercentage }: BudgetManagementCardProps) => {
     return (
         <div className={styles.content}>
             <div className={styles.header}>
