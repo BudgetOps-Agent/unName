@@ -7,9 +7,11 @@ import Button from '@/shared/components/button/Button';
 import useExpenseDetail from '@/features/teams/hooks/useExpenseDetail';
 import useApproveExpense from '@/features/teams/hooks/useApproveExpense';
 import useRejectExpense from '@/features/teams/hooks/useRejectExpense';
+import useDeleteExpense from '@/features/teams/hooks/useDeleteExpense';
 import ExpenseInfoCard from '@/features/teams/components/ExpenseInfoCard/ExpenseInfoCard';
 import ReceiptCard from '@/features/teams/components/ReceiptCard/ReceiptCard';
 import AIReviewCard from '@/features/teams/components/AIReviewCard/AIReviewCard';
+import DeleteExpenseCard from '@/features/teams/components/DeleteExpenseCard/DeleteExpenseCard';
 
 const aiReviewers = [
     {
@@ -40,7 +42,15 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const CATEGORY_LABEL: Record<string, string> = {
+    회의: '회의',
     IT_인프라: 'IT/인프라',
+    교육: '교육',
+    식비: '식비',
+    교통: '교통',
+    장소_대관: '장소/대관',
+    비품: '비품',
+    행사_활동: '행사/활동',
+    기타: '기타',
 };
 
 const ExpenseDetail = () => {
@@ -52,9 +62,11 @@ const ExpenseDetail = () => {
     const { expense, isLoading, error, refetch } = useExpenseDetail(validExpenseId);
     const { isSubmitting: isApproving, submitApprove } = useApproveExpense();
     const { isSubmitting: isRejectingSubmit, submitReject } = useRejectExpense();
+    const { isSubmitting: isDeleting, submitDelete } = useDeleteExpense();
 
     const [isRejecting, setIsRejecting] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     const handleApprove = async () => {
         if (!validExpenseId) return;
@@ -77,6 +89,18 @@ const ExpenseDetail = () => {
             setIsRejecting(false);
             setRejectReason('');
             refetch();
+        } else {
+            alert(result.message);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!validExpenseId) return;
+
+        const result = await submitDelete(validExpenseId);
+
+        if (result.success) {
+            router.push(`/teams/${teamId}/expenses`);
         } else {
             alert(result.message);
         }
@@ -121,9 +145,38 @@ const ExpenseDetail = () => {
 
     return (
         <div className={styles.detailContainer}>
-            <Link href={`/teams/${teamId}/expenses`} className={`link-back ${styles.backLink}`}>
-                <span>지출 내역</span>
-            </Link>
+            <div className={styles.topBar}>
+                <Link href={`/teams/${teamId}/expenses`} className={`link-back ${styles.backLink}`}>
+                    <span>지출 내역</span>
+                </Link>
+
+                {mappedExpense.status === '대기' && (
+                    <div className={styles.topBarActions}>
+                        <Button
+                            className={styles.editTriggerBtn}
+                            text="수정"
+                            style="tertiary"
+                            onClick={() => router.push(`/teams/${teamId}/expenses/new?edit=${validExpenseId}`)}
+                        />
+                        <Button
+                            className={styles.deleteTriggerBtn}
+                            text="삭제"
+                            style="tertiary"
+                            onClick={() => setIsDeleteModalOpen(true)}
+                        />
+                    </div>
+                )}
+            </div>
+
+            {isDeleteModalOpen && (
+                <div className={styles.modalOverlay}>
+                    <DeleteExpenseCard
+                        onClose={() => setIsDeleteModalOpen(false)}
+                        onConfirm={handleDelete}
+                        isSubmitting={isDeleting}
+                    />
+                </div>
+            )}
 
             <ExpenseInfoCard expense={mappedExpense} />
 

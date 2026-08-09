@@ -1,16 +1,20 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import styles from './newexpense.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
 import useCreateExpense from '@/features/teams/hooks/useCreateExpense';
+import useUpdateExpense from '@/features/teams/hooks/useUpdateExpense';
+import useExpenseDetail from '@/features/teams/hooks/useExpenseDetail';
 
 const NewExpense = () => {
 
     const router = useRouter();
-    const { teamId } = router.query;
+    const { teamId, edit } = router.query;
     const validTeamId = typeof teamId === 'string' ? teamId : undefined;
+    const editExpenseId = typeof edit === 'string' ? edit : undefined;
+    const isEditMode = editExpenseId !== undefined;
 
     const [title, setTitle] = useState('');
     const [amount, setAmount] = useState('');
@@ -18,7 +22,19 @@ const NewExpense = () => {
     const [description, setDescription] = useState('');
     const [receipt, setReceipt] = useState<File | null>(null);
 
-    const { isSubmitting, submitExpense } = useCreateExpense(validTeamId);
+    const { isSubmitting: isCreating, submitExpense } = useCreateExpense(validTeamId);
+    const { isSubmitting: isUpdating, submitUpdate } = useUpdateExpense(editExpenseId);
+    const { expense } = useExpenseDetail(editExpenseId);
+    const isSubmitting = isEditMode ? isUpdating : isCreating;
+
+    useEffect(() => {
+        if (expense) {
+            setTitle(expense.title);
+            setAmount(String(expense.amount));
+            setDate(expense.expenseDate);
+            setDescription(expense.description ?? '');
+        }
+    }, [expense]);
 
     const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
         setAmount(e.target.value.replace(/[^0-9]/g, ''));
@@ -28,9 +44,22 @@ const NewExpense = () => {
         setReceipt(e.target.files?.[0] ?? null);
     };
 
-    const isFormValid = title.trim() !== '' && amount !== '' && date !== '' && receipt !== null;
+    const isFormValid = isEditMode
+        ? title.trim() !== '' && amount !== ''
+        : title.trim() !== '' && amount !== '' && date !== '' && receipt !== null;
 
     const handleSubmit = async () => {
+        if (isEditMode) {
+            const result = await submitUpdate({ title, amount, description, receipt });
+
+            if (result.success) {
+                router.push(`/teams/${validTeamId}/expenses/${editExpenseId}`);
+            } else {
+                alert(result.message);
+            }
+            return;
+        }
+
         if (!receipt) return;
 
         const result = await submitExpense({
@@ -96,8 +125,12 @@ const NewExpense = () => {
                         className={styles.dateInput}
                         type="date"
                         value={date}
+                        disabled={isEditMode}
                         onChange={(e) => setDate(e.target.value)}
                     />
+                    {isEditMode && (
+                        <p className={styles.helperText}>ⓘ 지출 발생일은 수정할 수 없어요</p>
+                    )}
                 </div>
 
                 <div className={styles.formGroup}>
@@ -114,9 +147,13 @@ const NewExpense = () => {
 
                 <div className={styles.formGroup}>
                     <label className={styles.label}>
-                        영수증 <span className={styles.required}>*</span>
+                        영수증 {!isEditMode && <span className={styles.required}>*</span>}
                     </label>
-                    <p className={styles.helperText}>ⓘ 영수증을 첨부해야 지출을 요청할 수 있어요</p>
+                    <p className={styles.helperText}>
+                        {isEditMode
+                            ? 'ⓘ 새 파일을 선택하면 기존 영수증을 교체해요'
+                            : 'ⓘ 영수증을 첨부해야 지출을 요청할 수 있어요'}
+                    </p>
 
                     <label htmlFor="receipt" className={styles.dropzone}>
                         <input
@@ -131,6 +168,8 @@ const NewExpense = () => {
                         </span>
                         {receipt ? (
                             <p className={styles.dropzoneTitle}>{receipt.name}</p>
+                        ) : isEditMode ? (
+                            <p className={styles.dropzoneTitle}>기존 영수증 유지 중</p>
                         ) : (
                             <>
                                 <p className={styles.dropzoneTitle}>jpg, png, pdf 파일 업로드</p>
@@ -141,13 +180,25 @@ const NewExpense = () => {
                 </div>
             </Card>
 
-            <Button
-                text={isSubmitting ? "요청하는 중..." : "요청하기"}
-                style="tertiary"
-                size="lg"
-                disabled={!isFormValid || isSubmitting}
-                onClick={handleSubmit}
-            />
+            {isEditMode ? (
+                <div className={styles.editSubmitBar}>
+                    <Button
+                        className={styles.completeBtn}
+                        text={isSubmitting ? "저장하는 중..." : "완료"}
+                        style="tertiary"
+                        disabled={!isFormValid || isSubmitting}
+                        onClick={handleSubmit}
+                    />
+                </div>
+            ) : (
+                <Button
+                    text={isSubmitting ? "요청하는 중..." : "요청하기"}
+                    style="tertiary"
+                    size="lg"
+                    disabled={!isFormValid || isSubmitting}
+                    onClick={handleSubmit}
+                />
+            )}
         </div>
     )
 }
