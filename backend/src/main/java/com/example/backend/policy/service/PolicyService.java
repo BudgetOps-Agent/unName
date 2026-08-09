@@ -4,6 +4,7 @@ import com.example.backend.budget.entity.Budget;
 import com.example.backend.budget.repository.BudgetRepository;
 import com.example.backend.global.file.FileStorageService;
 import com.example.backend.global.llm.LlmClient;
+import com.example.backend.global.llm.dto.ContextRefreshRequest;
 import com.example.backend.global.llm.dto.PolicyDraftRequest;
 import com.example.backend.global.llm.dto.PolicyDraftResponse;
 import com.example.backend.member.entity.User;
@@ -161,11 +162,16 @@ public class PolicyService {
             policyRepository.save(policy);
         }
 
-        // LLM 재인덱싱 트리거 자리
-        // 회칙이 바뀌면 AI 지출 심사 기준도 바뀌어야 하므로 Agent Server에 알려줘야 함.
-        // 반려 사유 전달(ExpenseService)이랑 똑같이
-        // @TransactionalEventListener(AFTER_COMMIT) + @Async로 커밋 성공 후 비동기 전송 예정.
-        // Agent Server URL 확정되면 붙임.
+        // LLM-006 회칙 재인덱싱 트리거
+        // 회칙이 바뀌면 AI 지출 심사 기준도 바뀌므로 LLM에 알려서 다시 학습시켜야 함.
+        // 원문은 보내지 않고, LLM이 BE-005로 되물어 감(pull). changeType은 회칙 저장이라 "rule".
+        // contextRefresh()는 실패해도 예외를 안 던짐(로그만) → 회칙 저장 흐름을 막지 않음(analyze와 동일).
+        llmClient.contextRefresh(
+                ContextRefreshRequest.builder()
+                        .teamId(teamId)
+                        .changeType("rule")
+                        .build()
+        );
 
         // 8. 응답 반환 (명세: { success, policyId })
         return PolicyCreateResponse.builder()
