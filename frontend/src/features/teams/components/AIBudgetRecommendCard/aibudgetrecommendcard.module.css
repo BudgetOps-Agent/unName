@@ -52,6 +52,7 @@
 }
 
 .analysisText strong {
+    display: inline-block;
     font-weight: 700;
 }
 

@@ -1,6 +1,6 @@
 .card {
     width: 100%;
-    min-width: 0;
+    min-width: 400px;
     max-width: 100%;
     padding: 24px;
     border-radius: 24px;
@@ -11,6 +11,8 @@
 
 .smallCard {
     min-width: 384px;
+    max-width: 70%;
+    width: auto;
     box-sizing: border-box;
 }
 
@@ -115,5 +117,9 @@
         width: 100%;
         min-width: 0;
         max-width: 100%;
+    }
+        
+    .smallCard {
+        margin: 0 40px;
     }
 }

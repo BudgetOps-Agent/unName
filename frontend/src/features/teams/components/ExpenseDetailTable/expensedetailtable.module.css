@@ -16,7 +16,7 @@
 }
 
 .reportTable {
-    width: 700px;
+    width: 100%;
     max-width: none;
     border-collapse: collapse;
 }
@@ -78,4 +78,10 @@
     font-size: 14px;
     font-weight: 700;
     text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+    .reportTable {
+        width: 700px;
+    }
 }
