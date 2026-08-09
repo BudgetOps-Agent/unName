@@ -35,6 +35,7 @@ public class ExpenseListResponse {
         private String status; // SUBMITTED/ESCALATED/APPROVED/REJECTED 그대로 내려줌
         private String requesterName; // 작성자 이름
         private String date; // 지출 발생일 (실제 돈 쓴 날)
+        private String processedBy; // 최종 처리 주체(AI/HUMAN). 아직 처리 전이면 null
 
         // Expense 엔티티를 ExpenseInfo(DTO)로 변환하는 메서드
         public static ExpenseInfo fromEntity(Expense expense) {
@@ -45,6 +46,8 @@ public class ExpenseListResponse {
                     .status(expense.getStatus().name())
                     .requesterName(expense.getUser().getName()) // User 엔티티 타고 들어가서 이름 꺼내기
                     .date(expense.getExpenseDate().toString())
+                    // 처리 전(SUBMITTED/ESCALATED)이면 processedBy가 null → 그대로 null 내려줌
+                    .processedBy(expense.getProcessedBy() == null ? null : expense.getProcessedBy().name())
                     .build();
         }
     }
