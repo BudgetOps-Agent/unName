@@ -35,7 +35,7 @@ const BudgetEditModal = ({ teamId, currentTotalBudget, onClose, onSuccess }: Bud
     return (
         <div className={styles.modalOverlay}>
             <Card small>
-                <p className={styles.title}>예산 수정</p>
+                <p className={styles.title}>예산 추가</p>
 
                 <div className={styles.formGroup}>
                     <label className={styles.label}>금액</label>

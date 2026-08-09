@@ -22,7 +22,7 @@ const Budget = () => {
 
     return (
         <>
-            <ContentTitle title="모임 관리" subTitle="예산과 회칙·정책을 관리해요" onClick={() => setIsEditModalOpen(true)} btnText="예산 수정" />
+            <ContentTitle title="모임 관리" subTitle="예산과 회칙·정책을 관리해요" onClick={() => setIsEditModalOpen(true)} btnText="예산 추가" />
 
             {isEditModalOpen && (
                 <BudgetEditModal
@@ -46,7 +46,12 @@ const Budget = () => {
                     ) : isLoading || !budget ? (
                         <p className={styles.placeholder}>불러오는 중이에요...</p>
                     ) : (
-                        <BudgetManagementCard totalBudget={budget.totalBudget} usedBudget={budget.usedBudget} />
+                        <BudgetManagementCard
+                            totalBudget={budget.totalBudget}
+                            usedBudget={budget.usedBudget}
+                            remainingBudget={budget.remainingBudget}
+                            usagePercentage={budget.usagePercentage}
+                        />
                     )
                 )}
 
