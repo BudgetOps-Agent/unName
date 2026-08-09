@@ -1,0 +1,11 @@
+# 빌드 산출물·로컬 파일은 이미지에 안 넣음 (빌드는 컨테이너 안에서 새로 함)
+build/
+out/
+bin/
+.gradle/
+uploads/
+*.log
+
+# IDE
+.idea/
+*.iml
