@@ -111,6 +111,12 @@ public enum TeamMemberErrorCode {
     NOT_ADMIN_FOR_REMOVE(
             HttpStatus.FORBIDDEN,
             "관리자만 멤버를 강퇴할 수 있습니다."
+    ),
+
+    // 관리자가 아닌데 회비·승인정책 설정을 바꾸려 할 때 (API-029)
+    NOT_ADMIN_FOR_SETTINGS(
+            HttpStatus.FORBIDDEN,
+            "관리자만 설정을 변경할 수 있습니다."
     );
 
     private final HttpStatus status;

@@ -161,8 +161,12 @@ public class ExpenseService {
         User requester = userRepository.findByEmail(email)
             .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
 
-        teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+        TeamMember teamMember = teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
                 .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+        // 관리자·총무만 정산 리포트 조회 가능
+        if (teamMember.getRole() != TeamRole.ADMIN && teamMember.getRole() != TeamRole.ACCOUNTANT) {
+            throw new ExpenseException(ExpenseErrorCode.NOT_AUTHORIZED_TO_VIEW_REPORT);
+        }
 
         PageRequest pageable = PageRequest.of(page, size);
 
@@ -219,9 +223,12 @@ public class ExpenseService {
         User requester = userRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
 
-        // 3. 요청자가 이 모임 소속인지 확인 (남의 모임 정산 못 보게 막음)
-        teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+        // 3. 요청자가 이 모임 소속인지 확인 (남의 모임 정산 못 보게 막음) + 관리자·총무만 조회 가능
+        TeamMember teamMember = teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
                 .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+        if (teamMember.getRole() != TeamRole.ADMIN && teamMember.getRole() != TeamRole.ACCOUNTANT) {
+            throw new ExpenseException(ExpenseErrorCode.NOT_AUTHORIZED_TO_VIEW_REPORT);
+        }
 
         // 4. 승인된 지출 목록 조회 (승인일 최신순)
         List<Expense> approvedExpenses =
@@ -648,6 +655,9 @@ public class ExpenseService {
     @Transactional(readOnly = true)
     public MonthlyStatsResponse getMonthlyStats(Long teamId, Integer months) {
 
+        // 0. 이 팀 소속인지 확인 (아니면 403) — teamId만 바꿔 남의 팀 통계 못 보게
+        checkTeamMembership(teamId);
+
         // 1. months 파라미터가 없으면 기본값 5개월
         int monthCount = (months == null) ? 5 : months;
 
@@ -686,6 +696,9 @@ public class ExpenseService {
     @Transactional(readOnly = true)
     public CategoryStatsResponse getCategoryStats(Long teamId) {
 
+        // 0. 이 팀 소속인지 확인 (아니면 403) — teamId만 바꿔 남의 팀 통계 못 보게
+        checkTeamMembership(teamId);
+
         // 1. 이번 달 범위 계산 (이번 달 1일 00:00 ~ 다음 달 1일 00:00 직전)
         //    approvedAt이 LocalDateTime이라 [start, end) 반열린 구간으로 걸러야 경계가 깔끔함
         LocalDateTime start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
@@ -709,6 +722,16 @@ public class ExpenseService {
                 .success(true)
                 .statistics(statistics)
                 .build();
+    }
+
+    // 이 팀 소속인지 확인하는 공통 부분 (통계·CSV 등 조회에서 재사용)
+    // 소속이 아니면 403 — teamId만 바꿔서 남의 팀 데이터 못 보게 막음
+    private void checkTeamMembership(Long teamId) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+        teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
     }
 
     // 지출 수정 (API-018)
@@ -802,6 +825,9 @@ public class ExpenseService {
 
     @Transactional(readOnly = true)
     public String getReportCsv(Long teamId) {
+
+        // 이 팀 소속인지 확인 (아니면 403) — teamId만 바꿔 남의 팀 CSV 못 받게
+        checkTeamMembership(teamId);
 
         List<Expense> expenses =
                 expenseRepository.findByTeamIdAndStatusOrderByApprovedAtDesc(

@@ -32,10 +32,16 @@ public enum BudgetErrorCode {
                 "예산 정보를 찾을 수 없습니다."
             ),
 
-    // 관리자가 아닌데 예산을 수정하려 할 때 (API-027)
+    // 관리자·총무가 아닌데 예산을 수정하려 할 때 (API-027)
     NOT_ADMIN_FOR_BUDGET(
             HttpStatus.FORBIDDEN,
             "관리자만 예산을 수정할 수 있습니다."
+    ),
+
+    // 관리자·총무가 아닌데 예산·AI예산을 조회하려 할 때 (API-026·052)
+    NOT_AUTHORIZED_TO_VIEW(
+            HttpStatus.FORBIDDEN,
+            "관리자 또는 총무만 조회할 수 있습니다."
     );
     private final HttpStatus status;
     private final String message;

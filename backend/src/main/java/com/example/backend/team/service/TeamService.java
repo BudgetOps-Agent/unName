@@ -109,6 +109,18 @@ public class TeamService {
     // PATCH 방식: 보낸 필드만 반영, 안 보낸 필드(null)는 안 건드림
     @Transactional
     public void updateSettings(Long teamId, UpdateSettingsRequest request) {
+
+        // 0) 권한 확인 — 이 팀 소속 + 관리자만 회비·승인정책을 바꿀 수 있음 (API-029)
+        //    (기존엔 이 검사가 없어 로그인만 하면 아무나 남의 팀 설정을 바꿀 수 있었음)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+        TeamMember member = teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+        if (member.getRole() != TeamRole.ADMIN) {
+            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN_FOR_SETTINGS);
+        }
+
         // 해당 팀의 settings 조회 (모임 생성 때 만들어진 row)
         TeamSettings settings = teamSettingsRepository.findByTeamId(teamId)
                 .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.TEAM_NOT_FOUND));

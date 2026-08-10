@@ -40,7 +40,7 @@ public class CorsConfig {
                                 "http://localhost:3001",
                                 "http://localhost:3002",
                                 "http://localhost:8081",
-                                "https://klein-specialists-appreciation-suggest.trycloudflare.com/"
+                                "https://un-name.vercel.app"    // 프론트 배포(Vercel)
                         )
                         .allowedMethods("*")                // 모든 HTTP Method 허용 -> GET, POST, PUT, PATCH, DELETE 등
                         .allowedHeaders("*")                // 모든 요청 헤더 허용
