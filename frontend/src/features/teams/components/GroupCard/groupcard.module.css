@@ -58,4 +58,7 @@
       width: 50%;
       word-break: break-all;
   }
+  .progressFooter p:last-child {
+        text-align: right;
+  }
 }

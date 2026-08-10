@@ -8,8 +8,16 @@
     font-weight: 700;
 }
 
+.table {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
 .reportTable {
     width: 100%;
+    max-width: none;
     border-collapse: collapse;
 }
 
@@ -63,9 +71,17 @@
     border-top: 1.6px solid rgba(0, 0, 0, 0.06);
 }
 
-.reportTable td .noData {
+.reportTable td.noData {
+    height: 51px;
+    padding: 12px 20px;
     color: var(--gray-8);
     font-size: 14px;
     font-weight: 700;
     text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+    .reportTable {
+        width: 700px;
+    }
 }
