@@ -1,9 +1,9 @@
 import api from "@/shared/api/api";
 import { AcceptInviteResponse, RejectInviteResponse, InviteMemberResponse, TransferAdminResponse, RemoveMemberResponse, ChangeRoleResponse, ResponseMyTeams, CreateTeamRequest, CreateTeamResponse, UpdateTeamSettingsRequest, UpdateTeamSettingsResponse } from "@/types/team";
-import { ResponseExpenses, ExpenseCreateResponse, ExpenseDetailResponse, ExpenseApproveResponse, ExpenseRejectResponse, ExpenseDeleteResponse, ExpenseUpdateResponse } from "@/types/expense";
+import { ResponseExpenses, ExpenseCreateResponse, ExpenseDetailResponse, ExpenseApproveResponse, ExpenseRejectResponse, ExpenseDeleteResponse, ExpenseUpdateResponse, ExpenseReviewResultResponse, CategoryStatsResponse } from "@/types/expense";
 import { Member, ResponseTeamMembers } from "@/types/member";
-import { DashboardResponse, MonthlyStatsResponse } from "@/types/dashboard";
-import { BudgetResponse } from "@/types/budget";
+import { DashboardResponse, MonthlyStatsResponse, AiSummaryResponse } from "@/types/dashboard";
+import { BudgetResponse, BudgetInsightsResponse } from "@/types/budget";
 import { PolicyCreateResponse, PolicyRecommendResponse } from "@/types/policy";
 import { AxiosResponse } from "axios";
 
@@ -79,8 +79,20 @@ export const getExpenseDetail = (expenseId: string): Promise<AxiosResponse<Expen
   return api.get<ExpenseDetailResponse>(`/api/expenses/${expenseId}`);
 }
 
+export const getExpenseReviewResult = (expenseId: string): Promise<AxiosResponse<ExpenseReviewResultResponse>> => {
+  return api.get<ExpenseReviewResultResponse>(`/api/expenses/${expenseId}/review-result`);
+}
+
+export const getCategoryStats = (teamId: string): Promise<AxiosResponse<CategoryStatsResponse>> => {
+  return api.get<CategoryStatsResponse>(`/api/teams/${teamId}/statistics/category`);
+}
+
 export const getDashboard = (teamId: string): Promise<AxiosResponse<DashboardResponse>> => {
   return api.get<DashboardResponse>(`/api/teams/${teamId}/dashboard`);
+}
+
+export const getAiSummary = (teamId: string): Promise<AxiosResponse<AiSummaryResponse>> => {
+  return api.get<AiSummaryResponse>(`/api/teams/${teamId}/dashboard/ai-summary`);
 }
 
 export const getMonthlyStats = (teamId: string, months?: number): Promise<AxiosResponse<MonthlyStatsResponse>> => {
@@ -95,6 +107,12 @@ export const getBudget = (teamId: string): Promise<AxiosResponse<BudgetResponse>
 
 export const updateBudget = (teamId: string, totalBudget: number): Promise<AxiosResponse<BudgetResponse>> => {
   return api.patch<BudgetResponse>(`/api/teams/${teamId}/budget`, { totalBudget });
+}
+
+export const getBudgetInsights = (teamId: string, period?: string): Promise<AxiosResponse<BudgetInsightsResponse>> => {
+  return api.get<BudgetInsightsResponse>(`/api/teams/${teamId}/budget/ai-insights`, {
+    params: period ? { period } : undefined,
+  });
 }
 
 export const approveExpense = (expenseId: string): Promise<AxiosResponse<ExpenseApproveResponse>> => {

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
 import useExpenseDetail from '@/features/teams/hooks/useExpenseDetail';
+import useExpenseReviewResult from '@/features/teams/hooks/useExpenseReviewResult';
 import useApproveExpense from '@/features/teams/hooks/useApproveExpense';
 import useRejectExpense from '@/features/teams/hooks/useRejectExpense';
 import useDeleteExpense from '@/features/teams/hooks/useDeleteExpense';
@@ -12,45 +13,13 @@ import ExpenseInfoCard from '@/features/teams/components/ExpenseInfoCard/Expense
 import ReceiptCard from '@/features/teams/components/ReceiptCard/ReceiptCard';
 import AIReviewCard from '@/features/teams/components/AIReviewCard/AIReviewCard';
 import DeleteExpenseCard from '@/features/teams/components/DeleteExpenseCard/DeleteExpenseCard';
-
-const aiReviewers = [
-    {
-        id: 1,
-        verdict: 'HOLD' as const,
-        opinion: '회칙 제3조 회의비 항목에 해당하며 지출 한도 내에 있어요.',
-        reason: '회의비 월 한도 100,000원 중 45,000원 사용 (45%)',
-    },
-    {
-        id: 2,
-        verdict: 'FAIL' as const,
-        opinion: '회의비 카테고리 잔여 예산이 충분해요.',
-        reason: '회의비 잔여 455,000원, 요청액 45,000원 (9.9%)',
-    },
-    {
-        id: 3,
-        verdict: 'PASS' as const,
-        opinion: '정상적인 지출 패턴이에요.',
-        reason: '유사 지출 대비 금액·빈도 모두 정상 범위',
-    },
-];
+import { CATEGORY_LABEL } from '@/features/teams/constants/category';
 
 const STATUS_LABEL: Record<string, string> = {
     SUBMITTED: '대기',
     ESCALATED: '대기',
     APPROVED: '승인',
     REJECTED: '반려',
-};
-
-const CATEGORY_LABEL: Record<string, string> = {
-    회의: '회의',
-    IT_인프라: 'IT/인프라',
-    교육: '교육',
-    식비: '식비',
-    교통: '교통',
-    장소_대관: '장소/대관',
-    비품: '비품',
-    행사_활동: '행사/활동',
-    기타: '기타',
 };
 
 const ExpenseDetail = () => {
@@ -60,6 +29,7 @@ const ExpenseDetail = () => {
     const validExpenseId = typeof expenseId === 'string' ? expenseId : undefined;
 
     const { expense, isLoading, error, refetch } = useExpenseDetail(validExpenseId);
+    const { review, pollTimedOut: reviewPollTimedOut, refetch: refetchReview } = useExpenseReviewResult(validExpenseId);
     const { isSubmitting: isApproving, submitApprove } = useApproveExpense();
     const { isSubmitting: isRejectingSubmit, submitReject } = useRejectExpense();
     const { isSubmitting: isDeleting, submitDelete } = useDeleteExpense();
@@ -75,6 +45,7 @@ const ExpenseDetail = () => {
 
         if (result.success) {
             refetch();
+            refetchReview();
         } else {
             alert(result.message);
         }
@@ -89,6 +60,7 @@ const ExpenseDetail = () => {
             setIsRejecting(false);
             setRejectReason('');
             refetch();
+            refetchReview();
         } else {
             alert(result.message);
         }
@@ -182,13 +154,26 @@ const ExpenseDetail = () => {
 
             <ReceiptCard receiptUrl={receiptUrl} />
 
-            <AIReviewCard
-                reviewers={aiReviewers}
-                finalVerdict="APPROVED"
-                processType="ESCALATED"
-                processor="AI 에이전트"
-                category="회의비"
-            />
+            {review ? (
+                <AIReviewCard
+                    reviewers={review.reviewers}
+                    finalVerdict={review.finalVerdict}
+                    processType={review.processType}
+                    processor={review.processor}
+                    category={CATEGORY_LABEL[review.category] ?? review.category}
+                />
+            ) : (
+                <Card className={styles.reviewPendingCard}>
+                    <p className={styles.reviewPendingText}>
+                        {reviewPollTimedOut
+                            ? 'ⓘ AI 심사가 예상보다 오래 걸리고 있어요.'
+                            : 'ⓘ AI가 아직 심사 중이에요. 잠시 후 자동으로 갱신돼요.'}
+                    </p>
+                    {reviewPollTimedOut && (
+                        <Button className={styles.errorBtn} text="다시 확인" onClick={() => refetchReview()} style="tertiary" />
+                    )}
+                </Card>
+            )}
 
             {mappedExpense.status === '대기' && (
                 isRejecting ? (

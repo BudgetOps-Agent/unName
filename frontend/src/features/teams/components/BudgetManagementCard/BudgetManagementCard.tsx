@@ -3,13 +3,14 @@ import ProgressBar from '@/shared/components/progressbar/ProgressBar';
 import AIBudgetRecommendCard from '@/features/teams/components/AIBudgetRecommendCard/AIBudgetRecommendCard';
 
 interface BudgetManagementCardProps {
+    teamId: string | undefined;
     totalBudget: number;
     usedBudget: number;
     remainingBudget: number;
     usagePercentage: number;
 }
 
-const BudgetManagementCard = ({ totalBudget, usedBudget, remainingBudget, usagePercentage }: BudgetManagementCardProps) => {
+const BudgetManagementCard = ({ teamId, totalBudget, usedBudget, remainingBudget, usagePercentage }: BudgetManagementCardProps) => {
     return (
         <div className={styles.content}>
             <div className={styles.header}>
@@ -33,7 +34,7 @@ const BudgetManagementCard = ({ totalBudget, usedBudget, remainingBudget, usageP
                 </div>
             </div>
 
-            <AIBudgetRecommendCard />
+            <AIBudgetRecommendCard teamId={teamId} />
         </div>
     );
 };

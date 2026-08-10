@@ -51,23 +51,23 @@ const PROCESS_BADGE_STYLE: Record<ProcessType, 'purple' | 'orange'> = {
     ESCALATED: 'orange',
 };
 
-const FINAL_VERDICT_LABEL: Record<FinalVerdict, string> = {
-    SUBMITTED: 'AI 검토중',
-    ESCALATED: '에스컬레이션',
-    APPROVED: 'AI 승인',
-    REJECTED: 'AI 반려',
+// processType이 ESCALATED면 AI 자체 결론은 항상 "에스컬레이션"(나중에 관리자가 승인/반려해도 AI의 최종 판정은 안 바뀜)
+// AUTO일 땐 관리자가 개입할 방법이 없어(대기 화면 버튼은 상태==='대기'일 때만 노출) finalVerdict가 곧 AI의 판정과 동일
+const getFinalVerdictBadge = (processType: ProcessType, finalVerdict: FinalVerdict): { label: string; style: 'orange' | 'green' | 'red' } => {
+    if (processType === 'ESCALATED') return { label: '에스컬레이션', style: 'orange' };
+    return finalVerdict === 'REJECTED'
+        ? { label: 'AI 반려', style: 'red' }
+        : { label: 'AI 승인', style: 'green' };
 };
 
-const FINAL_VERDICT_BADGE_STYLE: Record<FinalVerdict, 'blue' | 'orange' | 'green' | 'red'> = {
-    SUBMITTED: 'blue',
-    ESCALATED: 'orange',
-    APPROVED: 'green',
-    REJECTED: 'red',
-};
-
-const REVIEWER_NAMES = ['회칙 심사관', '예산 심사관', '이상탐지 심사관'];
+// 백엔드 응답에 심사관 종류(auditor) 필드가 없어 opinions[] 순서로만 구분됨 (회칙→예산→이상탐지→증빙 순서 가정)
+const REVIEWER_NAMES = ['회칙 심사관', '예산 심사관', '이상탐지 심사관', '증빙 심사관'];
 
 const AIReviewCard = ({ reviewers, finalVerdict, processType, processor, category }: AIReviewCardProps) => {
+
+    const finalVerdictBadge = getFinalVerdictBadge(processType, finalVerdict);
+    // 에스컬레이션 후 아직 관리자·총무가 승인/반려하지 않았으면 처리 주체 미정
+    const processorDisplay = finalVerdict === 'ESCALATED' ? '-' : processor;
 
     return (
         <Card className={styles.reviewCard}>
@@ -93,7 +93,7 @@ const AIReviewCard = ({ reviewers, finalVerdict, processType, processor, categor
                     <div key={reviewer.id} className={styles.reviewerBox}>
                         <div className={styles.reviewerHeader}>
                             <span className={styles.reviewerName}>
-                                {REVIEWER_NAMES[index]}
+                                {REVIEWER_NAMES[index] ?? `심사관 ${index + 1}`}
                             </span>
                             <Badge
                                 icon={<img src={VERDICT_ICON[reviewer.verdict]} alt="" width={12} height={12} />}
@@ -115,11 +115,11 @@ const AIReviewCard = ({ reviewers, finalVerdict, processType, processor, categor
             <div className={styles.summaryRow}>
                 <div className={styles.summaryBox}>
                     <span className={styles.summaryLabel}>AI 최종 판정</span>
-                    <Badge text={FINAL_VERDICT_LABEL[finalVerdict]} style={FINAL_VERDICT_BADGE_STYLE[finalVerdict]} />
+                    <Badge text={finalVerdictBadge.label} style={finalVerdictBadge.style} />
                 </div>
                 <div className={styles.summaryBox}>
                     <span className={styles.summaryLabel}>처리 주체</span>
-                    <p className={styles.summaryValue}>{processor}</p>
+                    <p className={styles.summaryValue}>{processorDisplay}</p>
                 </div>
             </div>
 

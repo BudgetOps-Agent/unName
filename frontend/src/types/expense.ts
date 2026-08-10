@@ -54,6 +54,30 @@ export interface ExpenseUpdateResponse {
     };
 }
 
+export interface CategoryStatsResponse {
+    success: boolean;
+    statistics: {
+        category: string;
+        amount: number;
+    }[];
+}
+
+export interface ExpenseReviewResultResponse {
+    success: boolean;
+    review: {
+        reviewers: {
+            id: number;
+            verdict: 'PASS' | 'FAIL' | 'HOLD';
+            opinion: string;
+            reason: string;
+        }[];
+        finalVerdict: 'SUBMITTED' | 'ESCALATED' | 'APPROVED' | 'REJECTED';
+        processType: 'AUTO' | 'ESCALATED';
+        processor: string;
+        category: string;
+    } | null;
+}
+
 export interface ResponseExpenses {
     success: boolean;
     counts: {
