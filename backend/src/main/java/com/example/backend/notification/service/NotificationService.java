@@ -59,7 +59,8 @@ public class NotificationService {
     private void notifyResult(Expense expense, User processor, NotificationType type) {
         Long teamId = expense.getTeam().getId();
         User writer = expense.getUser();        // 작성자
-        Long processorId = processor.getId();   // 처리한 사람 (본인은 제외)
+        // 처리한 사람 (본인은 제외). AI가 자동 처리한 경우 processor=null → 제외 대상 없음
+        Long processorId = (processor != null) ? processor.getId() : null;
 
         // 수신자 모으기 (LinkedHashSet = 순서 유지 + 중복 자동 제거)
         Set<User> receivers = new LinkedHashSet<>();
@@ -69,7 +70,7 @@ public class NotificationService {
 
         // 2) 나머지 관리자·총무 (처리자 제외, 작성자는 이미 위에서 들어감)
         for (User approver : findApprovers(teamId)) {
-            if (approver.getId().equals(processorId)) continue; // 처리자 제외
+            if (processorId != null && approver.getId().equals(processorId)) continue; // 사람 처리자면 제외
             receivers.add(approver); // 작성자와 겹치면 Set이 자동으로 중복 제거
         }
 

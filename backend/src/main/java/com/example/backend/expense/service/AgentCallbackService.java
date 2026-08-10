@@ -13,6 +13,7 @@ import com.example.backend.expense.exception.ExpenseException;
 import com.example.backend.expense.repository.ExpenseRepository;
 import com.example.backend.expense.repository.ExpensesReviewRepository;
 import com.example.backend.global.llm.dto.AgentCallbackRequest;
+import com.example.backend.notification.service.NotificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ public class AgentCallbackService {
     private final ExpenseRepository expenseRepository;
     private final BudgetRepository budgetRepository;
     private final ExpensesReviewRepository expensesReviewRepository;
+    private final NotificationService notificationService; // AI 자동 승인/반려 시 작성자 알림용
 
     // ObjectMapper는 주입 대신 자체 생성 — Spring Boot 4의 Jackson 빈 타입(2 vs 3) 불일치로 인한
     // "주입 가능한 빈 없음" 시작 오류를 피하려고 인스턴스를 직접 만든다 (@RequiredArgsConstructor에서 제외됨)
@@ -97,12 +99,18 @@ public class AgentCallbackService {
         budget.addUsedBudget(expense.getAmount());
 
         saveReview(expense, FinalVerdict.APPROVED, detail, category);
+
+        // AI가 자동 승인 → 작성자에게 승인 알림 (처리자=AI라 processor=null)
+        notificationService.notifyApproved(expense, null);
     }
 
     // 반려: 상태/사유 변경 + 심사기록(AI)
     private void applyReject(Expense expense, ExpenseCategory category, String detail, String reason) {
         expense.aiReject(category, reason);
         saveReview(expense, FinalVerdict.REJECTED, detail, category);
+
+        // AI가 자동 반려 → 작성자에게 반려 알림 (처리자=AI라 processor=null)
+        notificationService.notifyRejected(expense, null);
     }
 
     // 에스컬레이션: 관리자 확인 대기 상태로 + AI 소견 기록(최종 아님)
