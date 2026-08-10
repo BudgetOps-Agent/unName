@@ -47,6 +47,15 @@
     background-color: var(--gray-3);
 }
 
+/* 마지막 행 hover 시 배경이 카드의 둥근 모서리 밖으로 각지게 튀어나오지 않도록 */
+.tableItems:last-child td:first-child {
+    border-bottom-left-radius: 24px;
+}
+
+.tableItems:last-child td:last-child {
+    border-bottom-right-radius: 24px;
+}
+
 .item, .amount, .totalRow {
     font-weight: 700;
 }
