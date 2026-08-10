@@ -2,6 +2,7 @@ import { ReportExpense } from '@/types/report';
 import styles from './expensedetailtable.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Skeleton from '@/shared/components/skeleton/Skeleton';
+import { CATEGORY_LABEL } from '@/features/teams/constants/category';
 
 interface ExpenseDetailTableProps {
     expenses: ReportExpense[];
@@ -59,7 +60,7 @@ const ExpenseDetailTable = ({ expenses, isLoading, isError, totalAmount }: Expen
                         ) : expenses.length === 0 ? (
                             <tr>
                                 <td colSpan={5} className={styles.noData}>
-                                    등록된 지출이 없어요!
+                                    아직 승인된 지출이 없어요
                                 </td>
                             </tr>
                         ) : (
@@ -67,7 +68,9 @@ const ExpenseDetailTable = ({ expenses, isLoading, isError, totalAmount }: Expen
                                 {expenses.map((expense) => (
                                     <tr key={expense.id} className={styles.tableItems}>
                                         <td className={styles.item}>{expense.title}</td>
-                                        <td className={styles.category}>{expense.category}</td>
+                                        <td className={styles.category}>
+                                            {expense.category ? (CATEGORY_LABEL[expense.category] ?? expense.category) : '-'}
+                                        </td>
                                         <td className={styles.requester}>{expense.requesterName}</td>
                                         <td className={styles.date}>{formatDate(expense.date)}</td>
                                         <td className={styles.amount}>{expense.amount.toLocaleString()}원</td>
