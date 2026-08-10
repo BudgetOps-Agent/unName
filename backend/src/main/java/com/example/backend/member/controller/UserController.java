@@ -205,7 +205,7 @@ public class UserController {// 4. 클래스 선언
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/")
                 .maxAge(Duration.ofMinutes(30))
                 .build();
@@ -213,7 +213,7 @@ public class UserController {// 4. 클래스 선언
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/")
                 .maxAge(Duration.ofDays(14))
                 .build();
@@ -288,7 +288,7 @@ public class UserController {// 4. 클래스 선언
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", newAccessToken)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/")
                 .maxAge(Duration.ofMinutes(30))
                 .build();
@@ -296,7 +296,7 @@ public class UserController {// 4. 클래스 선언
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", newRefreshToken)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/")
                 .maxAge(Duration.ofDays(14))
                 .build();
@@ -538,7 +538,7 @@ public class UserController {// 4. 클래스 선언
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/")
                 .maxAge(0)
                 .build();
@@ -546,7 +546,7 @@ public class UserController {// 4. 클래스 선언
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/")
                 .maxAge(0)
                 .build();
