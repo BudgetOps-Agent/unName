@@ -86,6 +86,11 @@ const PolicyManageCard = ({ teamId }: PolicyManageCardProps) => {
     const isSaving = isSavingSettings || isSavingPolicy;
 
     const handleSave = async () => {
+        if (method === 'upload' && !uploadedFile) {
+            alert('회칙 파일을 첨부해주세요.');
+            return;
+        }
+        
         if (isFeeProvided || isApprovalPolicyProvided) {
             const result = await submitSettings({
                 ...(isFeeProvided && { membershipFee: noFee ? 0 : membershipFeeNumber }),
