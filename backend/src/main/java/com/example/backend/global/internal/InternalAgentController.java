@@ -1,6 +1,7 @@
 package com.example.backend.global.internal;
 
 import com.example.backend.global.internal.dto.InternalBudgetResponse;
+import com.example.backend.global.internal.dto.InternalExpenseHistoryResponse;
 import com.example.backend.global.internal.dto.InternalExpenseResponse;
 import com.example.backend.global.internal.dto.InternalTeamProfileResponse;
 import com.example.backend.global.internal.dto.InternalTeamSettingsResponse;
@@ -67,6 +68,19 @@ public class InternalAgentController {
     ) {
         agentTokenValidator.verify(authorization);
         return internalAgentService.getBudget(teamId);
+    }
+
+    // BE-009 지출 이력 조회
+    @Operation(summary = "지출 이력 조회 (BE-009)",
+            description = "팀의 지출 목록을 조회합니다(기간 선택). LLM 정산 리포트·대시보드 요약·예산 배분 집계용. period 미지정 시 전체.")
+    @GetMapping("/internal/agent/teams/{teamId}/expenses")
+    public java.util.List<InternalExpenseHistoryResponse> getExpenseHistory(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @PathVariable("teamId") Long teamId,
+            @RequestParam(value = "period", required = false) String period
+    ) {
+        agentTokenValidator.verify(authorization);
+        return internalAgentService.getExpenseHistory(teamId, period);
     }
 
     // BE-006 팀 프로필 조회
