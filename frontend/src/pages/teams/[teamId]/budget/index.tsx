@@ -9,6 +9,7 @@ import BudgetManagementCard from '@/features/teams/components/BudgetManagementCa
 import PolicyManageCard from '@/features/teams/components/PolicyManageCard/PolicyManageCard';
 import BudgetEditModal from '@/features/teams/components/BudgetEditModal/BudgetEditModal';
 import useBudget from '@/features/teams/hooks/useBudget';
+import useRoleGuard from '@/features/teams/hooks/useRoleGuard';
 
 const Budget = () => {
     const router = useRouter();
@@ -16,9 +17,14 @@ const Budget = () => {
     const validTeamId = typeof teamId === 'string' ? teamId : undefined;
 
     const { budget, isLoading, error, refetch } = useBudget(validTeamId);
+    const { isChecking: isRoleChecking, isAllowed } = useRoleGuard(validTeamId, ['ADMIN', 'ACCOUNTANT']);
 
     const [activeTab, setActiveTab] = useState<BudgetTabId>('budget');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+    if (isRoleChecking || !isAllowed) {
+        return <p className={styles.placeholder}>불러오는 중이에요...</p>;
+    }
 
     return (
         <>

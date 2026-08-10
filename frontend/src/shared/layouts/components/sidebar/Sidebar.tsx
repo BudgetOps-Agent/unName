@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { getSidebarMenus } from "./menus";
 import useMediaQuery from "@/shared/hook/useMediaQuery";
+import useMyTeamRole from "@/features/teams/hooks/useMyTeamRole";
 
 
 export default function Sidebar({}) {
@@ -11,8 +12,10 @@ export default function Sidebar({}) {
     const router = useRouter();
     const { teamId, from } = router.query;
     const effectiveTeamId = teamId ?? from;
+    const validTeamId = Array.isArray(effectiveTeamId) ? effectiveTeamId[0] : effectiveTeamId;
 
-    const menus = getSidebarMenus(effectiveTeamId);
+    const { role } = useMyTeamRole(validTeamId);
+    const menus = getSidebarMenus(effectiveTeamId, role);
 
     const [isOpen, setIsOpen] = useState(false);
     const [showText, setShowText] = useState(false);

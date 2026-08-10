@@ -3,14 +3,16 @@ import styles from './memberlist.module.css';
 import Button from '@/shared/components/button/Button';
 import { Badge } from "@/shared/components/badge/Badge";
 import { Member } from '@/types/member';
+import { TeamRole } from '@/types/team';
 import ChangeRoleCard from '@/features/teams/components/MemberManageCard/ChangeRoleCard';
 import RemoveMemberCard from '@/features/teams/components/MemberManageCard/RemoveMemberCard';
-import MandateRoleCard from '@/features/teams/components/MemberManageCard/MandateRoleCard'; 
+import MandateRoleCard from '@/features/teams/components/MemberManageCard/MandateRoleCard';
 
 interface MemberListProps {
     teamId: string | undefined;
     members: Member[];
     refetch: () => void;
+    viewerRole: TeamRole | null;
 }
 
 const ROLE_LABEL: Record<Member['role'], string> = {
@@ -25,7 +27,7 @@ const ROLE_BADGE_STYLE: Record<Member['role'], 'blue' | 'purple' | 'gray'> = {
     MEMBER: 'gray',
 }
 
-const MemberList = ({ teamId, members, refetch }: MemberListProps) => {
+const MemberList = ({ teamId, members, refetch, viewerRole }: MemberListProps) => {
 
     const [changeTargetId, setChangeTargetId] = useState<number | null>(null);
     const [isMandateModalOpen, setIsMandateModalOpen] = useState<boolean>(false);
@@ -57,56 +59,58 @@ const MemberList = ({ teamId, members, refetch }: MemberListProps) => {
                     </div>
 
                     <div className={styles.itemRight}>
-                        {member.role === 'ADMIN' ? (
-                            <>
-                                <Button className={styles.mandateBtn} text="권한 위임" onClick={openMandateModal} style="secondary" />
+                        {viewerRole === 'ADMIN' && (
+                            member.role === 'ADMIN' ? (
+                                <>
+                                    <Button className={styles.mandateBtn} text="권한 위임" onClick={openMandateModal} style="secondary" />
 
-                                {isMandateModalOpen && (
-                                    <div className={styles.modalOverlay}>
-                                        <MandateRoleCard
-                                            teamId={teamId}
-                                            members={members}
-                                            onClick={closeMandateModal}
-                                            onSuccess={() => {
-                                                closeMandateModal();
-                                                refetch();
-                                            }}
-                                        />
-                                    </div>
-                                )}
-                            </>
-                        ) : (
-                            <>
-                                <Button className={styles.changeBtn} text="권한 변경" onClick={() => openChangeModal(member.id)} style="secondary" />
+                                    {isMandateModalOpen && (
+                                        <div className={styles.modalOverlay}>
+                                            <MandateRoleCard
+                                                teamId={teamId}
+                                                members={members}
+                                                onClick={closeMandateModal}
+                                                onSuccess={() => {
+                                                    closeMandateModal();
+                                                    refetch();
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    <Button className={styles.changeBtn} text="권한 변경" onClick={() => openChangeModal(member.id)} style="secondary" />
 
-                                {changeTargetId === member.id && (
-                                    <div className={styles.modalOverlay}>
-                                        <ChangeRoleCard
-                                            memberId={changeTargetId}
-                                            onClick={closeChangeModal}
-                                            onSuccess={() => {
-                                                closeChangeModal();
-                                                refetch();
-                                            }}
-                                        />
-                                    </div>
-                                )}
+                                    {changeTargetId === member.id && (
+                                        <div className={styles.modalOverlay}>
+                                            <ChangeRoleCard
+                                                memberId={changeTargetId}
+                                                onClick={closeChangeModal}
+                                                onSuccess={() => {
+                                                    closeChangeModal();
+                                                    refetch();
+                                                }}
+                                            />
+                                        </div>
+                                    )}
 
-                                <Button className={styles.outBtn} text="강퇴" onClick={() => openRemoveModal(member.id)} style="secondary" />
+                                    <Button className={styles.outBtn} text="강퇴" onClick={() => openRemoveModal(member.id)} style="secondary" />
 
-                                {removeTargetId === member.id && (
-                                    <div className={styles.modalOverlay}>
-                                        <RemoveMemberCard
-                                            memberId={removeTargetId}
-                                            onClick={closeRemoveModal}
-                                            onSuccess={() => {
-                                                closeRemoveModal();
-                                                refetch();
-                                            }}
-                                        />
-                                    </div>
-                                )}
-                            </>
+                                    {removeTargetId === member.id && (
+                                        <div className={styles.modalOverlay}>
+                                            <RemoveMemberCard
+                                                memberId={removeTargetId}
+                                                onClick={closeRemoveModal}
+                                                onSuccess={() => {
+                                                    closeRemoveModal();
+                                                    refetch();
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+                                </>
+                            )
                         )}
                     </div>
                 </div>
