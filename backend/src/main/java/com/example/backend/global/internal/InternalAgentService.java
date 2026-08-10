@@ -8,6 +8,7 @@ import com.example.backend.expense.exception.ExpenseException;
 import com.example.backend.expense.repository.ExpenseRepository;
 import com.example.backend.global.file.FileStorageService;
 import com.example.backend.global.internal.dto.InternalBudgetResponse;
+import com.example.backend.global.internal.dto.InternalExpenseHistoryResponse;
 import com.example.backend.global.internal.dto.InternalExpenseResponse;
 import com.example.backend.global.internal.dto.InternalTeamProfileResponse;
 import com.example.backend.global.internal.dto.InternalTeamSettingsResponse;
@@ -27,6 +28,9 @@ import com.example.backend.teamMember.exception.TeamMemberException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.YearMonth;
+import java.util.List;
 
 /**
  * LLM(Agent)이 심사할 때 pull 모델로 되물어 가져가는 내부 조회 API 로직 (BE-001~).
@@ -61,6 +65,27 @@ public class InternalAgentService {
                 .date(expense.getExpenseDate() == null ? null : expense.getExpenseDate().toString())
                 .description(expense.getDescription())
                 .build();
+    }
+
+    // BE-009 지출 이력 조회 — 팀의 지출 목록(기간 선택). LLM 정산 리포트·주간 브리핑·예산 배분·대시보드 요약 집계용
+    // period(YYYY-MM) 주어지면 그 달 지출발생일 기준으로만 필터, 없으면 전체
+    @Transactional(readOnly = true)
+    public List<InternalExpenseHistoryResponse> getExpenseHistory(Long teamId, String period) {
+        List<Expense> expenses = expenseRepository.findByTeamIdOrderByExpenseDateDesc(teamId);
+
+        YearMonth target = (period != null && !period.isBlank()) ? YearMonth.parse(period) : null;
+
+        return expenses.stream()
+                .filter(e -> target == null
+                        || (e.getExpenseDate() != null && YearMonth.from(e.getExpenseDate()).equals(target)))
+                .map(e -> InternalExpenseHistoryResponse.builder()
+                        .title(e.getTitle())
+                        .amount(e.getAmount())
+                        .category(e.getCategory() == null ? null : e.getCategory().name())
+                        .date(e.getExpenseDate() == null ? null : e.getExpenseDate().toString())
+                        .status(e.getStatus() == null ? null : e.getStatus().name())
+                        .build())
+                .toList();
     }
 
     // BE-002 팀 설정

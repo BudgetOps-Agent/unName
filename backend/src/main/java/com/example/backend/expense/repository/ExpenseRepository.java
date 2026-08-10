@@ -25,6 +25,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     // 반려 탭 -> List.of("REJECTED")만 넘기면 반려만 조회 됨
     List<Expense> findByTeamIdAndStatusIn(Long teamId, List<ExpenseStatus> statuses);
 
+    // BE-009 지출 이력 조회 — 팀의 전체 지출을 지출발생일 최신순으로 (상태 무관)
+    List<Expense> findByTeamIdOrderByExpenseDateDesc(Long teamId);
+
     List<Expense> findByTeamIdAndStatusInOrderByExpenseDateDesc(
             Long teamId,
             List<ExpenseStatus> statuses
