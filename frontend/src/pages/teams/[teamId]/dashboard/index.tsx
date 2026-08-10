@@ -28,9 +28,12 @@ const Dashboard = () => {
 
     const barData = statistics.map((item) => ({ month: formatMonthLabel(item.month), amount: item.amount }));
 
+    const now = new Date();
+    const currentMonthLabel = `${now.getFullYear()}년 ${now.getMonth() + 1}월`;
+
   return (
     <>
-        <ContentTitle title="대시보드" subTitle={`2025년 1월`} href={`/expenses/new`} btnText="지출 요청" />
+        <ContentTitle title="대시보드" subTitle={currentMonthLabel} href={`/teams/${validTeamId}/expenses/new`} btnText="지출 요청" />
 
         <BudgetSummaryCard dashboard={dashboard} isLoading={isLoading} error={error} refetch={refetch} />
 
