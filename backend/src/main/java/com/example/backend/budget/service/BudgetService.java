@@ -45,8 +45,11 @@ public class BudgetService {
     @Transactional(readOnly = true)
     public BudgetResponse getBudget(Long teamId) {
 
-        // 1. 요청자가 이 팀 소속인지 확인 (아니면 403)
-        checkTeamMember(teamId);
+        // 1. 요청자가 이 팀 소속인지 확인 (아니면 403) + 관리자·총무만 조회 가능
+        TeamMember teamMember = checkTeamMember(teamId);
+        if (teamMember.getRole() != TeamRole.ADMIN && teamMember.getRole() != TeamRole.ACCOUNTANT) {
+            throw new BudgetException(BudgetErrorCode.NOT_AUTHORIZED_TO_VIEW);
+        }
 
         // 2. 예산 조회 (없으면 404)
         Budget budget = budgetRepository.findByTeamId(teamId)
@@ -69,8 +72,8 @@ public class BudgetService {
         // 1. 요청자가 이 팀 소속인지 확인 + 멤버 정보 받기
         TeamMember teamMember = checkTeamMember(teamId);
 
-        // 2. 관리자인지 확인 (아니면 403) — 예산은 관리자만 수정 가능
-        if (teamMember.getRole() != TeamRole.ADMIN) {
+        // 2. 관리자 또는 총무인지 확인 (아니면 403) — 예산은 관리자·총무만 수정 가능
+        if (teamMember.getRole() != TeamRole.ADMIN && teamMember.getRole() != TeamRole.ACCOUNTANT) {
             throw new BudgetException(BudgetErrorCode.NOT_ADMIN_FOR_BUDGET);
         }
 
@@ -94,8 +97,11 @@ public class BudgetService {
     //    멤버 확인 쿼리들은 각자 자기 트랜잭션으로 짧게 돌고 끝난다.
     public BudgetInsightsResponse getAiInsights(Long teamId, String period) {
 
-        // 1. 이 팀 소속인지 확인 (아니면 403) — 조회/수정과 동일한 접근 제어
-        checkTeamMember(teamId);
+        // 1. 이 팀 소속인지 확인 (아니면 403) + 관리자·총무만 조회 가능
+        TeamMember teamMember = checkTeamMember(teamId);
+        if (teamMember.getRole() != TeamRole.ADMIN && teamMember.getRole() != TeamRole.ACCOUNTANT) {
+            throw new BudgetException(BudgetErrorCode.NOT_AUTHORIZED_TO_VIEW);
+        }
 
         // 2. 캐시 키에 쓸 기간 확정 (미지정이면 당월 YYYY-MM)
         boolean periodGiven = period != null && !period.isBlank();
