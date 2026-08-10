@@ -112,7 +112,7 @@ const ExpenseDetail = () => {
     };
 
     const receiptUrl = expense.receiptFileUrl
-        ? `${process.env.NEXT_PUBLIC_API_URL}${expense.receiptFileUrl}`
+        ? `${(process.env.NEXT_PUBLIC_API_URL ?? '').replace(/\/+$/, '')}${expense.receiptFileUrl}`
         : null;
 
     return (
