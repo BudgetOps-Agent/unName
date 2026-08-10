@@ -47,6 +47,7 @@ const Budget = () => {
                         <p className={styles.placeholder}>불러오는 중이에요...</p>
                     ) : (
                         <BudgetManagementCard
+                            teamId={validTeamId}
                             totalBudget={budget.totalBudget}
                             usedBudget={budget.usedBudget}
                             remainingBudget={budget.remainingBudget}
