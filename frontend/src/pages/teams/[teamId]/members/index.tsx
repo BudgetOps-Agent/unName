@@ -9,6 +9,7 @@ import InvitationCard from "@/features/teams/components/MemberManageCard/Invitat
 import ContentTitle from '@/shared/components/contentTitle/ContentTitle';
 import MemberSkeleton from '@/features/teams/components/MemberList/MemberSkeleton';
 import MemberList from '@/features/teams/components/MemberList/MemberList';
+import useMyTeamRole from '@/features/teams/hooks/useMyTeamRole';
 
 const rolelist = [
     {
@@ -37,7 +38,8 @@ const Members = () => {
     const isRouterLoading = !router.isReady;
 
     const { members, isLoading, error, refetch } = useTeamMembers(validTeamId);
-    
+    const { role: viewerRole } = useMyTeamRole(validTeamId);
+
     const isPageLoading = isRouterLoading || isLoading;
     
     const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
@@ -47,7 +49,12 @@ const Members = () => {
 
     return (
         <>
-            <ContentTitle title="멤버" subTitle={`총 ${members.length}명이에요`} onClick={openInviteModal} btnText="초대하기" />
+            <ContentTitle
+                title="멤버"
+                subTitle={`총 ${members.length}명이에요`}
+                onClick={viewerRole === 'ADMIN' ? openInviteModal : undefined}
+                btnText={viewerRole === 'ADMIN' ? '초대하기' : undefined}
+            />
 
             {isInviteModalOpen && (
                 <div className={styles.modalOverlay}>
@@ -65,7 +72,7 @@ const Members = () => {
                         <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
                     </div>
                 ) : (
-                    <MemberList teamId={validTeamId} members={members} refetch={refetch} />
+                    <MemberList teamId={validTeamId} members={members} refetch={refetch} viewerRole={viewerRole} />
                 )}
             </Card>
 
