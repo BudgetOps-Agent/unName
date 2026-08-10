@@ -6,6 +6,7 @@ import Button from "@/shared/components/button/Button";
 import { useRouter } from "next/router";
 import useDashboard from "@/features/teams/hooks/useDashboard";
 import useMonthlyStats from "@/features/teams/hooks/useMonthlyStats";
+import useAiSummary from "@/features/teams/hooks/useAiSummary";
 import PendingApprovalCard from "@/features/teams/components/PendingApprovalCard/PendingApprovalCard";
 import BudgetSummaryCard from "@/features/teams/components/BudgetSummaryCard/BudgetSummaryCard";
 import styles from "./dashboard.module.css";
@@ -23,6 +24,7 @@ const Dashboard = () => {
 
     const { dashboard, isLoading, error, refetch } = useDashboard(validTeamId);
     const { statistics, isLoading: isStatsLoading, error: statsError, refetch: refetchStats } = useMonthlyStats(validTeamId);
+    const { summary, verified, isLoading: isSummaryLoading, error: summaryError, refetch: refetchSummary } = useAiSummary(validTeamId);
 
     const barData = statistics.map((item) => ({ month: formatMonthLabel(item.month), amount: item.amount }));
 
@@ -48,7 +50,13 @@ const Dashboard = () => {
                 )}
             </Card>
 
-            <AISummaryCard />
+            <AISummaryCard
+                summary={summary}
+                verified={verified}
+                isLoading={isSummaryLoading}
+                error={summaryError}
+                onRetry={refetchSummary}
+            />
         </div>
 
         <PendingApprovalCard
