@@ -1,3 +1,5 @@
+import { TeamRole } from "@/types/team";
+
 export interface ResponseMyPage {
   success: true;
   user: {
@@ -11,6 +13,6 @@ export interface ResponseMyPage {
     teamId: number;
     name: string;
     memberCount: number;
-    role: 'ADMIN' | 'ACCOUNTANT' | 'MEMBER';
+    role: TeamRole;
   }[];
 }
