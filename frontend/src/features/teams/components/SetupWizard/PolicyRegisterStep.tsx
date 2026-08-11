@@ -2,6 +2,7 @@ import styles from './policyregisterstep.module.css';
 import { Card } from '@/shared/components/card/Card';
 import Button from '@/shared/components/button/Button';
 import useRecommendPolicy from '@/features/teams/hooks/useRecommendPolicy';
+import { validateFile, POLICY_EXTENSIONS, POLICY_ACCEPT } from '@/features/teams/utils/fileValidator';
 
 export type RegisterMethod = 'upload' | 'text' | 'ai';
 
@@ -47,7 +48,19 @@ const PolicyRegisterStep = ({
     const { isLoading: isGeneratingDraft, fetchRecommendation } = useRecommendPolicy();
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFile(e.target.files?.[0] ?? null);
+        const selected = e.target.files?.[0] ?? null;
+
+        if (selected) {
+            const errorMessage = validateFile(selected, POLICY_EXTENSIONS);
+
+            if (errorMessage) {
+                alert(errorMessage);
+                e.target.value = ''; // 같은 파일을 다시 선택해도 onChange가 걸리도록 초기화
+                return;
+            }
+        }
+
+        setFile(selected);
     };
 
     const handleGenerateDraft = async () => {
@@ -92,7 +105,7 @@ const PolicyRegisterStep = ({
                     <input
                         id="setupPolicyFile"
                         type="file"
-                        accept=".pdf,.doc,.docx,.txt"
+                        accept={POLICY_ACCEPT}
                         className={styles.hiddenFileInput}
                         onChange={handleFileSelect}
                     />

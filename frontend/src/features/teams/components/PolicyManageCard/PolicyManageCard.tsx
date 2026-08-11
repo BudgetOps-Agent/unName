@@ -4,6 +4,7 @@ import Button from '@/shared/components/button/Button';
 import useUpdateTeamSettings from '@/features/teams/hooks/useUpdateTeamSettings';
 import useCreatePolicy from '@/features/teams/hooks/useCreatePolicy';
 import useRecommendPolicy from '@/features/teams/hooks/useRecommendPolicy';
+import { validateFile, POLICY_EXTENSIONS, POLICY_ACCEPT } from '@/features/teams/utils/fileValidator';
 
 type RegisterMethod = 'upload' | 'text' | 'ai';
 
@@ -33,7 +34,19 @@ const PolicyManageCard = ({ teamId }: PolicyManageCardProps) => {
     const { isLoading: isGeneratingDraft, fetchRecommendation } = useRecommendPolicy();
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setUploadedFile(e.target.files?.[0] ?? null);
+        const selected = e.target.files?.[0] ?? null;
+
+        if (selected) {
+            const errorMessage = validateFile(selected, POLICY_EXTENSIONS);
+
+            if (errorMessage) {
+                alert(errorMessage);
+                e.target.value = ''; // 같은 파일을 다시 선택해도 onChange가 걸리도록 초기화
+                return;
+            }
+        }
+
+        setUploadedFile(selected);
     };
 
     const MIN_AUTO_APPROVE_LIMIT = 50000;
@@ -145,7 +158,7 @@ const PolicyManageCard = ({ teamId }: PolicyManageCardProps) => {
                     <input
                         id="policyFile"
                         type="file"
-                        accept=".pdf,.doc,.docx,.txt"
+                        accept={POLICY_ACCEPT}
                         className={styles.hiddenFileInput}
                         onChange={handleFileSelect}
                     />
