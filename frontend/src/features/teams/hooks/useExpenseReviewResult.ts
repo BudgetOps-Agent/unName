@@ -49,10 +49,16 @@ const useExpenseReviewResult = (expenseId: string | undefined) => {
         fetchReviewResult();
     }, [fetchReviewResult]);
 
-    // review가 아직 null(AI 심사 대기 중)이면 결과가 나올 때까지 주기적으로 다시 조회
+    // 아직 판정 전이면 결과가 나올 때까지 주기적으로 다시 조회
     // CB-001 콜백을 프론트가 직접 받을 방법이 없어(웹소켓/SSE 없음) 폴링으로 대신함
+    //
+    // 판정 전은 두 가지: (1) 최초 심사 — review가 null
+    //                  (2) 재심사 — 지출을 수정하면 status가 SUBMITTED로 돌아가지만
+    //                      옛 심사기록이 남아있어 review는 null이 아님 (finalVerdict로 판별)
+    const isAwaitingReview = !review || review.finalVerdict === 'SUBMITTED';
+
     useEffect(() => {
-        if (!expenseId || review || pollTimedOut) return;
+        if (!expenseId || !isAwaitingReview || pollTimedOut) return;
 
         const timer = setInterval(() => {
             pollCountRef.current += 1;
@@ -67,7 +73,7 @@ const useExpenseReviewResult = (expenseId: string | undefined) => {
         }, POLL_INTERVAL_MS);
 
         return () => clearInterval(timer);
-    }, [expenseId, review, pollTimedOut, fetchReviewResult]);
+    }, [expenseId, isAwaitingReview, pollTimedOut, fetchReviewResult]);
 
     return { review, isLoading, error, pollTimedOut, refetch };
 };

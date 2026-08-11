@@ -123,20 +123,24 @@ const ExpenseDetail = () => {
                     <span>지출 내역</span>
                 </Link>
 
-                {mappedExpense.status === '대기' && (
+                {(expense.canEdit || expense.canDelete) && (
                     <div className={styles.topBarActions}>
-                        <Button
-                            className={styles.editTriggerBtn}
-                            text="수정"
-                            style="tertiary"
-                            onClick={() => router.push(`/teams/${teamId}/expenses/new?edit=${validExpenseId}`)}
-                        />
-                        <Button
-                            className={styles.deleteTriggerBtn}
-                            text="삭제"
-                            style="tertiary"
-                            onClick={() => setIsDeleteModalOpen(true)}
-                        />
+                        {expense.canEdit && (
+                            <Button
+                                className={styles.editTriggerBtn}
+                                text="수정"
+                                style="tertiary"
+                                onClick={() => router.push(`/teams/${teamId}/expenses/new?edit=${validExpenseId}`)}
+                            />
+                        )}
+                        {expense.canDelete && (
+                            <Button
+                                className={styles.deleteTriggerBtn}
+                                text="삭제"
+                                style="tertiary"
+                                onClick={() => setIsDeleteModalOpen(true)}
+                            />
+                        )}
                     </div>
                 )}
             </div>
@@ -155,7 +159,9 @@ const ExpenseDetail = () => {
 
             <ReceiptCard receiptUrl={receiptUrl} />
 
-            {review ? (
+            {/* SUBMITTED면 아직 판정 전 — 지출을 수정하면 재심사가 걸리는데 옛 심사기록은 남아있어서
+                review가 null이 아님. 이때 옛 결과 대신 "심사 중" 안내를 보여준다 */}
+            {review && review.finalVerdict !== 'SUBMITTED' ? (
                 <AIReviewCard
                     reviewers={review.reviewers}
                     finalVerdict={review.finalVerdict}
@@ -176,7 +182,7 @@ const ExpenseDetail = () => {
                 </Card>
             )}
 
-            {mappedExpense.status === '대기' && (
+            {(expense.canApprove || expense.canReject) && (
                 isRejecting ? (
                     <Card className={styles.rejectCard}>
                         <p className={styles.rejectLabel}>반려 사유를 알려 주세요</p>
@@ -205,19 +211,23 @@ const ExpenseDetail = () => {
                     </Card>
                 ) : (
                     <div className={styles.actionButtons}>
-                        <Button
-                            className={styles.rejectToggleBtn}
-                            text="반려"
-                            style="ghost"
-                            onClick={() => setIsRejecting(true)}
-                        />
-                        <Button
-                            className={styles.approveBtn}
-                            text={isApproving ? '처리 중...' : '승인하기'}
-                            style="tertiary"
-                            disabled={isApproving}
-                            onClick={handleApprove}
-                        />
+                        {expense.canReject && (
+                            <Button
+                                className={styles.rejectToggleBtn}
+                                text="반려"
+                                style="ghost"
+                                onClick={() => setIsRejecting(true)}
+                            />
+                        )}
+                        {expense.canApprove && (
+                            <Button
+                                className={styles.approveBtn}
+                                text={isApproving ? '처리 중...' : '승인하기'}
+                                style="tertiary"
+                                disabled={isApproving}
+                                onClick={handleApprove}
+                            />
+                        )}
                     </div>
                 )
             )}

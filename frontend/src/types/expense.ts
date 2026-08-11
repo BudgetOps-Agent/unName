@@ -37,6 +37,11 @@ export interface ExpenseDetailResponse {
         approvedAt: string | null;
         rejectReason: string | null;
         expenseDate: string;
+        // 조회자 기준 동작 가능 여부 (버튼 노출용 힌트, 실제 권한은 서버가 재검증)
+        canEdit: boolean;
+        canDelete: boolean;
+        canApprove: boolean;
+        canReject: boolean;
     };
 }
 
