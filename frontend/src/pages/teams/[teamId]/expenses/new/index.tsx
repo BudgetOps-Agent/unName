@@ -7,6 +7,7 @@ import Button from '@/shared/components/button/Button';
 import useCreateExpense from '@/features/teams/hooks/useCreateExpense';
 import useUpdateExpense from '@/features/teams/hooks/useUpdateExpense';
 import useExpenseDetail from '@/features/teams/hooks/useExpenseDetail';
+import { validateFile, RECEIPT_EXTENSIONS, RECEIPT_ACCEPT } from '@/features/teams/utils/fileValidator';
 
 const NewExpense = () => {
 
@@ -41,7 +42,19 @@ const NewExpense = () => {
     };
 
     const handleReceiptChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setReceipt(e.target.files?.[0] ?? null);
+        const file = e.target.files?.[0] ?? null;
+
+        if (file) {
+            const errorMessage = validateFile(file, RECEIPT_EXTENSIONS);
+
+            if (errorMessage) {
+                alert(errorMessage);
+                e.target.value = ''; // 같은 파일을 다시 선택해도 onChange가 걸리도록 초기화
+                return;
+            }
+        }
+
+        setReceipt(file);
     };
 
     const isFormValid = isEditMode
@@ -159,7 +172,7 @@ const NewExpense = () => {
                         <input
                             id="receipt"
                             type="file"
-                            accept=".jpg,.jpeg,.png,.pdf"
+                            accept={RECEIPT_ACCEPT}
                             className={styles.receiptInput}
                             onChange={handleReceiptChange}
                         />
