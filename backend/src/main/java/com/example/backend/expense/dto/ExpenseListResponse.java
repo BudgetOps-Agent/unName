@@ -34,7 +34,7 @@ public class ExpenseListResponse {
         private Long amount; // 지출 금액
         private String status; // SUBMITTED/ESCALATED/APPROVED/REJECTED 그대로 내려줌
         private String requesterName; // 작성자 이름
-        private String date; // 지출 발생일 (실제 돈 쓴 날)
+        private String date; // 지출 요청일(등록일, createdAt) — 상세 화면 표시값과 일치시킴 (프론트 요청 2026-08-10)
         private String processedBy; // 최종 처리 주체(AI/HUMAN). 아직 처리 전이면 null
 
         // Expense 엔티티를 ExpenseInfo(DTO)로 변환하는 메서드
@@ -45,7 +45,8 @@ public class ExpenseListResponse {
                     .amount(expense.getAmount())
                     .status(expense.getStatus().name())
                     .requesterName(expense.getUser().getName()) // User 엔티티 타고 들어가서 이름 꺼내기
-                    .date(expense.getExpenseDate().toString())
+                    // 요청일(createdAt)에서 날짜만 뽑아 "YYYY-MM-DD"로 — 기존 표시 형식 유지, 값만 요청일로
+                    .date(expense.getCreatedAt().toLocalDate().toString())
                     // 처리 전(SUBMITTED/ESCALATED)이면 processedBy가 null → 그대로 null 내려줌
                     .processedBy(expense.getProcessedBy() == null ? null : expense.getProcessedBy().name())
                     .build();

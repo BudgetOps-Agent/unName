@@ -33,9 +33,24 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             List<ExpenseStatus> statuses
     );
 
+    // 지출 목록 조회(API-014) — 요청일(createdAt) 최신순 정렬 (프론트 요청 2026-08-10)
+    // 목록의 date 표시값을 요청일로 바꾸면서 정렬 기준도 요청일로 맞춰야 순서가 안 어긋남
+    // (아래 findByTeamIdAndStatusInOrderByCreatedAtDesc(…, Pageable)은 대시보드용이라 시그니처가 다름)
+    List<Expense> findByTeamIdAndStatusInOrderByCreatedAtDesc(
+            Long teamId,
+            List<ExpenseStatus> statuses
+    );
+
     // 지출 목록 조회(API-015) — MEMBER 권한용: 본인이 요청한 지출만 상태 필터로 조회
     // (관리자/총무는 위의 팀 전체 조회를 쓰고, 일반 멤버는 이 메서드로 자기 것만 봄)
     List<Expense> findByTeamIdAndUserIdAndStatusInOrderByExpenseDateDesc(
+            Long teamId,
+            Long userId,
+            List<ExpenseStatus> statuses
+    );
+
+    // 위 MEMBER용의 요청일(createdAt) 최신순 버전 (프론트 요청 2026-08-10)
+    List<Expense> findByTeamIdAndUserIdAndStatusInOrderByCreatedAtDesc(
             Long teamId,
             Long userId,
             List<ExpenseStatus> statuses
