@@ -20,6 +20,9 @@
 .logo-section {
     display: flex;
     height: 60px;
+    /* menu-section(height:100%)이 컨테이너를 넘겨서 flex가 자식들을 비례 축소함.
+       헤더(60px 고정)와 border 높이를 맞추려면 여기는 축소되면 안 됨 */
+    flex-shrink: 0;
     align-items: center;
     padding-left: 16px;
     border-bottom: 0.8px solid rgba(0, 0, 0, 0.05);
