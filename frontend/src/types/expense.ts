@@ -93,6 +93,8 @@ export interface ResponseExpenses {
         status: 'SUBMITTED' | 'ESCALATED' | 'APPROVED' | 'REJECTED';
         requesterName: string;
         date: string;
+        // 최종 처리 주체. 승인/반려 결정 전(대기·에스컬레이션)에는 null
+        processedBy: 'AI' | 'HUMAN' | null;
     }[];
 }
 

@@ -1,6 +1,22 @@
 .filterSection {
     display: flex;
+    align-items: center;
     gap: 8px;
+}
+
+/* 상태 필터와 처리 주체 필터 사이 간격 */
+.processorGroupStart {
+    margin-left: 8px;
+}
+
+.filterSection .processorBtn {
+    min-width: auto;
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.filterSection .processorBtn .btnTitle {
+    font-size: 13px;
 }
 
 .filterBtn {
