@@ -117,6 +117,7 @@ public class NotificationService {
                             .id(n.getId())
                             .type(n.getType().name())
                             .teamId(expense != null ? expense.getTeam().getId() : null)
+                            .teamName(expense != null ? expense.getTeam().getName() : null)
                             .expenseId(expense != null ? expense.getId() : null)
                             .expenseTitle(expense != null ? expense.getTitle() : null)
                             .actorName(resolveActorName(n))     // 관련 사람 이름
