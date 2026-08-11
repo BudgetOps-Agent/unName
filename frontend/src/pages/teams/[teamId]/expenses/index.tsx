@@ -9,6 +9,7 @@ import ContentTitle from "@/shared/components/contentTitle/ContentTitle";
 
 import SearchBar from "@/features/teams/components/SearchBar/SearchBar";
 import ExpenseList from "@/features/teams/components/ExpenseList/ExpenseList";
+import LoadingText from "@/shared/components/loading/LoadingText";
 
 import { ExpenseCounts } from "@/features/teams/hooks/useExpenses";
 import { useExpenses } from "@/features/teams/hooks/useExpenses";
@@ -222,9 +223,7 @@ const Expenses = () => {
           </div>
 
           {isLoading ? (
-            <p className={styles.empty}>
-              불러오는 중이에요...
-            </p>
+            <LoadingText />
           ) : filteredExpenses.length === 0 ? (
             <p className={styles.empty}>
               표시할 지출 내역이 없어요.

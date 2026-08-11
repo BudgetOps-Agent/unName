@@ -192,7 +192,8 @@ const Header = () => {
 
                         return item.expenseId ? (
                             <Link
-                                href={`/teams/${effectiveTeamId ?? ''}/expenses/${item.expenseId}`}
+                                // 알림이 속한 팀으로 이동 (다른 팀 알림을 눌러도 팀이 같이 바뀌도록)
+                                href={`/teams/${item.teamId ?? effectiveTeamId ?? ''}/expenses/${item.expenseId}`}
                                 className={`notice-item ${!item.isRead ? 'pending' : ''}`}
                                 onClick={() => markAsRead(item.id)}
                             >

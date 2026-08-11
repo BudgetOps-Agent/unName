@@ -6,11 +6,13 @@
 }
 
 .summaryError {
+    min-height: 166px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 12px;
-    padding: 12px 0;
+    padding: 24px 0;
 }
 
 .summaryError button {
@@ -18,7 +20,7 @@
 }
 
 .summaryErrorText {
-    color: var(--gray-7);
+    color: var(--gray-6);
     font-size: 14px;
     font-weight: 600;
 }
