@@ -202,7 +202,7 @@ public class LlmClient {
 
     /**
      * LLM-016 예산 관리 AI 메시지 — 접수 + 폴링을 한 번에 처리하는 블로킹 호출.
-     * POST /v1/budget-insights 로 잡을 접수(202)한 뒤,
+     * POST /v1/proposals/budget 로 잡을 접수(202)한 뒤,
      * LLM-004(GET /v1/jobs/{job_id})를 succeeded 될 때까지 폴링해서 결과를 반환한다.
      *
      * 화면(API-052)이 캐시 미스일 때 이 메서드로 생성한다. (첫 호출만 수 초 소요)
@@ -217,7 +217,8 @@ public class LlmClient {
         JobAcceptedResponse accepted;
         try {
             accepted = restClient.post()
-                    .uri("/v1/budget-insights")
+                    // LLM 팀 확정 경로: 예산 배분 제안 접수(202). 결과는 /v1/jobs/{job_id} 폴링(getJobResult)으로 조회.
+                    .uri("/v1/proposals/budget")
                     .body(request)
                     .retrieve()
                     .body(JobAcceptedResponse.class);
