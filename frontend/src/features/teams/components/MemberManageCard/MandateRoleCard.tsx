@@ -23,6 +23,9 @@ const MandateRoleCard = ({ teamId, members, onClick, onSuccess }: MandateRoleCar
     const [mandateMemberId, setMandateMemberId] = useState<number | null>(null);
     const { isSubmitting, submitTransfer } = useTransferAdmin(teamId);
 
+    // 위임 대상에서 현재 관리자(본인)는 제외 — 관리자는 팀당 한 명이고, 이 모달은 본인만 열 수 있음
+    const candidates = members.filter((member) => member.role !== 'ADMIN');
+
     const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
 
@@ -47,15 +50,19 @@ const MandateRoleCard = ({ teamId, members, onClick, onSuccess }: MandateRoleCar
 
             <form onSubmit={handleSubmit}>
                 <div className={`${styles.roleSection} ${styles.mandateRoleBtnContainer}`}>
-                    {members.map((member) => (
-                        <Button
-                            key={member.id}
-                            className={`${styles.mandateRoleBtn} ${mandateMemberId === member.id ? styles.active : ''}`}
-                            text={<span><p className={styles.name}>{member.name}</p> <p className={styles.role}>{ROLE_LABEL[member.role]}</p></span>}
-                            onClick={() => setMandateMemberId(member.id)}
-                            style='secondary'
-                        />
-                    ))}
+                    {candidates.length === 0 ? (
+                        <p className={styles.subTitle}>위임할 수 있는 멤버가 없어요.</p>
+                    ) : (
+                        candidates.map((member) => (
+                            <Button
+                                key={member.id}
+                                className={`${styles.mandateRoleBtn} ${mandateMemberId === member.id ? styles.active : ''}`}
+                                text={<span><p className={styles.name}>{member.name}</p> <p className={styles.role}>{ROLE_LABEL[member.role]}</p></span>}
+                                onClick={() => setMandateMemberId(member.id)}
+                                style='secondary'
+                            />
+                        ))
+                    )}
                 </div>
 
                 <div className={styles.ButtonSection}>
