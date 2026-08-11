@@ -3,6 +3,7 @@ package com.example.backend.expense.dto;
 import com.example.backend.expense.entity.ExpenseCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,7 +32,9 @@ public class ExpenseCreateRequest {
 
     // 지출 발생 날짜 - 필수 (실제로 돈 쓴 날. 등록 시각 createdAt과 다름)
     // 프론트가 "2025-01-24" 형식으로 보내면 Spring이 LocalDate로 자동 변환
+    // 아직 안 쓴 돈일 순 없으니 오늘이거나 그 이전만 허용 (미래 날짜 선택 방지)
     @NotNull(message = "지출 발생 날짜는 필수입니다.")
+    @PastOrPresent(message = "지출 발생 날짜는 오늘이거나 그 이전이어야 합니다.")
     private LocalDate expenseDate;
 
     // 설명 선택이여서 검증 안 붙임

@@ -71,6 +71,11 @@ services:
       LLM_BASE_URL: ${LLM_BASE_URL}
       LLM_SERVICE_TOKEN: ${LLM_SERVICE_TOKEN}
       AGENT_SERVICE_TOKEN: ${AGENT_SERVICE_TOKEN}
+      # S3 (영수증/회칙 파일 저장 — 재배포해도 안 날아감)
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     depends_on:
       mysql:
         condition: service_healthy
