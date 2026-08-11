@@ -107,12 +107,15 @@ public class Expense {
     // 승인 대기 상태일 때만 호출됨(권한·상태 검사는 Service에서) — 여기선 값만 바꿈
     // 카테고리는 사용자가 안 건드림(AI 심사가 채우는 값)이라 수정 대상에서 제외
     // receiptUrl은 영수증 새로 올리면 새 경로, 안 올리면 기존 경로 그대로(Service에서 판단)
+    // 내용이 바뀌었으니 옛 AI 판정(특히 ESCALATED 사유)은 더 이상 유효하지 않음 → SUBMITTED로 되돌려
+    // 재심사를 다시 태움(Service가 update() 호출 뒤 dispatchAiReview()를 다시 부름)
     // @Transactional 안에서 호출하면 더티 체킹으로 자동 UPDATE 나감
     public void update(String title, Long amount, String description, String receiptUrl) {
         this.title = title;
         this.amount = amount;
         this.description = description;
         this.receiptUrl = receiptUrl;
+        this.status = ExpenseStatus.SUBMITTED;
         this.updatedAt = LocalDateTime.now();
     }
 
