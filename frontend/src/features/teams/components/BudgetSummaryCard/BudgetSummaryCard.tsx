@@ -1,6 +1,7 @@
 import { Card } from "@/shared/components/card/Card";
 import Button from "@/shared/components/button/Button";
 import ProgressBar from "@/shared/components/progressbar/ProgressBar";
+import LoadingText from "@/shared/components/loading/LoadingText";
 import { Dashboard } from "@/features/teams/hooks/useDashboard";
 import styles from "./BudgetSummaryCard.module.css";
 
@@ -15,7 +16,7 @@ const BudgetSummaryCard = ({ dashboard, isLoading, error, refetch }: BudgetSumma
     return (
         <Card title="이번 달 예산" headerRight={dashboard ? `총 ${dashboard.totalBudget.toLocaleString()}원` : undefined}>
             {isLoading ? (
-                <p>불러오는 중이에요...</p>
+                <LoadingText />
             ) : error ? (
                 <div className={styles.budgetError}>
                     <p>{error}</p>

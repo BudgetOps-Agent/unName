@@ -10,6 +10,7 @@ import PolicyManageCard from '@/features/teams/components/PolicyManageCard/Polic
 import BudgetEditModal from '@/features/teams/components/BudgetEditModal/BudgetEditModal';
 import useBudget from '@/features/teams/hooks/useBudget';
 import useRoleGuard from '@/features/teams/hooks/useRoleGuard';
+import LoadingText from '@/shared/components/loading/LoadingText';
 
 const Budget = () => {
     const router = useRouter();
@@ -23,7 +24,7 @@ const Budget = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     if (isRoleChecking || !isAllowed) {
-        return <p className={styles.placeholder}>불러오는 중이에요...</p>;
+        return <LoadingText />;
     }
 
     return (
@@ -50,7 +51,7 @@ const Budget = () => {
                             <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
                         </div>
                     ) : isLoading || !budget ? (
-                        <p className={styles.placeholder}>불러오는 중이에요...</p>
+                        <LoadingText />
                     ) : (
                         <BudgetManagementCard
                             teamId={validTeamId}

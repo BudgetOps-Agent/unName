@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { Card } from '@/shared/components/card/Card';
 import { useReportCsv } from '@/features/teams/hooks/useReportCsv';
 import useRoleGuard from '@/features/teams/hooks/useRoleGuard';
+import LoadingText from '@/shared/components/loading/LoadingText';
 
 const Report = () => {
     const router = useRouter();
@@ -39,7 +40,7 @@ const Report = () => {
     const totalPages = data?.totalPages ?? 1;
 
     if (isRoleChecking || !isAllowed) {
-        return <p className={styles.placeholder}>불러오는 중이에요...</p>;
+        return <LoadingText />;
     }
 
     const handleCsvDownload = () => {
