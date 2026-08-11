@@ -60,8 +60,13 @@ const getFinalVerdictBadge = (processType: ProcessType, finalVerdict: FinalVerdi
         : { label: 'AI 승인', style: 'green' };
 };
 
-// 백엔드 응답에 심사관 종류(auditor) 필드가 없어 opinions[] 순서로만 구분됨 (회칙→예산→이상탐지→증빙 순서 가정)
-const REVIEWER_NAMES = ['회칙 심사관', '예산 심사관', '이상탐지 심사관', '증빙 심사관'];
+// 백엔드 응답에 심사관 종류(auditor) 필드가 없어 opinions[] 순서로만 구분됨.
+// LLM 내부 처리 순서(evidence→budget→precedent→rule)에 맞춘 값이다.
+//
+// TODO: 일부 심사관이 빠진 채 오는 경우(예: 증빙 불일치로 나머지를 건너뛴 보류 건)
+//       중간이 비면 이 위치 매핑은 다시 어긋난다. 백엔드가 auditor를 내려주면
+//       위치가 아닌 auditor 키 기준 매핑으로 바꿔야 함 (LLM팀 요청사항)
+const REVIEWER_NAMES = ['증빙 심사관', '예산 심사관', '이상탐지 심사관', '회칙 심사관'];
 
 const AIReviewCard = ({ reviewers, finalVerdict, processType, processor, category }: AIReviewCardProps) => {
 
