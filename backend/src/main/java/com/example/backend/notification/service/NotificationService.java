@@ -116,6 +116,7 @@ public class NotificationService {
                     return NotificationListResponse.NotificationInfo.builder()
                             .id(n.getId())
                             .type(n.getType().name())
+                            .teamId(expense != null ? expense.getTeam().getId() : null)
                             .expenseId(expense != null ? expense.getId() : null)
                             .expenseTitle(expense != null ? expense.getTitle() : null)
                             .actorName(resolveActorName(n))     // 관련 사람 이름
