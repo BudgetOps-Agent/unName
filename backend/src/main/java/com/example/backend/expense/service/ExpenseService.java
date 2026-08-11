@@ -82,17 +82,17 @@ public class ExpenseService {
     @Transactional(readOnly = true)
     public ExpenseListResponse getExpenses(Long teamId, String status) {
 
-        // 1. 요청자 조회 + 팀 소속/권한 확인
-        //    MEMBER는 자기가 요청한 지출만, ADMIN/ACCOUNTANT는 팀 전체를 봄 (프론트 요청, 2026-08-07)
+        // 1. 요청자 조회 + 팀 소속 확인
+        //    역할 무관하게 팀 전체 지출을 봄 (요청 반영: 멤버도 전체 조회 가능, 기존엔 본인 것만 봤음)
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User requester = userRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
-        TeamMember teamMember = teamMemberRepository
+        teamMemberRepository
                 .findByTeamIdAndUserId(teamId, requester.getId())
                 .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
 
-        // MEMBER면 본인 것만 → 카운트·목록 모두 본인 userId로 거름 (관리자/총무는 null = 전체)
-        Long scopeUserId = (teamMember.getRole() == TeamRole.MEMBER) ? requester.getId() : null;
+        // scopeUserId=null → 팀 전체 조회 (더 이상 역할별로 좁히지 않음)
+        Long scopeUserId = null;
 
         // 2. 요청받은 status에 따라 실제로 조회할 상태 리스트를 결정
         List<ExpenseStatus> statusFilter = resolveStatusFilter(status);
@@ -164,12 +164,9 @@ public class ExpenseService {
         User requester = userRepository.findByEmail(email)
             .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
 
-        TeamMember teamMember = teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+        // 팀 소속이면 역할 무관하게 조회 가능(요청 반영: 멤버도 정산 리포트 열람 가능)
+        teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
                 .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
-        // 관리자·총무만 정산 리포트 조회 가능
-        if (teamMember.getRole() != TeamRole.ADMIN && teamMember.getRole() != TeamRole.ACCOUNTANT) {
-            throw new ExpenseException(ExpenseErrorCode.NOT_AUTHORIZED_TO_VIEW_REPORT);
-        }
 
         PageRequest pageable = PageRequest.of(page, size);
 
@@ -200,6 +197,10 @@ public class ExpenseService {
                                 ? null
                                 : expense.getApprovedAt().toString())
                         .amount(expense.getAmount())
+                        // 승인 처리자: 사람이 처리했으면 그 이름, AI 자동승인이면 "AI"
+                        .processorName(expense.getApprovedBy() != null
+                                ? expense.getApprovedBy().getName()
+                                : "AI")
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -226,12 +227,10 @@ public class ExpenseService {
         User requester = userRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
 
-        // 3. 요청자가 이 모임 소속인지 확인 (남의 모임 정산 못 보게 막음) + 관리자·총무만 조회 가능
-        TeamMember teamMember = teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+        // 3. 요청자가 이 모임 소속인지 확인 (남의 모임 정산 못 보게 막음)
+        //    팀 소속이면 역할 무관하게 조회 가능(요청 반영: 멤버도 정산 리포트 열람 가능)
+        teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
                 .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
-        if (teamMember.getRole() != TeamRole.ADMIN && teamMember.getRole() != TeamRole.ACCOUNTANT) {
-            throw new ExpenseException(ExpenseErrorCode.NOT_AUTHORIZED_TO_VIEW_REPORT);
-        }
 
         // 4. 승인된 지출 목록 조회 (승인일 최신순)
         List<Expense> approvedExpenses =
