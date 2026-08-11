@@ -346,10 +346,23 @@ public class TeamMemberService {
             throw new TeamMemberException(TeamMemberErrorCode.CANNOT_CHANGE_ADMIN);
         }
 
-        // 7. 역할 변경 (changeRole은 권한위임 때 만든 메서드 재사용)
+        // 7. ACCOUNTANT로 바꾸는 거면, 같은 팀의 기존 총무부터 MEMBER로 내림 — 총무는 팀당 1명 유일해야 함.
+        //    같은 트랜잭션 안에서 처리해야 중간에 실패해도 총무가 0명/2명이 되는 상태로 안 남음
+        //    (권한위임 API-039의 currentAdmin→MEMBER, newAdmin→ADMIN 패턴과 동일)
+        if (request.getRole() == TeamRole.ACCOUNTANT) {
+            List<TeamMember> currentAccountants = teamMemberRepository
+                    .findByTeamIdAndStatusAndRoleIn(teamId, TeamStatus.ACCEPTED, List.of(TeamRole.ACCOUNTANT));
+            for (TeamMember accountant : currentAccountants) {
+                if (!accountant.getId().equals(target.getId())) {
+                    accountant.changeRole(TeamRole.MEMBER);
+                }
+            }
+        }
+
+        // 8. 역할 변경 (changeRole은 권한위임 때 만든 메서드 재사용)
         target.changeRole(request.getRole());
 
-        // 8. 응답 반환
+        // 9. 응답 반환
         return ChangeRoleResponse.builder()
                 .success(true)
                 .member(ChangeRoleResponse.MemberInfo.builder()
