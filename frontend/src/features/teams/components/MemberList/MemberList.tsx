@@ -86,6 +86,7 @@ const MemberList = ({ teamId, members, refetch, viewerRole }: MemberListProps) =
                                         <div className={styles.modalOverlay}>
                                             <ChangeRoleCard
                                                 memberId={changeTargetId}
+                                                currentRole={member.role === 'ACCOUNTANT' ? 'ACCOUNTANT' : 'MEMBER'}
                                                 onClick={closeChangeModal}
                                                 onSuccess={() => {
                                                     closeChangeModal();

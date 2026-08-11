@@ -70,7 +70,9 @@
     background-color: #F9FAFB;
 }
 
-.dropdown-items > div:first-child .grouplist-item {
+/* active 배경색은 래퍼 div에 붙으므로 래퍼에도 같이 radius를 줘야 각지게 튀어나오지 않음 */
+.grouplist .dropdown-items > div:first-child,
+.grouplist .dropdown-items > div:first-child .grouplist-item {
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
 }
