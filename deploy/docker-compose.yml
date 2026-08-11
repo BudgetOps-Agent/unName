@@ -54,6 +54,8 @@ services:
     restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      # 컨테이너 JVM 기본 타임존을 한국시간으로. 없으면 UTC라 LocalDateTime.now()가 9시간 어긋남
+      TZ: Asia/Seoul
       JAVA_OPTS: "-Xmx384m -Xms128m"
       # DB
       DB_HOST: mysql
