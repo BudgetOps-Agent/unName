@@ -51,7 +51,7 @@
     justify-content: space-between;
 }
 
-.categoryRow {
+.categoryRow, .dateRow {
     margin-top: 12px;
 }
 

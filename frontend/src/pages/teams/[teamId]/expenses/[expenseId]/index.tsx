@@ -105,6 +105,7 @@ const ExpenseDetail = () => {
         title: expense.title,
         category: category ? (CATEGORY_LABEL[category] ?? category) : '-',
         date: expense.createdAt.slice(0, 10),
+        expenseDate: expense.expenseDate,
         requester: expense.requesterName,
         description: expense.description ?? '',
         amount: expense.amount,

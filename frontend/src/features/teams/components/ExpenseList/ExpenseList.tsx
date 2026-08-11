@@ -6,6 +6,8 @@ import { Badge } from '@/shared/components/badge/Badge';
 
 type ExpenseStatus = 'SUBMITTED' | 'ESCALATED' | 'APPROVED' | 'REJECTED';
 
+type ProcessedBy = 'AI' | 'HUMAN';
+
 interface Expense {
     id: number;
     title: string;
@@ -13,6 +15,7 @@ interface Expense {
     status: ExpenseStatus;
     requesterName: string;
     date: string;
+    processedBy: ProcessedBy | null;
 }
 
 interface ExpenseListProps {
@@ -31,6 +34,17 @@ const STATUS_BADGE_STYLE: Record<ExpenseStatus, 'yellow' | 'orange' | 'green' | 
     ESCALATED: 'orange',
     APPROVED: 'green',
     REJECTED: 'red',
+}
+
+// 승인/반려를 누가 결정했는지 (결정 전이면 processedBy가 null이라 뱃지 자체를 안 띄움)
+const PROCESSED_BY_LABEL: Record<ProcessedBy, string> = {
+    AI: 'AI',
+    HUMAN: '관리자/총무',
+}
+
+const PROCESSED_BY_BADGE_STYLE: Record<ProcessedBy, 'purple' | 'blue'> = {
+    AI: 'purple',
+    HUMAN: 'blue',
 }
 
 const formatDate = (isoString: string) => {
@@ -59,6 +73,13 @@ const ExpenseList = ({ expenses }: ExpenseListProps) => {
                                     style={STATUS_BADGE_STYLE[expense.status]}
                                     size={expense.status === 'ESCALATED' ? 'sm' : undefined}
                                 />
+                                {expense.processedBy && (
+                                    <Badge
+                                        text={PROCESSED_BY_LABEL[expense.processedBy]}
+                                        style={PROCESSED_BY_BADGE_STYLE[expense.processedBy]}
+                                        size="sm"
+                                    />
+                                )}
                             </div>
 
                             <p className={styles.expenseInfo}>{`${expense.requesterName} · ${formatDate(expense.date)}`}</p>

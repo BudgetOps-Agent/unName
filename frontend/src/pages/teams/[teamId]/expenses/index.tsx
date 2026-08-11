@@ -33,6 +33,15 @@ type ExpenseFilter =
   | "APPROVED"
   | "REJECTED";
 
+// 처리 주체 필터 — 승인/반려일 때만 노출. 선택 안 하면 전체라 별도 '전체' 버튼은 없고,
+// 이미 선택된 버튼을 다시 누르면 해제된다. 백엔드가 status만 받아서 프론트에서 거름
+const processorFilterBtn = [
+  { id: 1, text: "AI", value: "AI" },
+  { id: 2, text: "관리자·총무", value: "HUMAN" },
+] as const;
+
+type ProcessorFilter = "AI" | "HUMAN";
+
 const Expenses = () => {
   const router = useRouter();
 
@@ -42,6 +51,14 @@ const Expenses = () => {
 
   const [searchKeyword, setSearchKeyword] = useState("");
   const currentFilter = (router.query.status as ExpenseFilter) ?? "ALL";
+
+  // 처리 주체는 승인/반려에서만 의미가 있음 (대기 건은 아직 처리 주체가 없음)
+  const canFilterByProcessor =
+    currentFilter === "APPROVED" || currentFilter === "REJECTED";
+
+  const currentProcessorFilter = canFilterByProcessor
+    ? (router.query.processedBy as ProcessorFilter | undefined)
+    : undefined;
 
   const {
     data,
@@ -62,14 +79,20 @@ const Expenses = () => {
   const filteredExpenses = useMemo(() => {
     const keyword = searchKeyword.toLowerCase();
 
-    return expenses.filter(
-      (expense) =>
+    return expenses.filter((expense) => {
+      const matchesKeyword =
         expense.title.toLowerCase().includes(keyword) ||
         expense.requesterName
           .toLowerCase()
-          .includes(keyword)
-    );
-  }, [expenses, searchKeyword]);
+          .includes(keyword);
+
+      const matchesProcessor =
+        !currentProcessorFilter ||
+        expense.processedBy === currentProcessorFilter;
+
+      return matchesKeyword && matchesProcessor;
+    });
+  }, [expenses, searchKeyword, currentProcessorFilter]);
 
   return (
     <>
@@ -126,6 +149,7 @@ const Expenses = () => {
                               ...(item.value !== "ALL" && {
                                 status: item.value,
                               }),
+                              // 상태를 바꾸면 처리 주체 선택은 초기화
                             },
                           },
                           undefined,
@@ -152,6 +176,48 @@ const Expenses = () => {
                   </li>
                 );
               })}
+              {canFilterByProcessor &&
+                processorFilterBtn.map((item, index) => {
+                  const isActive =
+                    currentProcessorFilter === item.value;
+
+                  return (
+                    <li
+                      key={`processor-${item.id}`}
+                      className={index === 0 ? styles.processorGroupStart : undefined}
+                    >
+                      <button
+                        className={`${styles.filterBtn} ${styles.processorBtn} ${isActive ? styles.active : ""
+                          }`}
+                        onClick={() =>
+                          router.push(
+                            {
+                              pathname: router.pathname,
+                              query: {
+                                teamId: validTeamId,
+                                status: currentFilter,
+                                // 이미 선택된 버튼을 다시 누르면 해제 (= 전체)
+                                ...(!isActive && {
+                                  processedBy: item.value,
+                                }),
+                              },
+                            },
+                            undefined,
+                            { shallow: true }
+                          )
+                        }
+                      >
+                        <span
+                          className={styles.filterBtnText}
+                        >
+                          <p className={styles.btnTitle}>
+                            {item.text}
+                          </p>
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
             </ul>
           </div>
 
