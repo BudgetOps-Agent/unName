@@ -9,6 +9,14 @@ import useUpdateExpense from '@/features/teams/hooks/useUpdateExpense';
 import useExpenseDetail from '@/features/teams/hooks/useExpenseDetail';
 import { validateFile, RECEIPT_EXTENSIONS, RECEIPT_ACCEPT } from '@/features/teams/utils/fileValidator';
 
+// 오늘 날짜를 YYYY-MM-DD로. toISOString()은 UTC 기준이라 자정 전후에 하루가 밀릴 수 있어
+// 타임존 오프셋을 빼고 변환한다
+const getTodayString = () => {
+    const now = new Date();
+    const localTime = now.getTime() - now.getTimezoneOffset() * 60 * 1000;
+    return new Date(localTime).toISOString().slice(0, 10);
+};
+
 const NewExpense = () => {
 
     const router = useRouter();
@@ -22,6 +30,10 @@ const NewExpense = () => {
     const [date, setDate] = useState('');
     const [description, setDescription] = useState('');
     const [receipt, setReceipt] = useState<File | null>(null);
+
+    // 지출 발생일 상한 — 미래 날짜 차단용. YYYY-MM-DD 형식이라 문자열 비교로 대소 판단 가능
+    const today = getTodayString();
+    const isFutureDate = date !== '' && date > today;
 
     const { isSubmitting: isCreating, submitExpense } = useCreateExpense(validTeamId);
     const { isSubmitting: isUpdating, submitUpdate } = useUpdateExpense(editExpenseId);
@@ -59,7 +71,7 @@ const NewExpense = () => {
 
     const isFormValid = isEditMode
         ? title.trim() !== '' && amount !== ''
-        : title.trim() !== '' && amount !== '' && date !== '' && receipt !== null;
+        : title.trim() !== '' && amount !== '' && date !== '' && !isFutureDate && receipt !== null;
 
     const handleSubmit = async () => {
         if (isEditMode) {
@@ -138,12 +150,16 @@ const NewExpense = () => {
                         className={styles.dateInput}
                         type="date"
                         value={date}
+                        // 미래 날짜 차단 + 연도 입력 칸이 올해를 넘길 수 없게 되어 4자리에서 월로 넘어감
+                        max={today}
                         disabled={isEditMode}
                         onChange={(e) => setDate(e.target.value)}
                     />
-                    {isEditMode && (
+                    {isEditMode ? (
                         <p className={styles.helperText}>ⓘ 지출 발생일은 수정할 수 없어요</p>
-                    )}
+                    ) : isFutureDate ? (
+                        <p className={styles.helperText}>ⓘ 오늘 이후 날짜는 선택할 수 없어요</p>
+                    ) : null}
                 </div>
 
                 <div className={styles.formGroup}>
