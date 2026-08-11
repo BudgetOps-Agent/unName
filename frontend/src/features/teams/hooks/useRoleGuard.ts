@@ -18,7 +18,8 @@ const useRoleGuard = (teamId: string | undefined, allowedRoles: TeamRole[]) => {
         router.replace(`/teams/${teamId}/dashboard`);
     }, [isChecking, isAllowed, teamId, router]);
 
-    return { isChecking, isAllowed };
+    // role도 함께 반환 — 페이지 안에서 역할별로 탭·버튼을 가를 때 mypage를 또 호출하지 않도록
+    return { isChecking, isAllowed, role };
 };
 
 export default useRoleGuard;

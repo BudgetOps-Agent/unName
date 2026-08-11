@@ -9,6 +9,7 @@ import useMonthlyStats from "@/features/teams/hooks/useMonthlyStats";
 import useAiSummary from "@/features/teams/hooks/useAiSummary";
 import PendingApprovalCard from "@/features/teams/components/PendingApprovalCard/PendingApprovalCard";
 import BudgetSummaryCard from "@/features/teams/components/BudgetSummaryCard/BudgetSummaryCard";
+import LoadingText from "@/shared/components/loading/LoadingText";
 import styles from "./dashboard.module.css";
 
 const formatMonthLabel = (yearMonth: string) => {
@@ -40,7 +41,7 @@ const Dashboard = () => {
         <div className="cards">
             <Card title="월별 지출">
                 {isStatsLoading ? (
-                    <p>불러오는 중이에요...</p>
+                    <LoadingText />
                 ) : statsError ? (
                     <div className={styles.chartError}>
                         <p>{statsError}</p>

@@ -1,10 +1,18 @@
 .chartError {
+    min-height: 166px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 12px;
     padding: 24px 0;
+}
+
+.chartError p {
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
 }
 
 .chartError button {
@@ -16,7 +24,7 @@
     align-items: center;
     justify-content: center;
     height: 166px;
-    color: #99A1AF;
-    font-size: 13px;
+    color: var(--gray-6);
+    font-size: 14px;
     font-weight: 600;
 }

@@ -10,6 +10,7 @@ import PolicyManageCard from '@/features/teams/components/PolicyManageCard/Polic
 import BudgetEditModal from '@/features/teams/components/BudgetEditModal/BudgetEditModal';
 import useBudget from '@/features/teams/hooks/useBudget';
 import useRoleGuard from '@/features/teams/hooks/useRoleGuard';
+import LoadingText from '@/shared/components/loading/LoadingText';
 
 const Budget = () => {
     const router = useRouter();
@@ -17,13 +18,16 @@ const Budget = () => {
     const validTeamId = typeof teamId === 'string' ? teamId : undefined;
 
     const { budget, isLoading, error, refetch } = useBudget(validTeamId);
-    const { isChecking: isRoleChecking, isAllowed } = useRoleGuard(validTeamId, ['ADMIN', 'ACCOUNTANT']);
+    const { isChecking: isRoleChecking, isAllowed, role } = useRoleGuard(validTeamId, ['ADMIN', 'ACCOUNTANT']);
+
+    // 회칙·정책 관리는 관리자만 (백엔드 API-029/031도 ADMIN 제한). 예산 수정은 총무도 가능
+    const isAdmin = role === 'ADMIN';
 
     const [activeTab, setActiveTab] = useState<BudgetTabId>('budget');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     if (isRoleChecking || !isAllowed) {
-        return <p className={styles.placeholder}>불러오는 중이에요...</p>;
+        return <LoadingText />;
     }
 
     return (
@@ -40,7 +44,7 @@ const Budget = () => {
             )}
 
             <Card noPadding={true}>
-                <BudgetTabs activeTab={activeTab} onChange={setActiveTab} />
+                <BudgetTabs activeTab={activeTab} onChange={setActiveTab} canManagePolicy={isAdmin} />
 
                 {activeTab === 'budget' && (
                     error ? (
@@ -50,7 +54,7 @@ const Budget = () => {
                             <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
                         </div>
                     ) : isLoading || !budget ? (
-                        <p className={styles.placeholder}>불러오는 중이에요...</p>
+                        <LoadingText />
                     ) : (
                         <BudgetManagementCard
                             teamId={validTeamId}
@@ -62,7 +66,7 @@ const Budget = () => {
                     )
                 )}
 
-                {activeTab === 'policy' && (
+                {activeTab === 'policy' && isAdmin && (
                     <PolicyManageCard teamId={validTeamId} />
                 )}
             </Card>

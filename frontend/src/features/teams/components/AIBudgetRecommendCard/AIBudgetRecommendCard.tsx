@@ -5,6 +5,7 @@ import Button from '@/shared/components/button/Button';
 import useBudgetInsights from '@/features/teams/hooks/useBudgetInsights';
 import useCategoryStats from '@/features/teams/hooks/useCategoryStats';
 import { CATEGORY_LABEL } from '@/features/teams/constants/category';
+import LoadingText from '@/shared/components/loading/LoadingText';
 
 interface AIBudgetRecommendCardProps {
     teamId: string | undefined;
@@ -34,7 +35,7 @@ const AIBudgetRecommendCard = ({ teamId }: AIBudgetRecommendCardProps) => {
             <div className={styles.content}>
                 <div className={styles.chart}>
                     {isStatsLoading ? (
-                        <p className={styles.placeholder}>불러오는 중이에요...</p>
+                        <LoadingText />
                     ) : statsError ? (
                         <div className={styles.errorBox}>
                             <p className={styles.errorText}>{statsError}</p>
@@ -49,7 +50,7 @@ const AIBudgetRecommendCard = ({ teamId }: AIBudgetRecommendCardProps) => {
 
                 <div className={styles.analysisList}>
                     {isLoading ? (
-                        <p className={styles.placeholder}>불러오는 중이에요...</p>
+                        <LoadingText />
                     ) : error ? (
                         <div className={styles.errorBox}>
                             <p className={styles.errorText}>{error}</p>

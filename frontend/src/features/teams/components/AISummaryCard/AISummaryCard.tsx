@@ -1,6 +1,7 @@
 import { Card } from "@/shared/components/card/Card";
 import { Badge } from "@/shared/components/badge/Badge";
 import Button from "@/shared/components/button/Button";
+import LoadingText from "@/shared/components/loading/LoadingText";
 import styles from "./AISummaryCard.module.css";
 
 interface AISummaryCardProps {
@@ -18,7 +19,7 @@ const AISummaryCard = ({ summary, verified, isLoading, error, onRetry }: AISumma
             headerRight={verified === false && <Badge text="확인 필요" style="orange" size="sm" />}
         >
             {isLoading ? (
-                <p className={styles.summaryText}>불러오는 중이에요...</p>
+                <LoadingText />
             ) : error ? (
                 <div className={styles.summaryError}>
                     <p className={styles.summaryErrorText}>{error}</p>
