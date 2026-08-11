@@ -27,5 +27,6 @@ public class ReportExpenseListResponse {
         private String requesterName; // 요청자
         private String date;          // 승인 날짜
         private Long amount;          // 금액
+        private String processorName; // 승인 처리한 사람 이름 (AI 자동승인이면 "AI")
     }
 }
