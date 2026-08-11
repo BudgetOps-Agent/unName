@@ -96,9 +96,10 @@ public class ExpenseService {
         List<ExpenseStatus> statusFilter = resolveStatusFilter(status);
 
         // 3. 그 조건으로 지출 목록 조회 (권한에 따라 본인 것만/전체)
+        //    정렬은 요청일(createdAt) 최신순 — 목록 date 표시값(요청일)과 순서를 맞춤 (프론트 요청 2026-08-10)
         List<Expense> expenses = (scopeUserId == null)
-                ? expenseRepository.findByTeamIdAndStatusInOrderByExpenseDateDesc(teamId, statusFilter)
-                : expenseRepository.findByTeamIdAndUserIdAndStatusInOrderByExpenseDateDesc(
+                ? expenseRepository.findByTeamIdAndStatusInOrderByCreatedAtDesc(teamId, statusFilter)
+                : expenseRepository.findByTeamIdAndUserIdAndStatusInOrderByCreatedAtDesc(
                         teamId, scopeUserId, statusFilter);
 
         // 4. Expense 엔티티 → ExpenseInfo(DTO)로 변환
@@ -364,9 +365,31 @@ public class ExpenseService {
         Expense expense = expenseRepository.findById(expenseId)
                 .orElseThrow(() -> new ExpenseException(ExpenseErrorCode.EXPENSE_NOT_FOUND));
 
-        // 2. 엔티티 → 상세 응답 DTO로 변환해서 반환
+        // 2. 조회자 기준 권한 플래그 계산 (프론트 버튼 노출용).
+        //    실제 강제는 각 API(수정 018/삭제 021/승인 019/반려 020)가 서버에서 다시 검증하므로,
+        //    여기 규칙은 그 검증과 정확히 같게 맞춰 둔다.
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User viewer = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        boolean isOwner = expense.getUser().getId().equals(viewer.getId());
+        // 조회자의 이 팀 역할 (팀원이 아니면 null → 승인/반려·관리자 삭제 전부 불가)
+        TeamRole role = teamMemberRepository
+                .findByTeamIdAndUserId(expense.getTeam().getId(), viewer.getId())
+                .map(TeamMember::getRole)
+                .orElse(null);
+
+        boolean pending = isPending(expense); // SUBMITTED/ESCALATED만 true
+        boolean canApproveReject = (role == TeamRole.ADMIN || role == TeamRole.ACCOUNTANT);
+
+        boolean canEdit    = isOwner && pending;                                  // 수정: 본인 + 대기
+        boolean canDelete  = (isOwner || role == TeamRole.ADMIN) && pending;      // 삭제: 본인 또는 ADMIN + 대기
+        boolean canApprove = canApproveReject && pending;                         // 승인: ADMIN/ACCOUNTANT + 대기
+        boolean canReject  = canApproveReject && pending;                         // 반려: ADMIN/ACCOUNTANT + 대기
+
+        // 3. 엔티티 → 상세 응답 DTO로 변환해서 반환
         //    (receiptUrl → receiptFileUrl 변환, 요청자 이름 등은 fromEntity 안에서 처리)
-        return ExpenseDetailResponse.fromEntity(expense);
+        return ExpenseDetailResponse.fromEntity(expense, canEdit, canDelete, canApprove, canReject);
     }
 
     // ObjectMapper는 주입 대신 자체 생성 — Spring Boot 4의 Jackson 빈 타입(2 vs 3) 불일치로 인한
@@ -766,10 +789,17 @@ public class ExpenseService {
                 : expense.getReceiptUrl();
 
         // 6. 값 변경 (카테고리는 AI가 채우는 값이라 제외) — 더티 체킹으로 자동 UPDATE
+        //    내용이 바뀌었으니 status는 SUBMITTED로 초기화됨(엔티티 update() 안에서 처리)
         expense.update(request.getTitle(), request.getAmount(),
                 request.getDescription(), receiptUrl);
 
-        // 7. 응답 반환
+        // 7. 옛 AI 판정(특히 ESCALATED 사유)은 수정 전 내용 기준이라 더 이상 유효하지 않음
+        //    → 새 jobId로 LLM에 재심사 요청 (LLM-003, 실패해도 수정 자체는 유지됨)
+        //    옛 심사기록(expenses_reviews)은 지우지 않고 남겨둠 — 새 콜백이 오면
+        //    getReviewResult가 "가장 최근 AI 기록" 기준이라 자연히 최신 것으로 교체되어 보임
+        dispatchAiReview(expense, receiptUrl);
+
+        // 8. 응답 반환
         return ExpenseUpdateResponse.fromEntity(expense);
     }
 

@@ -32,10 +32,25 @@ public class ExpenseDetailResponse {
         private LocalDateTime approvedAt;   // 승인/반려 확정 시각 (처리 전이면 null)
         private String rejectReason;        // 반려 사유 (반려된 경우만, 아니면 null)
         private LocalDate expenseDate;      // 지출 발생 날짜 (실제 돈 쓴 날)
+
+        // 조회한 사람이 이 지출에 대해 할 수 있는 동작(프론트 버튼 노출용).
+        // 실제 권한 강제는 각 API(수정/삭제/승인/반려)가 서버에서 다시 검증하므로,
+        // 이 값은 "버튼을 보여줄지" 힌트일 뿐 보안 경계는 아님.
+        private boolean canEdit;            // 수정 가능(작성자 본인 + 대기)
+        private boolean canDelete;          // 삭제 가능(작성자 본인 또는 ADMIN + 대기)
+        private boolean canApprove;         // 승인 가능(ADMIN/ACCOUNTANT + 대기)
+        private boolean canReject;          // 반려 가능(ADMIN/ACCOUNTANT + 대기)
     }
 
-    // Expense 엔티티 → 상세 응답 DTO로 변환
+    // Expense 엔티티 → 상세 응답 DTO로 변환 (권한 플래그 없이 — 하위호환용, 전부 false)
     public static ExpenseDetailResponse fromEntity(Expense expense) {
+        return fromEntity(expense, false, false, false, false);
+    }
+
+    // Expense 엔티티 → 상세 응답 DTO로 변환 (조회자 기준 권한 플래그 포함)
+    public static ExpenseDetailResponse fromEntity(Expense expense,
+                                                   boolean canEdit, boolean canDelete,
+                                                   boolean canApprove, boolean canReject) {
         ExpenseInfo info = ExpenseInfo.builder()
                 .id(expense.getId())
                 .title(expense.getTitle())
@@ -51,6 +66,10 @@ public class ExpenseDetailResponse {
                 .createdAt(expense.getCreatedAt())
                 .approvedAt(expense.getApprovedAt())
                 .rejectReason(expense.getRejectReason())
+                .canEdit(canEdit)
+                .canDelete(canDelete)
+                .canApprove(canApprove)
+                .canReject(canReject)
                 .build();
 
         return ExpenseDetailResponse.builder()
