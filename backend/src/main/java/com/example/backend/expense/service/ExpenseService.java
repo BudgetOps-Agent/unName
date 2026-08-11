@@ -38,7 +38,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service // 이 클래스가 비즈니스 로직 담당이라는 표시, Spring이 자동으로 Bean 등록
@@ -447,41 +449,64 @@ public class ExpenseService {
                 .build();
     }
 
+    // 프론트(AIReviewCard.tsx)가 심사관 이름을 opinions 배열의 "위치"로만 구분함(REVIEWER_NAMES[index]).
+    // LLM 내부 처리 순서(evidence→budget→precedent→rule, 증빙이 그래프상 가장 먼저 나오는 값)에 맞춤
+    // — LLM팀 제안(2026-08-11), 프론트 REVIEWER_NAMES도 [증빙,예산,이상탐지,회칙] 순으로 같이 바꾸기로 함.
+    // ⚠️ 프론트가 이 순서로 안 바뀌면 다시 위치가 어긋남 — 배포는 프론트·백엔드 동시에.
+    // 영수증 불일치로 나머지 3종을 건너뛰는 건은 일부 항목이 통째로 빠지기도 해서, 위치가 아니라
+    // opinion.auditor 값으로 찾아 이 고정 순서로 4자리를 항상 채워 내려줌. 없는 항목은 "심사 미실시".
+    private static final List<String> AUDITOR_ORDER = List.of("evidence", "budget", "precedent", "rule");
+
     // detail(JSON 문자열)에서 opinions[]를 꺼내 프론트용 Reviewer 리스트로 변환
     // opinions 항목 필드는 camelCase(auditor, verdict, summary), 근거는 evidence[] 또는 similar_cases(예외적 snake_case)
     // LLM verdict(pass/warn/fail/error) → 프론트 verdict(PASS/FAIL/HOLD)로 매핑
     private List<ExpenseReviewResultResponse.Reviewer> parseReviewers(String detailJson) {
-        List<ExpenseReviewResultResponse.Reviewer> reviewers = new ArrayList<>();
         if (detailJson == null || detailJson.isBlank()) {
-            return reviewers;
+            return new ArrayList<>();
         }
 
         try {
             JsonNode root = objectMapper.readTree(detailJson);
             JsonNode opinions = root.path("opinions");
             if (!opinions.isArray()) {
-                return reviewers;
+                return new ArrayList<>();
             }
 
-            int id = 1;
+            // auditor 값 → opinion 노드 (배열 순서·누락과 무관하게 종류로 바로 찾기 위함)
+            Map<String, JsonNode> byAuditor = new HashMap<>();
             for (JsonNode opinion : opinions) {
-                String verdict = mapAuditorVerdict(opinion.path("verdict").asText(""));
-                String summary = opinion.path("summary").asText("");
-                String reason = extractReason(opinion);
-
-                reviewers.add(ExpenseReviewResultResponse.Reviewer.builder()
-                        .id(id++)
-                        .verdict(verdict)
-                        .opinion(summary)
-                        .reason(reason)
-                        .build());
+                String auditor = opinion.path("auditor").asText("");
+                if (!auditor.isBlank()) {
+                    byAuditor.put(auditor, opinion);
+                }
             }
+
+            List<ExpenseReviewResultResponse.Reviewer> reviewers = new ArrayList<>();
+            int id = 1;
+            for (String auditor : AUDITOR_ORDER) {
+                JsonNode opinion = byAuditor.get(auditor);
+                if (opinion != null) {
+                    reviewers.add(ExpenseReviewResultResponse.Reviewer.builder()
+                            .id(id++)
+                            .verdict(mapAuditorVerdict(opinion.path("verdict").asText("")))
+                            .opinion(opinion.path("summary").asText(""))
+                            .reason(extractReason(opinion))
+                            .build());
+                } else {
+                    // 이 심사관은 이번 건에서 안 돌았음(예: 증빙 불일치로 나머지 건너뜀) — 자리는 유지
+                    reviewers.add(ExpenseReviewResultResponse.Reviewer.builder()
+                            .id(id++)
+                            .verdict("HOLD")
+                            .opinion("이 항목은 심사되지 않았습니다.")
+                            .reason("")
+                            .build());
+                }
+            }
+            return reviewers;
         } catch (Exception e) {
             // detail이 예상과 다른 형식이어도 화면 자체는 떠야 하므로 조용히 빈 리스트 반환
             return new ArrayList<>();
         }
-
-        return reviewers;
     }
 
     // 심사관 근거 텍스트 조립: evidence[] 우선, 없으면 similar_cases, 둘 다 없으면 소견 재사용
