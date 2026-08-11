@@ -16,6 +16,7 @@ export interface ExpenseInfo {
     title: string;
     category: string;
     date: string;
+    expenseDate: string;
     requester: string;
     description: string;
     amount: number;
@@ -27,7 +28,7 @@ interface ExpenseInfoCardProps {
 }
 
 const ExpenseInfoCard = ({ expense }: ExpenseInfoCardProps) => {
-    const { status, statusStyle, title, category, date, requester, description, amount, rejectReason } = expense;
+    const { status, statusStyle, title, category, date, expenseDate, requester, description, amount, rejectReason } = expense;
     const badgeStyle = statusStyle ?? STATUS_BADGE_STYLE[status] ?? 'gray';
 
     return (
@@ -46,6 +47,11 @@ const ExpenseInfoCard = ({ expense }: ExpenseInfoCardProps) => {
                 <div className={styles.infoRow}>
                     <span className={styles.infoLabel}>요청자</span>
                     <p className={styles.infoValue}>{requester}</p>
+                </div>
+
+                <div className={`${styles.infoRow} ${styles.dateRow}`}>
+                    <span className={styles.infoLabel}>지출 발생일</span>
+                    <p className={styles.infoValue}>{expenseDate}</p>
                 </div>
 
                 <div className={`${styles.infoRow} ${styles.categoryRow}`}>
