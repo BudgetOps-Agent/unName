@@ -9,11 +9,12 @@ type ChangeableRole = 'ACCOUNTANT' | 'MEMBER';
 
 interface ChangeRoleCardProps {
     memberId: number | null;
+    currentRole: ChangeableRole;
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
     onSuccess?: () => void;
 }
 
-const ChangeRoleCard = ({ memberId, onClick, onSuccess }: ChangeRoleCardProps) => {
+const ChangeRoleCard = ({ memberId, currentRole, onClick, onSuccess }: ChangeRoleCardProps) => {
 
     const [changeRole, setChangeRole] = useState<ChangeableRole | ''>('');
     const { isSubmitting, submitChangeRole } = useChangeRole();
@@ -45,21 +46,26 @@ const ChangeRoleCard = ({ memberId, onClick, onSuccess }: ChangeRoleCardProps) =
                 <div className={styles.roleSection}>
                     <span className={styles.roleTitle}>역할</span>
 
+                    {/* 현재 역할이 아닌 쪽만 노출 (총무 → 멤버, 멤버 → 총무) */}
                     <div className={styles.changeRoleBtnContainer}>
-                        <Button
-                            className={`${styles.changeRoleBtn} ${changeRole === 'ACCOUNTANT' ? styles.active : ''}`}
-                            text='총무 — 지출 승인·예산 관리'
-                            iconLeft={<Badge className={styles.roleBadge} text='총무' style='purple' />}
-                            onClick={() => setChangeRole('ACCOUNTANT')}
-                            style='secondary'
-                        />
-                        <Button
-                            className={`${styles.changeRoleBtn} ${changeRole === 'MEMBER' ? styles.active : ''}`}
-                            text='멤버 — 지출 요청만 가능'
-                            iconLeft={<Badge className={styles.roleBadge} text='멤버' style='gray' />}
-                            onClick={() => setChangeRole('MEMBER')}
-                            style='secondary'
-                        />
+                        {currentRole === 'MEMBER' && (
+                            <Button
+                                className={`${styles.changeRoleBtn} ${changeRole === 'ACCOUNTANT' ? styles.active : ''}`}
+                                text='총무 — 지출 승인·예산 관리'
+                                iconLeft={<Badge className={styles.roleBadge} text='총무' style='purple' />}
+                                onClick={() => setChangeRole('ACCOUNTANT')}
+                                style='secondary'
+                            />
+                        )}
+                        {currentRole === 'ACCOUNTANT' && (
+                            <Button
+                                className={`${styles.changeRoleBtn} ${changeRole === 'MEMBER' ? styles.active : ''}`}
+                                text='멤버 — 지출 요청만 가능'
+                                iconLeft={<Badge className={styles.roleBadge} text='멤버' style='gray' />}
+                                onClick={() => setChangeRole('MEMBER')}
+                                style='secondary'
+                            />
+                        )}
                     </div>
                 </div>
 
