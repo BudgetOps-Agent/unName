@@ -276,13 +276,14 @@
 .checkbox:checked::after {
     content: '';
     position: absolute;
-    left: 6px;
-    top: 2px;
+    left: 50%;
+    top: 50%;
     width: 4px;
     height: 8px;
     border: solid var(--white);
     border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+    /* 45도 돌리면 획이 오른쪽 아래로 쏠려서, 그만큼 되돌려 광학적 중앙에 맞춘다 */
+    transform: translate(-50%, -60%) rotate(45deg);
 }
 
 .sectionTitle {
