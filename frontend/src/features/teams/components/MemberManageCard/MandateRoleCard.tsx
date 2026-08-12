@@ -8,9 +8,13 @@ import useTransferAdmin from '../../hooks/useTransferAdmin';
 interface MandateRoleCardProps {
     teamId: string | undefined;
     members: Member[];
+    // 모임 탈퇴처럼 위임이 다른 동작의 전제 조건일 때 안내 문구를 바꿔 쓴다
+    description?: React.ReactNode;
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
     onSuccess?: () => void;
 }
+
+const DEFAULT_DESCRIPTION = '관리자 권한을 다른 멤버에게 넘겨요. 이후 본인은 일반 멤버가 돼요.';
 
 const ROLE_LABEL: Record<Member['role'], string> = {
     ADMIN: '관리자',
@@ -18,7 +22,7 @@ const ROLE_LABEL: Record<Member['role'], string> = {
     MEMBER: '멤버',
 }
 
-const MandateRoleCard = ({ teamId, members, onClick, onSuccess }: MandateRoleCardProps) => {
+const MandateRoleCard = ({ teamId, members, description, onClick, onSuccess }: MandateRoleCardProps) => {
 
     const [mandateMemberId, setMandateMemberId] = useState<number | null>(null);
     const { isSubmitting, submitTransfer } = useTransferAdmin(teamId);
@@ -46,7 +50,7 @@ const MandateRoleCard = ({ teamId, members, onClick, onSuccess }: MandateRoleCar
     return (
         <Card small>
             <p className={styles.title}>관리자 권한 위임</p>
-            <span className={styles.subTitle}>관리자 권한을 다른 멤버에게 넘겨요. 이후 본인은 일반 멤버가 돼요.</span>
+            <span className={styles.subTitle}>{description ?? DEFAULT_DESCRIPTION}</span>
 
             <form onSubmit={handleSubmit}>
                 <div className={`${styles.roleSection} ${styles.mandateRoleBtnContainer}`}>
