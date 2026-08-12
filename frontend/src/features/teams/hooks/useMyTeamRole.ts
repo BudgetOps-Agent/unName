@@ -3,8 +3,11 @@ import { AxiosError } from 'axios';
 import { mypage } from '@/features/auth/api/authApi';
 import { TeamRole } from '@/types/team';
 import { ErrorResponse } from '@/types/auth';
+import { useTeamRoleStore } from '@/store/teamRoleStore';
 
 const useMyTeamRole = (teamId: string | undefined) => {
+    // 권한이 바뀌면 이 값이 올라가고, 그때 역할을 다시 조회함
+    const roleVersion = useTeamRoleStore((state) => state.version);
     const [role, setRole] = useState<TeamRole | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -33,7 +36,8 @@ const useMyTeamRole = (teamId: string | undefined) => {
             setIsLoading(false);
             setHasFetched(true);
         }
-    }, [teamId]);
+        // roleVersion이 바뀌면 fetchRole도 새로 만들어져 useEffect가 다시 돌음
+    }, [teamId, roleVersion]);
 
     useEffect(() => {
         fetchRole();
