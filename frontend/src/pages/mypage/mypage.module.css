@@ -1,0 +1,71 @@
+.myPageContainer {
+    display: flex;
+    max-width: 480px;
+    margin: 0 auto;
+    flex-direction: column;
+}
+
+@media screen and (max-width: 768px) {
+    /* main의 좌우 패딩(20px) 안쪽이라 카드가 그만큼 좁아짐.
+       이 페이지에서만 8px씩 상쇄해 좌우 여백을 12px로 줄이고 카드를 320px 근처까지 넓힌다
+       (390px 화면 → 366px, 345px 화면 → 321px) */
+    .myPageContainer {
+        max-width: none;
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+}
+
+.backLink {
+    text-align: left;
+}
+
+.profileCard {
+    margin-top: 20px;
+}
+
+.grouplistCard {
+    margin-top: 16px;
+}
+
+.errorCard {
+    margin-top: 4px;
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 350px;
+    gap: 12px;
+}
+
+.errorTextTitle {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.errorTextSub {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px 0px;
+    margin-top: 16px;
+    gap: 8px;
+    border: 1.6px solid #FFE2E2;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--red-7);
+}

@@ -1,0 +1,27 @@
+.chartError {
+    min-height: 166px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px 0;
+}
+
+.chartError p {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.chartEmpty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 166px;
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}

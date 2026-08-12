@@ -1,0 +1,43 @@
+import styles from './budgetmanagementcard.module.css';
+import ProgressBar from '@/shared/components/progressbar/ProgressBar';
+import AIBudgetRecommendCard from '@/features/teams/components/AIBudgetRecommendCard/AIBudgetRecommendCard';
+
+interface BudgetManagementCardProps {
+    teamId: string | undefined;
+    totalBudget: number;
+    usedBudget: number;
+    remainingBudget: number;
+    usagePercentage: number;
+}
+
+const BudgetManagementCard = ({ teamId, totalBudget, usedBudget, remainingBudget, usagePercentage }: BudgetManagementCardProps) => {
+    return (
+        <div className={styles.content}>
+            <div className={styles.header}>
+                <span className={styles.label}>사용된 예산</span>
+                <span className={styles.usageLabel}>{`${usagePercentage}% 사용됨`}</span>
+            </div>
+
+            <p className={styles.totalAmount}>{`${usedBudget.toLocaleString()}원`}</p>
+
+            <ProgressBar total={totalBudget} used={usedBudget} />
+
+            {/* 큰 숫자가 사용액으로 바뀌면서 전체 예산이 화면에서 사라지므로 아래 줄에서 대신 보여줌 */}
+            <div className={styles.statsRow}>
+                <div className={styles.statItem}>
+                    <span className={styles.statLabel}>전체 예산</span>
+                    <p className={`${styles.statValue} ${styles.total}`}>{`${totalBudget.toLocaleString()}원`}</p>
+                </div>
+
+                <div className={styles.statItem}>
+                    <span className={styles.statLabel}>잔여</span>
+                    <p className={`${styles.statValue} ${styles.remaining}`}>{`${remainingBudget.toLocaleString()}원`}</p>
+                </div>
+            </div>
+
+            <AIBudgetRecommendCard teamId={teamId} />
+        </div>
+    );
+};
+
+export default BudgetManagementCard;

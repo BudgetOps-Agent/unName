@@ -1,26 +1,158 @@
-@import "tailwindcss";
-
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+    --white: #ffffff;
+    --black: #171717;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+    --gray-2: #FFFBEB;
+    --gray-3: #F9FAFB;
+    --gray-4: #F3F4F6;
+    --gray-5: #E5E7EB;
+    --gray-6: #99A1AF;
+    --gray-7: #4A5565;
+    --gray-8: #6A7282;
+    --gray-9: #191F28;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    --blue-1: #F6F7FB;
+    --blue-2: #EFF6FF;
+    --blue-3: #DFF2FE;
+    --blue-8: #3182F6;
+    --blue-9: #155DFC;
+
+    --red-2: #FEF2F2;
+    --red-3: #FECACA;
+    --red-5: #EF4444;
+    --red-6: #E53E3E;
+    --red-7: #FB2C36;
+    --red-8: #DC2626;
+    --red-9: #CA3500;
+
+    --purple-2: #EEF2FF;
+    --purple-5: #615FFF;
+    --purple-6: #4F39F6;
+
+    --yellow-3: #FFFBEB;
+    --yellow-4: #FEF3C7;
+    --yellow-5: #FBBF24;
+    --yellow-6: #F59E0B;
+  
+    --orange-1: #E17100;
+    --orange-2: #FE9A00;
+    --orange-3: #FFD6A8;
+
+    --green-1: #ECFDF5;
+    --green-2: #00BC7D;
+    --green-3: #009966;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  line-height: 1.5;
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-family-base);
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
+/* reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* margin reset */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+li,
+figure,
+figcaption,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  border: none;
+  background: none;
+  /* outline: none; */
+}
+
+/* list */
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+/* link */
+a {
+  display: inline-block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.links {
+    text-align: center;
+}
+.links .link {
+    font-size: 12px;
+}
+.links .link span {
+    vertical-align: top;
+}
+.links .link + .link:before{
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 16px;
+    background: var(--gray-5);
+    margin: 0 16px;
+    vertical-align: text-bottom;
+}
+.link {
+    color:var(--gray-6);
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px
+}
+.link-back {
+    color:var(--gray-6);
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px
+}
+.link-back:before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+    background: url("/arrow-gray.svg") no-repeat center center;
+    background-size: 16px 16px;
+    vertical-align: middle;
+}
+
+.blind {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
 }

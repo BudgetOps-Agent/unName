@@ -1,0 +1,483 @@
+.container {
+    padding: 24px;
+}
+
+.title {
+    color: var(--gray-9);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.subTitle {
+    margin-top: 4px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.methodTabs {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.methodTab {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 16px;
+    background: var(--gray-3);
+    color: var(--gray-8);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.methodTabActive {
+    border: 1.6px solid var(--blue-8);
+    background: #EBF3FE;
+    color: var(--blue-8);
+}
+
+.uploadBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 32px 16px;
+    border: 1.6px dashed var(--gray-5);
+    border-radius: 16px;
+    background: var(--gray-3);
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.uploadBox:hover {
+    border-color: rgba(49, 130, 246, 0.4);
+    background: rgba(235, 243, 254, 0.3);
+}
+
+.hiddenFileInput {
+    display: none;
+}
+
+.uploadIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 4px;
+    border-radius: 16px;
+    background: var(--white);
+    color: var(--gray-7);
+    font-size: 16px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+                0 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.uploadText {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.uploadSubText {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.textArea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 140px;
+    margin-top: 20px;
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    color: var(--gray-9);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.textArea:focus {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.textArea::placeholder {
+    color: var(--gray-6);
+    font-weight: 700;
+}
+
+/* 등록된 회칙 파일 내려받기 — 영수증 카드와 같은 형태 */
+.downloadLink {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    margin-top: 12px;
+    gap: 6px;
+    color: var(--blue-8);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.downloadLink img {
+    width: 16px;
+    height: 16px;
+}
+
+/* 수정 버튼은 텍스트 영역 오른쪽 아래에 붙임 */
+.textActions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.policyEditNote {
+    margin-top: 8px;
+    color: var(--blue-8);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: right;
+}
+
+.aiBox {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 16px;
+    background: #F5F3FF;
+}
+
+.aiTitle {
+    color: #7008E7;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.aiText {
+    color: #7F22FE;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.aiButton.aiButton {
+    width: fit-content;
+    padding: 8px 16px;
+    margin-top: 16px;
+    background: #8E51FF;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* 선택됨·생성 중처럼 못 누르는 상태에서는 hover 반응을 주지 않음 */
+.aiButton.aiButton:hover:not(:disabled) {
+    background-color: #7C3AED;
+}
+
+/* 새로 추천받기 / 이 초안 사용하기를 한 줄에 */
+.aiActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 16px;
+    gap: 8px;
+}
+
+/* .aiButton은 margin-top을 갖고 있어 이 줄 안에서는 상쇄해야 높이가 맞음 */
+.aiActions .aiButton {
+    margin-top: 0;
+}
+
+.aiRefreshButton.aiRefreshButton {
+    width: fit-content;
+    border: 1px solid #C4B4FF;
+    color: #7008E7;
+    background: var(--white);
+}
+
+.aiRefreshButton.aiRefreshButton:hover:not(:disabled) {
+    background: #EDE9FE;
+}
+
+/* 초안 선택만으로는 저장되지 않는다는 안내 — AI 박스 톤에 맞춰 보라색 계열 */
+.aiApplyNote {
+    margin-top: 8px;
+    color: #7F22FE;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.aiDraftText {
+    /* 초안이 있을 때만 렌더되는 영역이라, 생성 전 안내 박스 크기에는 영향이 없음 */
+    max-height: 480px;
+    margin: 0 0 16px;
+    overflow-y: auto;
+    color: var(--gray-8);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.paramSection {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+}
+
+.feeSectionHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--gray-7);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.checkbox {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--white);
+    border: 1px solid var(--blue-8);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.checkbox:checked {
+    background-color: var(--blue-8);
+}
+
+.checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 4px;
+    height: 8px;
+    border: solid var(--white);
+    border-width: 0 2px 2px 0;
+    /* 45도 돌리면 획이 오른쪽 아래로 쏠려서, 그만큼 되돌려 광학적 중앙에 맞춘다 */
+    transform: translate(-50%, -60%) rotate(45deg);
+}
+
+.sectionTitle {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.sectionSubTitle {
+    margin-top: 4px;
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.paramField {
+    margin-top: 16px;
+}
+
+.paramLabel {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--gray-7);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.amountInput {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    box-sizing: border-box;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.amountInput:focus-within {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.amountInput input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    color: var(--gray-9);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.amountInput input:focus {
+    outline: none;
+}
+
+.amountInput input:disabled {
+    color: var(--gray-6);
+}
+
+.amountInput input::placeholder {
+    color: var(--gray-6);
+    font-weight: 600;
+}
+
+.amountInput input::-webkit-outer-spin-button,
+.amountInput input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.amountInput .unit {
+    flex-shrink: 0;
+    margin-left: 8px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.paramPreview {
+    margin-top: 6px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.paramErrorText {
+    margin-top: 6px;
+    color: var(--red-7);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.paramHelper {
+    margin-top: 6px;
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.collapsible {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.25s ease;
+}
+
+.collapsible.collapsed {
+    grid-template-rows: 0fr;
+}
+
+.collapsibleInner {
+    min-height: 0;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.collapsible.collapsed .collapsibleInner {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.toggleRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: var(--gray-3);
+}
+
+.toggleTitle {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.toggleDesc {
+    margin-top: 2px;
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.switch {
+    position: relative;
+    flex-shrink: 0;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background-color: var(--gray-5);
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--white);
+    transition: transform 0.15s ease;
+}
+
+.switch input:checked + .slider {
+    background-color: var(--blue-8);
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(18px);
+}
+
+.saveButton {
+    margin-top: 20px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 700;
+}

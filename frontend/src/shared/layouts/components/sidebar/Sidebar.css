@@ -1,0 +1,115 @@
+.sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    width: 220px;
+    height: 100vh;
+    background: #FFFFFF;
+    border-right: 0.8px solid rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+    transition: width 0.3s ease;
+    z-index: 2000;
+}
+
+.sidebar-container.closed {
+    width: 68px;
+}
+
+.logo-section {
+    display: flex;
+    height: 60px;
+    /* menu-section(height:100%)이 컨테이너를 넘겨서 flex가 자식들을 비례 축소함.
+       헤더(60px 고정)와 border 높이를 맞추려면 여기는 축소되면 안 됨 */
+    flex-shrink: 0;
+    align-items: center;
+    padding-left: 16px;
+    border-bottom: 0.8px solid rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.logo-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.menu-section {
+    padding: 12px 8px 16px;
+    gap: 2px;
+    height: 100%;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 203px;
+    height: 40px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #99A1AF;
+    transition: width 0.3s ease;
+    box-sizing: border-box;
+}
+
+.menu.closed {
+    width: 51px;
+}
+
+.menu.active {
+    color: #3182F6;
+    background-color: #EBF3FE;
+    border-radius: 16px;
+}
+
+.sidebar-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    right: -18px;
+    transform: translateY(-50%);
+    width: 35px;
+    height: 35px;
+    background-color: #FFFFFF;
+    border-radius: 18px;
+    border: 0.8px solid #E5E7EB;
+}
+
+.sidebar-toggle img {
+    width: 10px;
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+.rotate {
+    transform: rotate(180deg);
+}
+
+@media screen and (max-width: 768px) {
+    /* 모바일에선 메뉴 이동을 하단 탭바(.bottom-nav)가 맡음.
+       사이드바는 헤더 왼쪽의 로고 자리로만 남기고, 메뉴와 여닫기 버튼은 없앤다 */
+    .sidebar-container  {
+        width: auto;
+        height: 60px;
+        background: none;
+        border-right: none;
+        box-sizing: border-box;
+    }
+    .sidebar-container.closed {
+        width: auto;
+    }
+    .sidebar-container .logo-section {
+        border-bottom: none;
+    }
+    .sidebar-container .menu-section,
+    .sidebar-container .sidebar-toggle {
+        display: none;
+    }
+}

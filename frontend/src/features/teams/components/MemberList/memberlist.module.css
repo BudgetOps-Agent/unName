@@ -1,0 +1,78 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.memberItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+}
+
+.nameBox, .itemRight {
+    display: flex;
+    align-items: center;
+}
+
+/* 좁은 화면에서 긴 이메일이 버튼을 밀어내지 않도록 왼쪽은 줄어들고 오른쪽은 고정 */
+.itemLeft {
+    min-width: 0;
+}
+
+.itemRight {
+    flex-shrink: 0;
+}
+
+.nameBox {
+    gap: 8px;
+}
+
+.name {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.email {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.itemRight {
+    font-size: 12px;
+    font-weight: 700;
+    gap: 4px;
+}
+
+.mandateBtn, .changeBtn, .outBtn {
+    padding: 6px 10px;
+    white-space: nowrap;
+}
+
+.mandateBtn:hover {
+    color: var(--yellow-6);
+    background-color: var(--yellow-4);
+}
+
+.changeBtn:hover {
+    color: var(--blue-8);
+    background-color: var(--blue-2);
+}
+
+.outBtn:hover {
+    color: var(--red-5);
+    background-color: var(--red-2);
+}

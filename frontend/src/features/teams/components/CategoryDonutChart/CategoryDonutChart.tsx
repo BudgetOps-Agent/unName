@@ -1,0 +1,68 @@
+import React from 'react';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import styles from './CategoryDonutChart.module.css';
+
+interface DonutData {
+    name: string;
+    value: number;
+}
+
+interface CategoryDonutChartProps {
+    data: DonutData[];
+    variant?: 'sideLegend' | 'bottomLegend';
+}
+
+const COLORS = [
+    '#4f46e5',
+    '#6366f1',
+    '#3b82f6',
+    '#60a5fa',
+    '#93c5fd',
+    '#bfdbfe',
+];
+
+export default function CategoryDonutChart({ data, variant = 'sideLegend' }: CategoryDonutChartProps) {
+    const isBottomLegend = variant === 'bottomLegend';
+
+    return (
+        <div className={`${styles.donutChartWrapper}${isBottomLegend ? ` ${styles.donutChartWrapperBottom}` : ''}`}>
+            <div className={`${styles.donutChartLeft}${isBottomLegend ? ` ${styles.donutChartLeftBottom}` : ''}`}>
+                <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                        <Pie
+                            data={data}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={isBottomLegend ? '60%' : 28}
+                            outerRadius={isBottomLegend ? '95%' : 50}
+                            paddingAngle={2}
+                            dataKey="value"
+                        >
+                            {data.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                        </Pie>
+                        <Tooltip
+                            contentStyle={{ backgroundColor: '#fff', borderRadius: '14px', border: '1px solid #e5e7eb', fontSize: 12, padding: 8 }}
+                            formatter={(value) => `${Number(value).toLocaleString()}원`}
+                        />
+                    </PieChart>
+                </ResponsiveContainer>
+            </div>
+
+            <div className={`${styles.donutLegendRight}${isBottomLegend ? ` ${styles.donutLegendRightBottom}` : ''}`}>
+                {data.map((item, index) => (
+                    <div key={index} className={styles.legendItem}>
+
+                    <span
+                        className={styles.legendColorDot}
+                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    />
+
+                    <span className={styles.legendText}>{item.name}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}

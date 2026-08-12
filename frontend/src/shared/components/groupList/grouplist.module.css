@@ -1,0 +1,38 @@
+.grouplistContainer {
+    width: 100%;
+}
+
+.grouplistHeader {
+    padding: 16px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gray-9);
+}
+
+.itemBox {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.boxLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.groupName {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.memberCount {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}

@@ -1,0 +1,108 @@
+# ═══════════════════════════════════════════════════════════════
+#  AWS EC2(프리티어 1GB)용 올인원 스택
+#  nginx(앞단) → backend(스프링) → mysql / redis
+#  실제 비밀값은 같은 폴더의 .env 파일에서 주입됨 (.env는 깃에 안 올림)
+#
+#  실행:  cd deploy && docker compose up -d --build
+#  종료:  docker compose down
+# ═══════════════════════════════════════════════════════════════
+
+services:
+  # ── MySQL ─────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: bravo-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      TZ: Asia/Seoul
+    # 프리티어 1GB 대비 메모리 절약 옵션
+    command:
+      - --innodb-buffer-pool-size=128M
+      - --performance-schema=OFF
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - bravo-net
+
+  # ── Redis ─────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: bravo-redis
+    restart: unless-stopped
+    # 메모리 상한 64MB (JWT 토큰 저장용이라 충분)
+    command: ["redis-server", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru"]
+    networks:
+      - bravo-net
+
+  # ── 백엔드 (스프링부트) ───────────────────────────────────
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: bravo-backend
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      # 컨테이너 JVM 기본 타임존을 한국시간으로. 없으면 UTC라 LocalDateTime.now()가 9시간 어긋남
+      TZ: Asia/Seoul
+      JAVA_OPTS: "-Xmx384m -Xms128m"
+      # DB
+      DB_HOST: mysql
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # 앱 설정 (비밀값)
+      JWT_SECRET: ${JWT_SECRET}
+      FILE_BASE_URL: ${FILE_BASE_URL}
+      LLM_BASE_URL: ${LLM_BASE_URL}
+      LLM_SERVICE_TOKEN: ${LLM_SERVICE_TOKEN}
+      AGENT_SERVICE_TOKEN: ${AGENT_SERVICE_TOKEN}
+      # S3 (영수증/회칙 파일 저장 — 재배포해도 안 날아감)
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - bravo-net
+
+  # ── Nginx (앞단 라우팅) ───────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: bravo-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro   # Let's Encrypt 인증서 (호스트 → 컨테이너)
+    depends_on:
+      - backend
+    networks:
+      - bravo-net
+
+volumes:
+  mysql-data:   # DB 데이터 영속화 (컨테이너 지워도 데이터 유지)
+
+networks:
+  bravo-net:
+    driver: bridge

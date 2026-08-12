@@ -1,0 +1,160 @@
+.createTeamForm.createTeamForm {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    margin: 0;
+    gap: 20px;
+}
+
+.formCard {
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px;
+    gap: 20px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.required {
+    color: var(--red-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.optional {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.typeList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.typeList .typeBtn {
+    width: fit-content;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.typeList .typeBtnActive {
+    color: var(--white);
+    background: var(--blue-8);
+}
+
+.nameInput {
+    width: 100%;
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    font-size: 14px;
+    color: var(--gray-9);
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nameInput:focus {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.budgetInputWrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    box-sizing: border-box;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.budgetInputWrap:focus-within {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+.budgetPreview {
+    margin-top: 6px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.budgetInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: var(--gray-9);
+    outline: none;
+}
+
+.nameInput::placeholder, .budgetInput::placeholder, .budgetUnit, .textarea::placeholder {
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.infoBox {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background-color: var(--blue-2);
+    border: 0.8px solid #DBEAFE;
+}
+
+.infoBox p {
+    color: var(--blue-9);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 13px 16px;
+    border: 2px solid var(--gray-3);
+    border-radius: 16px;
+    background: var(--gray-3);
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.textarea:focus {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--white);
+}
+
+@media screen and (max-width: 768px) {
+    .createTeamForm.createTeamForm {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+}

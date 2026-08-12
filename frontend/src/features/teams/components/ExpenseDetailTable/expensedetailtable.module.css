@@ -1,0 +1,101 @@
+/* 가로 스크롤바가 카드의 둥근 모서리(24px) 밖으로 삐져나오지 않도록 카드 안쪽으로 잘라냄 */
+.tableContainer {
+    overflow: hidden;
+}
+
+.tableTitle {
+    padding: 16px 24px;
+}
+
+.title {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.table {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.reportTable {
+    width: 100%;
+    max-width: none;
+    border-collapse: collapse;
+}
+
+.tableHeader {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.reportTable th,
+.reportTable td {
+    padding: 12px 20px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.reportTable th,
+.tableItems td {
+    border-top: 0.8px solid rgba(0, 0, 0, 0.04);
+}
+
+.reportTable tbody {
+    font-size: 14px;
+}
+
+.tableItems:hover td {
+    background-color: var(--gray-3);
+}
+
+/* 마지막 행 hover 시 배경이 카드의 둥근 모서리 밖으로 각지게 튀어나오지 않도록 */
+.tableItems:last-child td:first-child {
+    border-bottom-left-radius: 24px;
+}
+
+.tableItems:last-child td:last-child {
+    border-bottom-right-radius: 24px;
+}
+
+.item, .amount, .totalRow {
+    font-weight: 700;
+}
+
+.category, .requester, .processor, .date {
+    color: var(--gray-8);
+    font-weight: 600;
+}
+
+.tableHeader th:last-child,
+.tableItems td:last-child,
+.totalRow td:last-child {
+    text-align: right;
+}
+
+.totalRow td:last-child {
+    color: var(--blue-8);
+}
+
+.totalRow td {
+    padding: 16px 20px;
+    border-top: 1.6px solid rgba(0, 0, 0, 0.06);
+}
+
+.reportTable td.noData {
+    height: 51px;
+    padding: 12px 20px;
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+    .reportTable {
+        width: 700px;
+    }
+}

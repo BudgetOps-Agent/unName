@@ -1,0 +1,44 @@
+/* 카드 내부 안내 문구 — 대시보드의 빈 상태 문구(가운데 정렬 · gray-6 · 14px)와 같은 기준으로 맞춤 */
+.loadingText {
+    /* 카드 높이가 옆 카드에 맞춰 늘어나도 문구가 위에 붙지 않도록,
+       월별 지출의 빈 상태(.chartEmpty)와 같은 높이·중앙 정렬 기준을 씀 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 166px;
+    padding: 24px 0;
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* 한쪽 테두리만 진하게 줘서 회전할 때 호가 도는 것처럼 보이게 함 */
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 4px solid var(--gray-5);
+    border-top-color: var(--gray-6);
+    border-radius: 50%;
+    animation: spin 1.1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 애니메이션을 줄이도록 설정한 사용자에겐 회전 대신 은은한 깜빡임으로 대체 */
+@media (prefers-reduced-motion: reduce) {
+    .spinner {
+        animation: pulse 1.4s ease-in-out infinite;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}

@@ -1,0 +1,30 @@
+name: Deploy to GCP VM
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCP_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.GCP_HOST }}" >> ~/.ssh/known_hosts
+      - name: Deploy
+        run: |
+          ssh -i ~/.ssh/deploy_key "${{ secrets.GCP_USER }}@${{ secrets.GCP_HOST }}" << 'EOF'
+            set -e
+            cd ~/unName
+            git fetch origin dev
+            git reset --hard origin/dev
+
+            cd infra
+            docker compose down
+            docker compose up -d --build
+            docker compose ps
+          EOF

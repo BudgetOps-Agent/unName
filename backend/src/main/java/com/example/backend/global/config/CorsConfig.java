@@ -1,7 +1,6 @@
 package com.example.backend.global.config;
 
 // Spring Bean 등록을 위해 사용
-
 import org.springframework.context.annotation.Bean;
 
 // Spring 설정 클래스임을 나타냄
@@ -36,11 +35,17 @@ public class CorsConfig {
 
                         // localhost:3000 에서 오는 요청 허용
                         // Next.js 개발 서버
-                        .allowedOrigins("http://localhost:3000")
-
-                        // 모든 HTTP Method 허용
-                        // GET, POST, PUT, PATCH, DELETE 등
-                        .allowedMethods("*");
+                        .allowedOrigins(
+                                "http://localhost:3000",
+                                "http://localhost:3001",
+                                "http://localhost:3002",
+                                "http://localhost:8081",
+                                "https://un-name.vercel.app"    // 프론트 배포(Vercel)
+                        )
+                        .allowedMethods("*")                // 모든 HTTP Method 허용 -> GET, POST, PUT, PATCH, DELETE 등
+                        .allowedHeaders("*")                // 모든 요청 헤더 허용
+                        .allowCredentials(true)             // 쿠키 사용 시 필요
+                        .exposedHeaders("Authorization");   // Authorization 헤더를 프론트에서 읽을 수 있게
             }
         };
     }

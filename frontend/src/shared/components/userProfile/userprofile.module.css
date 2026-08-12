@@ -1,0 +1,79 @@
+.profileContainer {
+    width: 100%;
+}
+
+.profileHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.profileHeader .name {
+    color: var(--gray-9);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+    gap: 12px;
+}
+
+.infoBox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* 값이 길면(긴 이메일 등) 라벨과 붙어버려서 최소 간격을 둠 */
+    gap: 12px;
+    font-size: 14px;
+}
+
+.infoBox span {
+    color: var(--gray-6);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.infoBox p {
+    color: var(--gray-9);
+    font-weight: 700;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media screen and (max-width: 768px) {
+    /* 라벨과 값은 한 줄 유지. 값이 길어질 때만 다음 줄로 넘어가므로,
+       두 줄이 됐을 때 라벨이 가운데로 뜨지 않게 위쪽 정렬 */
+    .infoBox {
+        align-items: flex-start;
+    }
+
+    /* 긴 이메일을 말줄임으로 자르는 대신 줄바꿈해서 전체를 보여줌 */
+    .infoBox p {
+        overflow: visible;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        text-align: right;
+    }
+}
+
+.modifyBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 432px;
+    margin-top: 16px;
+    padding: 10px 0px;
+    border-radius: 16px;
+    border: 0.8px solid var(--gray-5);
+    font-size: 14px;
+    font-weight: 700;
+}

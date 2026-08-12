@@ -1,0 +1,26 @@
+[
+  {
+    "name": "swagger",
+    "path": "^/(swagger-ui|v3/api-docs)",
+    "port": 8080,
+    "regex": true
+  },
+  {
+    "name": "expenses-frontend",
+    "path": "^/teams/[^/]+/expenses",
+    "port": 3002,
+    "regex": true
+  },
+  {
+    "name": "backend-api",
+    "path": "/api/",
+    "port": 8080,
+    "regex": false
+  },
+  {
+    "name": "frontend",
+    "path": "/",
+    "port": 3001,
+    "regex": false
+  }
+]

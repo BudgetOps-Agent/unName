@@ -1,0 +1,36 @@
+.summaryText {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.8;
+}
+
+.summaryError {
+    min-height: 166px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px 0;
+}
+
+.summaryErrorText {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* 요약이 아직 없을 때 안내 — 에러 상태와 같은 높이·중앙 정렬 기준 */
+.summaryEmpty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 166px;
+    padding: 24px 0;
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}

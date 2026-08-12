@@ -1,0 +1,39 @@
+.title {
+    color: var(--gray-9);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.subTitle {
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.buttonSection {
+    display: flex;
+    gap: 8px;
+    padding-top: 20px;
+}
+
+.buttonSectionBtn {
+    padding: 12px 0;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.cancelBtn {
+    border: 0.8px solid #E5E7EB;
+}
+
+.cancelBtn:hover {
+    background-color: var(--gray-3);
+}
+
+.buttonSection .deleteBtn {
+    background-color: var(--red-5);
+}
+
+.buttonSection .deleteBtn:hover {
+    background-color: var(--red-8);
+}

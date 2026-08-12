@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: backend
+    runtime: java
+    rootDir: backend
+    buildCommand: ./gradlew build
+    startCommand: java -jar build/libs/*.jar

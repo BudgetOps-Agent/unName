@@ -1,0 +1,125 @@
+.card {
+    width: 100%;
+    min-width: 400px;
+    max-width: 100%;
+    padding: 24px;
+    border-radius: 24px;
+    background: #FFF;
+    box-shadow: 0 2px 20px 0 rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+}
+
+.smallCard {
+    min-width: 384px;
+    max-width: 70%;
+    width: auto;
+    box-sizing: border-box;
+}
+
+.card form {
+    margin: 20px 0 0;
+}
+
+.card form :global(.links) {
+    margin: 20px 0 0;
+}
+
+.noPadding {
+    padding: 0;
+}
+
+.empty {
+    padding: 24px 0;
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+:global(.cards) {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+:global(.cards) .card{
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
+}
+
+:global(.form-title:not(:first-child)) {
+    margin-top: 20px;
+}
+
+:global(.card-title) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 16px;
+    gap: 30px;
+}
+
+:global(.card-title .title) {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+:global(.card-title .desc) {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+:global(.card-title .count) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 16px;
+      background-color: #FFB900;
+      color: #FFFFFF;
+      font-size: 10px;
+}
+
+:global(.card-title .link) {
+    color: #3182F6;
+    font-size: 12px;
+}
+
+:global(.card-title .title-left) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+:global(.card-title .title-right) {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 1;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+@media screen and (max-width: 768px) {
+    :global(.cards) {
+        flex-direction: column;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .card {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+    }
+        
+    .smallCard {
+        margin: 0 40px;
+    }
+}

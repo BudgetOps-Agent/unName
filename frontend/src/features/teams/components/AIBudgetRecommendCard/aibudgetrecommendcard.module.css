@@ -1,0 +1,111 @@
+.container {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+}
+
+.titleRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.title {
+    color: var(--gray-9);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.subTitle {
+    margin-top: 4px;
+    color: var(--gray-6);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.placeholder {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.errorBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 0;
+}
+
+.errorText {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.content {
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+    margin-top: 20px;
+}
+
+.chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 2;
+    min-width: 0;
+    min-height: 260px;
+}
+
+.analysisList {
+    display: flex;
+    flex-direction: column;
+    /* 로딩·에러 문구가 옆의 차트 영역과 같은 높이에서 가운데 오도록 .chart와 기준을 맞춤 */
+    justify-content: center;
+    gap: 20px;
+    flex: 3;
+    min-width: 0;
+    min-height: 260px;
+}
+
+.analysisTitle {
+    color: var(--gray-9);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.analysisText {
+    margin-top: 8px;
+    color: var(--gray-7);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.analysisText strong {
+    display: inline-block;
+    font-weight: 700;
+}
+
+@media screen and (max-width: 768px) {
+    .content {
+        flex-direction: column;
+        /* 세로로 쌓이면 align-items가 가로축을 잡으므로, flex-start면 자식이 내용 너비만큼만 차지해 왼쪽에 붙음 */
+        align-items: stretch;
+    }
+
+    .chart {
+        width: 100%;
+    }
+
+    .analysisList {
+        width: 100%;
+        /* 차트와 나란히 놓일 때 높이를 맞추려던 값이라, 위아래로 쌓이면 빈 공간만 생김 */
+        min-height: 0;
+    }
+}

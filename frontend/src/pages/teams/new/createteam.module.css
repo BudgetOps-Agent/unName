@@ -1,0 +1,21 @@
+.formTitleSection {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.backLink {
+    text-align: left;
+}
+
+
+
+@media screen and (max-width: 768px) {
+    .formTitleSection {
+        min-height: 100vh;
+        min-width: 100%;
+        width :100%;
+        padding: 24px;
+        background: var(--blue-1);
+    }
+}

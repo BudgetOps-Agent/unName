@@ -1,0 +1,112 @@
+.filterSection {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 상태 필터와 처리 주체 필터 사이 간격 */
+.processorGroupStart {
+    margin-left: 8px;
+}
+
+.filterSection .processorBtn {
+    min-width: auto;
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.filterSection .processorBtn .btnTitle {
+    font-size: 13px;
+}
+
+.filterBtn {
+    min-width: 75px;
+    padding: 8px 16px;
+    border: 0.8px solid var(--gray-5);
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    background: var(--white);
+    border-radius: 9999px;
+}
+
+.filterBtn:hover {
+    border: 0.8px solid var(--gray-6);
+}
+
+.active {
+    background-color: var(--gray-9);
+    box-shadow: 
+        0px 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0px 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.active .btnTitle {
+    color: var(--white);
+}
+
+.filterBtnText {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btnTitle {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.btnCount {
+    color: var(--gray-6);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.empty {
+    padding: 24px 0;
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.errorCard {
+    margin-top: 4px;
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 350px;
+    gap: 12px;
+}
+
+.errorTextTitle {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.errorTextSub {
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+    .filterSection {
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+    }
+    .filterSection li {
+        flex: 0 0 auto;
+    }
+}
