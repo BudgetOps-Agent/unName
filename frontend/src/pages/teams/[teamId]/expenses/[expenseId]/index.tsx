@@ -173,6 +173,7 @@ const ExpenseDetail = () => {
                     processType={review.processType}
                     processor={review.processor}
                     category={CATEGORY_LABEL[review.category] ?? review.category}
+                    escalationReason={review.escalationReason}
                 />
             ) : (
                 <Card className={styles.reviewPendingCard}>

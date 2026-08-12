@@ -80,6 +80,8 @@ export interface ExpenseReviewResultResponse {
         processType: 'AUTO' | 'ESCALATED';
         processor: string;
         category: string;
+        // 에스컬레이션 사유 문구 (예: 관리자 승인 필수 금액 초과). 해당 없으면 null
+        escalationReason: string | null;
     } | null;
 }
 
