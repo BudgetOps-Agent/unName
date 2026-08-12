@@ -33,6 +33,18 @@ export interface UpdateTeamSettingsResponse {
     success: boolean;
 }
 
+export interface TeamSettings {
+    membershipFee: number;
+    autoApprove: boolean;
+    // autoApprove가 false면 null (모든 지출을 관리자가 직접 확인하는 모드)
+    autoApproveLimit: number | null;
+}
+
+export interface TeamSettingsResponse {
+    success: boolean;
+    settings: TeamSettings;
+}
+
 export interface ResponseMyTeams {
     success: true;
     teams: {

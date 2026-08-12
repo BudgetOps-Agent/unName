@@ -1,5 +1,4 @@
 import styles from './userprofile.module.css';
-import Button from '@/shared/components/button/Button';
 import Skeleton from '@/shared/components/skeleton/Skeleton';
 import { Badge } from '@/shared/components/badge/Badge';
 

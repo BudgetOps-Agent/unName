@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from 'next/router';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { getSidebarMenus } from "./menus";
 import useMediaQuery from "@/shared/hook/useMediaQuery";

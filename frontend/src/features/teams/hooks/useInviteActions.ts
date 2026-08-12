@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import { acceptInvite, rejectInvite } from "../api/teamApi";
 import { AxiosError } from "axios";
 import { ErrorResponse } from "@/types/auth";

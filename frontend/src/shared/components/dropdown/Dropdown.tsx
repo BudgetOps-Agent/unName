@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from "./Dropdown.module.css";
 
-interface DropdownProps {
+// items의 실제 타입은 호출하는 쪽에서 정해지므로 제네릭으로 받음
+interface DropdownProps<T> {
     id?: string;
     className?: string;
     text: React.ReactNode;
@@ -11,18 +12,18 @@ interface DropdownProps {
     iconRight?: React.ReactNode;
     iconOnly?: boolean;
     headerContent?: React.ReactNode;
-    items?: any[];
-    renderItem?: (item: any, index: number) => React.ReactNode;
+    items?: T[];
+    renderItem?: (item: T, index: number) => React.ReactNode;
     value?: string | number | string[];
-    getItemValue?: (item: any) => string | number;
+    getItemValue?: (item: T) => string | number;
     footerContent?: React.ReactNode;
     badge?: React.ReactNode;
     emptyContent?: React.ReactNode;
 }
 
-const Dropdown = ({
+const Dropdown = <T,>({
     id, className, text, blind, disabled, iconLeft, iconRight, iconOnly, headerContent, items, renderItem, value, getItemValue, footerContent, badge, emptyContent
-}: DropdownProps) => {
+}: DropdownProps<T>) => {
 
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
