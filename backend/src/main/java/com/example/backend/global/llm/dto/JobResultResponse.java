@@ -2,6 +2,7 @@ package com.example.backend.global.llm.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,8 +14,9 @@ import lombok.Setter;
  * status 값: queued · running · succeeded · failed · dead(재시도 소진)
  * succeeded 면 result 에 결과가 담긴다.
  *
- * ※ 지금은 예산 인사이트(LLM-016) 폴링에만 쓰므로 result 를 BudgetInsightsResult 로 둔다.
- *    다른 잡 종류에도 재사용하게 되면 그때 제네릭/분리 고려.
+ * result는 잡 종류마다 모양이 달라서(예: 예산 인사이트는 {proposal_id, payload:{...}})
+ * 고정 타입 대신 JsonNode로 받고, 호출부(LlmClient)가 필요한 만큼만 꺼내 씀
+ * (LLM팀 로그 대조로 확인, 2026-08-12 — payload가 한 겹 더 있는 구조였음).
  */
 @Getter
 @Setter
@@ -32,7 +34,7 @@ public class JobResultResponse {
     private Integer attempts;
 
     @JsonProperty("result")
-    private BudgetInsightsResult result;
+    private JsonNode result;
 
     @JsonProperty("created_at")
     private String createdAt;
