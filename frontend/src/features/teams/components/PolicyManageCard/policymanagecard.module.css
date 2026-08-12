@@ -163,7 +163,8 @@
 }
 
 .aiDraftText {
-    max-height: 260px;
+    /* 초안이 있을 때만 렌더되는 영역이라, 생성 전 안내 박스 크기에는 영향이 없음 */
+    max-height: 480px;
     margin: 0 0 16px;
     overflow-y: auto;
     color: var(--gray-8);
