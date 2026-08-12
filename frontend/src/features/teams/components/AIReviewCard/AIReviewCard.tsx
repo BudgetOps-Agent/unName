@@ -21,6 +21,8 @@ interface AIReviewCardProps {
     processType: ProcessType;
     processor: string;
     category: string;
+    // 에스컬레이션 사유 (예: 관리자 승인 필수 금액 초과). 없으면 null
+    escalationReason: string | null;
 }
 
 const VERDICT_LABEL: Record<ReviewVerdict, string> = {
@@ -68,7 +70,7 @@ const getFinalVerdictBadge = (processType: ProcessType, finalVerdict: FinalVerdi
 //       위치가 아닌 auditor 키 기준 매핑으로 바꿔야 함 (LLM팀 요청사항)
 const REVIEWER_NAMES = ['증빙 심사관', '예산 심사관', '이상탐지 심사관', '회칙 심사관'];
 
-const AIReviewCard = ({ reviewers, finalVerdict, processType, processor, category }: AIReviewCardProps) => {
+const AIReviewCard = ({ reviewers, finalVerdict, processType, processor, category, escalationReason }: AIReviewCardProps) => {
 
     const finalVerdictBadge = getFinalVerdictBadge(processType, finalVerdict);
     // 에스컬레이션 후 아직 관리자·총무가 승인/반려하지 않았으면 처리 주체 미정
@@ -90,6 +92,10 @@ const AIReviewCard = ({ reviewers, finalVerdict, processType, processor, categor
                 <div className={styles.escalationNotice}>
                     <p className={styles.escalationTitle}>관리자 직접 확인이 필요해요</p>
                     <p className={styles.escalationText}>AI가 자동 처리를 보류하고 관리자·총무의 검토를 요청했어요. 불일치 항목을 확인 후 직접 승인 또는 반려해 주세요.</p>
+                    {/* 금액 초과처럼 심사 소견과 무관한 사유는 백엔드가 문장으로 내려줌 */}
+                    {escalationReason && (
+                        <p className={styles.escalationReason}>{escalationReason}</p>
+                    )}
                 </div>
             )}
 

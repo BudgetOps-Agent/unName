@@ -40,6 +40,17 @@
     font-weight: 600;
 }
 
+/* 백엔드가 내려주는 구체적인 사유 — 안내 문구와 구분되게 한 칸 띄우고 살짝 진하게 */
+.escalationReason {
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 0.8px solid var(--orange-3);
+    color: #9F2D00;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
 .reviewerList {
     display: flex;
     flex-direction: column;
