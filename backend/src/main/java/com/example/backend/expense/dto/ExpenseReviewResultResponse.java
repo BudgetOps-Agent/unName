@@ -22,6 +22,7 @@ public class ExpenseReviewResultResponse {
         private String processType;        // AUTO(자동처리) / ESCALATED(관리자 확인 필요)
         private String processor;          // 처리 주체 표시값 ("AI" 또는 최종 처리한 관리자 이름)
         private String category;           // AI가 분류한 카테고리 (없으면 "미분류")
+        private String escalationReason;   // 에스컬레이션 사유(콜백 reasons.admin) — "관리자 직접 확인이 필요해요" 배너용, 없으면 null
     }
 
     // 프론트 AIReviewCard.tsx의 Reviewer 타입과 1:1 대응

@@ -2,12 +2,18 @@ package com.example.backend.team.service;
 
 import com.example.backend.budget.entity.Budget;
 import com.example.backend.budget.repository.BudgetRepository;
+import com.example.backend.expense.entity.Expense;
+import com.example.backend.expense.repository.ExpenseRepository;
+import com.example.backend.expense.repository.ExpensesReviewRepository;
 import com.example.backend.member.entity.User;
 import com.example.backend.member.exception.MemberErrorCode;
 import com.example.backend.member.exception.MemberException;
 import com.example.backend.member.repository.UserRepository;
+import com.example.backend.notification.repository.NotificationRepository;
+import com.example.backend.policy.repository.PolicyRepository;
 import com.example.backend.team.dto.CreateTeamRequest;
 import com.example.backend.team.dto.CreateTeamResponse;
+import com.example.backend.team.dto.DeleteTeamResponse;
 import com.example.backend.team.dto.TeamSettingsResponse;
 import com.example.backend.team.dto.UpdateSettingsRequest;
 import com.example.backend.team.entity.Team;
@@ -27,6 +33,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service // 비즈니스 로직 담당한다고 알려주는것이고 spring이 Bean 자동 등록해줌
 @RequiredArgsConstructor // final 필드 생성자 자동 생성
 public class TeamService {
@@ -36,6 +44,12 @@ public class TeamService {
     private final TeamMemberRepository teamMemberRepository;
     private final BudgetRepository budgetRepository;
     private final TeamSettingsRepository teamSettingsRepository;
+
+    // 모임 삭제용 — 지출·회칙 연쇄 삭제에 필요
+    private final ExpenseRepository expenseRepository;
+    private final ExpensesReviewRepository expensesReviewRepository;
+    private final NotificationRepository notificationRepository;
+    private final PolicyRepository policyRepository;
 
     @Transactional
     public CreateTeamResponse createTeam(CreateTeamRequest request) {
@@ -104,6 +118,60 @@ public class TeamService {
                 .build();
 
 
+    }
+
+    // 모임 삭제 — 관리자 혼자 남았을 때만 가능 (탈퇴 API-043과는 별도)
+    // 다른 멤버가 남아있으면 삭제 못 함(TEAM_HAS_OTHER_MEMBERS) — 먼저 다 나가야 함
+    // 지출·심사기록·알림·회칙·예산·팀설정·멤버·팀 순으로 자식부터 완전 삭제(hard delete)
+    @Transactional
+    public DeleteTeamResponse deleteTeam(Long teamId) {
+
+        // 1. 로그인한 사람 조회
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 2. 이 팀의 관리자인지 확인
+        TeamMember member = teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+        if (member.getRole() != TeamRole.ADMIN) {
+            throw new TeamMemberException(TeamMemberErrorCode.NOT_ADMIN_FOR_DELETE);
+        }
+
+        // 3. 관리자 혼자(본인만) 남았는지 확인 — 아니면 삭제 거부
+        long acceptedCount = teamMemberRepository.countByTeamIdAndStatus(teamId, TeamStatus.ACCEPTED);
+        if (acceptedCount > 1) {
+            throw new TeamMemberException(TeamMemberErrorCode.TEAM_HAS_OTHER_MEMBERS);
+        }
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.TEAM_NOT_FOUND));
+
+        // 4. 지출 관련 데이터 연쇄 삭제 (알림·심사기록 먼저 지우고 지출 삭제 — 지출 삭제 API와 동일 순서)
+        List<Expense> expenses = expenseRepository.findByTeamIdOrderByExpenseDateDesc(teamId);
+        for (Expense expense : expenses) {
+            notificationRepository.deleteByExpenseId(expense.getId());
+            expensesReviewRepository.deleteByExpenseId(expense.getId());
+        }
+        expenseRepository.deleteAll(expenses);
+
+        // 5. 회칙 삭제 (있으면)
+        policyRepository.findByTeamId(teamId).ifPresent(policyRepository::delete);
+
+        // 6. 예산·팀설정 삭제
+        budgetRepository.findByTeamId(teamId).ifPresent(budgetRepository::delete);
+        teamSettingsRepository.findByTeamId(teamId).ifPresent(teamSettingsRepository::delete);
+
+        // 7. 마지막 멤버(관리자 본인) 삭제
+        teamMemberRepository.delete(member);
+
+        // 8. 팀 자체 삭제
+        teamRepository.delete(team);
+
+        return DeleteTeamResponse.builder()
+                .success(true)
+                .message("모임이 삭제되었습니다.")
+                .build();
     }
 
     // 팀 설정 조회 (API-028) — 회칙·정책 관리 화면에서 회비·승인정책 현재값 표시용

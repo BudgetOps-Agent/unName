@@ -117,6 +117,26 @@ public enum TeamMemberErrorCode {
     NOT_ADMIN_FOR_SETTINGS(
             HttpStatus.FORBIDDEN,
             "관리자만 설정을 변경할 수 있습니다."
+    ),
+
+    // 관리자가 자진 탈퇴하려 할 때 (API-043) - 관리자 없는 모임 방지, 추방(041)과 동일 이유
+    // 관리자는 먼저 권한위임(API-039)으로 다른 멤버에게 넘긴 뒤에만 탈퇴 가능
+    CANNOT_LEAVE_AS_ADMIN(
+            HttpStatus.BAD_REQUEST,
+            "관리자는 권한을 위임한 뒤에만 탈퇴할 수 있습니다."
+    ),
+
+    // 관리자가 아닌데 모임 삭제를 시도할 때 (모임 삭제 API)
+    NOT_ADMIN_FOR_DELETE(
+            HttpStatus.FORBIDDEN,
+            "관리자만 모임을 삭제할 수 있습니다."
+    ),
+
+    // 관리자 본인 말고 다른 멤버가 남아있는데 모임을 삭제하려 할 때 (모임 삭제 API)
+    // 모임 삭제는 "관리자 혼자 남았을 때"만 허용 — 다른 멤버가 있으면 먼저 다 나가야 함
+    TEAM_HAS_OTHER_MEMBERS(
+            HttpStatus.CONFLICT,
+            "관리자 혼자 남았을 때만 모임을 삭제할 수 있습니다."
     );
 
     private final HttpStatus status;

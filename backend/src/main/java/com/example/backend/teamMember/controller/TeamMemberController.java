@@ -201,4 +201,25 @@ public class TeamMemberController {
         RemoveMemberResponse response = teamMemberService.removeMember(memberId);
         return ResponseEntity.ok(response);
     }
+
+    // 모임 탈퇴 (API-043)
+    @Operation(
+            summary = "모임 탈퇴 (API-043)",
+            description = "본인이 모임에서 자진 탈퇴합니다. 관리자는 먼저 권한 위임(API-039)으로 "
+                    + "다른 멤버에게 넘긴 뒤에만 탈퇴할 수 있습니다(관리자 없는 모임 방지)."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "탈퇴 성공",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+            @ApiResponse(responseCode = "400", description = "관리자가 탈퇴 시도(CANNOT_LEAVE_AS_ADMIN)",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+            @ApiResponse(responseCode = "403", description = "해당 팀 소속이 아님(NOT_TEAM_MEMBER)",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+    })
+    @DeleteMapping("/api/teams/{teamId}/leave")
+    public ResponseEntity<LeaveTeamResponse> leaveTeam(
+            @PathVariable("teamId") Long teamId) {
+        LeaveTeamResponse response = teamMemberService.leaveTeam(teamId);
+        return ResponseEntity.ok(response);
+    }
 }
