@@ -25,9 +25,10 @@
 }
 
 .placeholder {
-    color: var(--gray-6);
-    font-size: 13px;
-    font-weight: 600;
+    color: var(--gray-8);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
 }
 
 .errorBox {
@@ -38,14 +39,11 @@
     padding: 24px 0;
 }
 
-.errorBox .errorBtn {
-    max-width: 120px;
-}
-
 .errorText {
-    color: var(--gray-7);
+    color: var(--gray-8);
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
+    text-align: center;
 }
 
 .content {
@@ -67,9 +65,12 @@
 .analysisList {
     display: flex;
     flex-direction: column;
+    /* 로딩·에러 문구가 옆의 차트 영역과 같은 높이에서 가운데 오도록 .chart와 기준을 맞춤 */
+    justify-content: center;
     gap: 20px;
     flex: 3;
     min-width: 0;
+    min-height: 260px;
 }
 
 .analysisTitle {

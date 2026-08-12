@@ -31,22 +31,17 @@
 }
 
 .errorTextTitle {
-    color: var(--gray-9);
-    font-size: 16px;
+    color: var(--gray-8);
+    font-size: 14px;
     font-weight: 700;
+    text-align: center;
 }
 
 .errorTextSub {
-    color: var(--gray-7);
+    color: var(--gray-8);
     font-size: 14px;
-    font-weight: 600;
-}
-
-.errorBtn {
-    max-width: 120px;
-    padding: 6px 10px;
-    font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
+    text-align: center;
 }
 
 .logout {

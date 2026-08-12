@@ -13,14 +13,10 @@
 }
 
 .budgetError p {
-    color: var(--gray-6);
+    color: var(--gray-8);
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     text-align: center;
-}
-
-.budgetError button {
-    max-width: 120px;
 }
 
 .progressContent {

@@ -45,7 +45,7 @@ const Dashboard = () => {
                 ) : statsError ? (
                     <div className={styles.chartError}>
                         <p>{statsError}</p>
-                        <Button text="다시 시도" onClick={() => refetchStats()} style="tertiary" />
+                        <Button text="다시 시도" onClick={() => refetchStats()} style="tertiary" size="md" />
                     </div>
                 ) : barData.length === 0 ? (
                     <p className={styles.chartEmpty}>지출 내역이 없어요</p>

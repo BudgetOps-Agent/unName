@@ -112,13 +112,15 @@ const Expenses = () => {
             </p>
 
             <p className={styles.errorTextSub}>
-              {error.message}
+              {/* error.message는 "Request failed with status code 500" 같은 원본 문자열이라
+                  백엔드가 준 한글 메시지를 우선 쓰고, 없으면 일반 안내로 대체 */}
+              {error.response?.data?.message ?? '잠시 후 다시 시도해 주세요.'}
             </p>
 
             <Button
-              className={styles.errorBtn}
               text="다시 시도"
               style="tertiary"
+              size="md"
               onClick={() => refetch()}
             />
           </div>

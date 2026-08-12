@@ -39,9 +39,9 @@
 .empty {
     padding: 24px;
     border-top: 0.8px solid rgba(0, 0, 0, 0.05);
-    color: var(--gray-6);
+    color: var(--gray-8);
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     text-align: center;
 }
 

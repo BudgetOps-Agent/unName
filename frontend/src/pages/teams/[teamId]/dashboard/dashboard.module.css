@@ -9,14 +9,10 @@
 }
 
 .chartError p {
-    color: var(--gray-6);
+    color: var(--gray-8);
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     text-align: center;
-}
-
-.chartError button {
-    max-width: 120px;
 }
 
 .chartEmpty {
@@ -24,7 +20,8 @@
     align-items: center;
     justify-content: center;
     height: 166px;
-    color: var(--gray-6);
+    color: var(--gray-8);
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
+    text-align: center;
 }

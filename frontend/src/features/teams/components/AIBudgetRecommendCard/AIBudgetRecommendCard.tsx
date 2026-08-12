@@ -39,7 +39,7 @@ const AIBudgetRecommendCard = ({ teamId }: AIBudgetRecommendCardProps) => {
                     ) : statsError ? (
                         <div className={styles.errorBox}>
                             <p className={styles.errorText}>{statsError}</p>
-                            <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetchStats()} style="tertiary" />
+                            <Button text="다시 시도" onClick={() => refetchStats()} style="tertiary" size="md" />
                         </div>
                     ) : donutData.length === 0 ? (
                         <p className={styles.placeholder}>이번 달 승인된 지출이 없어요</p>
@@ -54,7 +54,7 @@ const AIBudgetRecommendCard = ({ teamId }: AIBudgetRecommendCardProps) => {
                     ) : error ? (
                         <div className={styles.errorBox}>
                             <p className={styles.errorText}>{error}</p>
-                            <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
+                            <Button text="다시 시도" onClick={() => refetch()} style="tertiary" size="md" />
                         </div>
                     ) : (
                         <>

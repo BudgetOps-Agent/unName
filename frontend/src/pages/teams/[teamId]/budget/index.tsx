@@ -51,7 +51,7 @@ const Budget = () => {
                         <div className={styles.errorContainer}>
                             <p className={styles.errorTextTitle}>⚠️ 예산 정보를 불러오지 못했습니다</p>
                             <p className={styles.errorTextSub}>{error}</p>
-                            <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
+                            <Button text="다시 시도" onClick={() => refetch()} style="tertiary" size="md" />
                         </div>
                     ) : isLoading || !budget ? (
                         <LoadingText />
