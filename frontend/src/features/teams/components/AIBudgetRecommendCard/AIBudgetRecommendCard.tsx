@@ -1,6 +1,5 @@
 import styles from './aibudgetrecommendcard.module.css';
 import CategoryDonutChart from '@/features/teams/components/CategoryDonutChart/CategoryDonutChart';
-import { Badge } from '@/shared/components/badge/Badge';
 import Button from '@/shared/components/button/Button';
 import useBudgetInsights from '@/features/teams/hooks/useBudgetInsights';
 import useCategoryStats from '@/features/teams/hooks/useCategoryStats';
@@ -27,9 +26,6 @@ const AIBudgetRecommendCard = ({ teamId }: AIBudgetRecommendCardProps) => {
                     <p className={styles.title}>AI 추천 예산 관리</p>
                     <p className={styles.subTitle}>AI가 지출 및 예산 현황을 분석하여 예산 관리를 추천해줘요.</p>
                 </div>
-                {insights?.verified === false && (
-                    <Badge text="확인 필요" style="orange" size="sm" />
-                )}
             </div>
 
             <div className={styles.content}>

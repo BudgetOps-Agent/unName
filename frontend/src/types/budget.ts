@@ -18,7 +18,5 @@ export interface BudgetInsightsResponse {
         categoryAnalysis: string | null;
         budgetStatusAnalysis: string | null;
         recommendation: string | null;
-        figures: unknown;
-        verified: boolean | null;
     };
 }

@@ -1,23 +1,18 @@
 import { Card } from "@/shared/components/card/Card";
-import { Badge } from "@/shared/components/badge/Badge";
 import Button from "@/shared/components/button/Button";
 import LoadingText from "@/shared/components/loading/LoadingText";
 import styles from "./AISummaryCard.module.css";
 
 interface AISummaryCardProps {
     summary: string | null;
-    verified: boolean | null;
     isLoading: boolean;
     error: string | null;
     onRetry: () => void;
 }
 
-const AISummaryCard = ({ summary, verified, isLoading, error, onRetry }: AISummaryCardProps) => {
+const AISummaryCard = ({ summary, isLoading, error, onRetry }: AISummaryCardProps) => {
     return (
-        <Card
-            title="AI 요약"
-            headerRight={verified === false && <Badge text="확인 필요" style="orange" size="sm" />}
-        >
+        <Card title="AI 요약">
             {isLoading ? (
                 <LoadingText text="AI가 이번 달 지출을 분석하고 있어요" />
             ) : error ? (
