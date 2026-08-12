@@ -46,10 +46,12 @@ const PolicyManageCard = ({ teamId }: PolicyManageCardProps) => {
     // 저장된 회칙 본문 (FILE이면 본문이 없음). 변경 여부 판단 기준으로도 씀
     const savedContent = policy?.policyType === 'TEXT' ? (policy.content ?? '') : '';
 
-    // 승인 정책은 값이 아니라 모드(직접 확인 여부)라 placeholder로 표현할 수 없어 토글 상태에 직접 반영
+    // 체크박스·토글은 값이 아니라 상태라 placeholder로 표현할 수 없어 직접 반영한다
     useEffect(() => {
         if (!settings) return;
         setAlwaysReviewManually(!settings.autoApprove);
+        // 회비 0원 = '없음'
+        setNoFee(settings.membershipFee === 0);
     }, [settings]);
 
     // 저장된 회칙을 각 탭의 초기값으로 채우고, 저장돼 있던 방식의 탭을 먼저 보여줌
