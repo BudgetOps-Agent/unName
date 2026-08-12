@@ -59,6 +59,11 @@
     transform: rotate(180deg);
 }
 
+/* 사이드바 토글 버튼(사이드바 오른쪽 끝에 반쯤 걸쳐 있음)과 겹치지 않게 오른쪽으로 밀어둠 */
+.grouplist .dropdown-container {
+    left: 16px;
+}
+
 .grouplist-item {
     display: flex;
     width: 256px;
