@@ -11,7 +11,6 @@ import com.example.backend.global.llm.dto.JobResultResponse;
 import com.example.backend.global.llm.dto.PolicyDraftRequest;
 import com.example.backend.global.llm.dto.PolicyDraftResponse;
 import com.example.backend.global.llm.dto.PrecedentRequest;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +22,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import java.time.Duration;
+import java.util.Map;
 
 /**
  * LLM(Agent) 서버를 부르는 담당 부품.
@@ -283,18 +283,21 @@ public class LlmClient {
      * LLM-016 예산 배분 제안 결과 추출
      * jobs 폴링(job.getResult())에 담겨온 {proposal_id, payload:{...}} 구조에서
      * payload만 꺼내 BudgetInsightsResult로 매핑. 못 읽으면 null(호출부가 502로 처리).
+     *
+     * job.getResult()는 Object 타입(Jackson 3가 JSON 객체를 LinkedHashMap으로 담아줌) —
+     * convertValue()는 이런 평범한 Map도 그대로 받아서 DTO로 변환해준다.
      */
     private BudgetInsightsResult extractBudgetPayload(JobResultResponse job) {
         try {
-            JsonNode result = job.getResult();
-            if (result == null) {
+            Object result = job.getResult();
+            if (!(result instanceof Map<?, ?> resultMap)) {
                 return null;
             }
-            JsonNode payload = result.path("payload");
-            if (payload.isMissingNode()) {
+            Object payload = resultMap.get("payload");
+            if (!(payload instanceof Map)) {
                 return null;
             }
-            return objectMapper.treeToValue(payload, BudgetInsightsResult.class);
+            return objectMapper.convertValue(payload, BudgetInsightsResult.class);
         } catch (Exception e) {
             log.error("[LLM-016] result.payload 파싱 실패 - jobId={}", job.getJobId(), e);
             return null;
