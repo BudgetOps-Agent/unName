@@ -5,6 +5,17 @@
     flex-direction: column;
 }
 
+@media screen and (max-width: 768px) {
+    /* main의 좌우 패딩(20px) 안쪽이라 카드가 그만큼 좁아짐.
+       이 페이지에서만 8px씩 상쇄해 좌우 여백을 12px로 줄이고 카드를 320px 근처까지 넓힌다
+       (390px 화면 → 366px, 345px 화면 → 321px) */
+    .myPageContainer {
+        max-width: none;
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+}
+
 .backLink {
     text-align: left;
 }
