@@ -95,9 +95,17 @@
 @media screen and (max-width: 768px) {
     .content {
         flex-direction: column;
+        /* 세로로 쌓이면 align-items가 가로축을 잡으므로, flex-start면 자식이 내용 너비만큼만 차지해 왼쪽에 붙음 */
+        align-items: stretch;
     }
 
     .chart {
         width: 100%;
+    }
+
+    .analysisList {
+        width: 100%;
+        /* 차트와 나란히 놓일 때 높이를 맞추려던 값이라, 위아래로 쌓이면 빈 공간만 생김 */
+        min-height: 0;
     }
 }

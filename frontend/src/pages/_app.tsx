@@ -2,6 +2,7 @@ import type { AppProps } from "next/app";
 import "@/styles/style.css";
 import "@/shared/layouts/components/header/Header.css";
 import "@/shared/layouts/components/sidebar/Sidebar.css";
+import "@/shared/layouts/components/bottomNav/BottomNav.css";
 import "@/shared/layouts/mainLayout/MainLayout.css";
 import "@/shared/layouts/authLayout/AuthLayout.css";
 import MainLayout from "@/shared/layouts/mainLayout/MainLayout";

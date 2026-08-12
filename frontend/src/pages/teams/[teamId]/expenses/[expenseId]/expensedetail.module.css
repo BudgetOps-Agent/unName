@@ -68,6 +68,13 @@
     text-align: center;
 }
 
+@media screen and (max-width: 768px) {
+    /* 좁은 화면에선 문장 중간에서 접히지 않고 마침표마다 줄이 나뉘도록 */
+    .pendingLine {
+        display: block;
+    }
+}
+
 .errorContainer {
     display: flex;
     flex-direction: column;

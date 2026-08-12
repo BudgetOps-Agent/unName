@@ -1,3 +1,8 @@
+/* 가로 스크롤바가 카드의 둥근 모서리(24px) 밖으로 삐져나오지 않도록 카드 안쪽으로 잘라냄 */
+.tableContainer {
+    overflow: hidden;
+}
+
 .tableTitle {
     padding: 16px 24px;
 }

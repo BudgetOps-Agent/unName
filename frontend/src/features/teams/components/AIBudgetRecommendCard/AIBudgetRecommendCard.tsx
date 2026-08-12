@@ -50,7 +50,7 @@ const AIBudgetRecommendCard = ({ teamId }: AIBudgetRecommendCardProps) => {
 
                 <div className={styles.analysisList}>
                     {isLoading ? (
-                        <LoadingText />
+                        <LoadingText text="AI가 예산 현황을 분석하고 있어요" />
                     ) : error ? (
                         <div className={styles.errorBox}>
                             <p className={styles.errorText}>{error}</p>

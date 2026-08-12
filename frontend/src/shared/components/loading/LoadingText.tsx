@@ -1,7 +1,9 @@
+import React from 'react';
 import styles from './LoadingText.module.css';
 
 interface LoadingTextProps {
-    text?: string;
+    // 문장을 줄 단위로 나눠 넘길 수 있게 ReactNode를 받음
+    text?: React.ReactNode;
     className?: string;
 }
 

@@ -13,6 +13,7 @@ import ExpenseInfoCard from '@/features/teams/components/ExpenseInfoCard/Expense
 import ReceiptCard from '@/features/teams/components/ReceiptCard/ReceiptCard';
 import AIReviewCard from '@/features/teams/components/AIReviewCard/AIReviewCard';
 import DeleteExpenseCard from '@/features/teams/components/DeleteExpenseCard/DeleteExpenseCard';
+import LoadingText from '@/shared/components/loading/LoadingText';
 import { CATEGORY_LABEL } from '@/features/teams/constants/category';
 
 const STATUS_LABEL: Record<string, string> = {
@@ -37,6 +38,10 @@ const ExpenseDetail = () => {
     const [isRejecting, setIsRejecting] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    // 재심사 중이면 옛 심사기록이 남아 review는 null이 아니지만 finalVerdict가 SUBMITTED로 돌아감.
+    // 두 경우(최초 심사·재심사)를 함께 "아직 판정 전"으로 본다
+    const isReviewDone = !!review && review.finalVerdict !== 'SUBMITTED';
 
     const handleApprove = async () => {
         if (!validExpenseId) return;
@@ -161,7 +166,7 @@ const ExpenseDetail = () => {
 
             {/* SUBMITTED면 아직 판정 전 — 지출을 수정하면 재심사가 걸리는데 옛 심사기록은 남아있어서
                 review가 null이 아님. 이때 옛 결과 대신 "심사 중" 안내를 보여준다 */}
-            {review && review.finalVerdict !== 'SUBMITTED' ? (
+            {isReviewDone ? (
                 <AIReviewCard
                     reviewers={review.reviewers}
                     finalVerdict={review.finalVerdict}
@@ -171,18 +176,29 @@ const ExpenseDetail = () => {
                 />
             ) : (
                 <Card className={styles.reviewPendingCard}>
-                    <p className={styles.reviewPendingText}>
-                        {reviewPollTimedOut
-                            ? 'ⓘ AI 심사가 예상보다 오래 걸리고 있어요.'
-                            : 'ⓘ AI가 아직 심사 중이에요. 잠시 후 자동으로 갱신돼요.'}
-                    </p>
-                    {reviewPollTimedOut && (
-                        <Button text="다시 확인" onClick={() => refetchReview()} style="tertiary" size="md" />
+                    {reviewPollTimedOut ? (
+                        <>
+                            <p className={styles.reviewPendingText}>ⓘ AI 심사가 예상보다 오래 걸리고 있어요.</p>
+                            <Button text="다시 확인" onClick={() => refetchReview()} style="tertiary" size="md" />
+                        </>
+                    ) : (
+                        /* 마침표 기준으로 줄이 나뉘도록 문장별로 감쌈 (모바일에서만 줄바꿈) */
+                        <LoadingText
+                            text={
+                                <>
+                                    <span className={styles.pendingLine}>AI가 아직 심사 중이에요.</span>{' '}
+                                    <span className={styles.pendingLine}>잠시 후 자동으로 갱신돼요.</span>
+                                </>
+                            }
+                        />
                     )}
                 </Card>
             )}
 
-            {(expense.canApprove || expense.canReject) && (
+            {/* AI 심사가 끝나기 전에 승인·반려하면 AI가 채워줄 카테고리가 비어버리고,
+                그런 지출은 예산 관리 탭의 카테고리별 도넛 차트에 잡히지 않는다.
+                그래서 관리자·총무여도 심사 결과가 나온 뒤에만 버튼을 노출한다 */}
+            {isReviewDone && (expense.canApprove || expense.canReject) && (
                 isRejecting ? (
                     <Card className={styles.rejectCard}>
                         <p className={styles.rejectLabel}>반려 사유를 알려 주세요</p>
