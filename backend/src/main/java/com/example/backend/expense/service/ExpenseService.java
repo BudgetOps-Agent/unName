@@ -441,12 +441,37 @@ public class ExpenseService {
                 .processType(processType)
                 .processor(processor)
                 .category(category)
+                .escalationReason(extractAdminReason(review.getDetail()))
                 .build();
 
         return ExpenseReviewResultResponse.builder()
                 .success(true)
                 .review(info)
                 .build();
+    }
+
+    // detail(JSON 문자열)에서 reasons.admin을 꺼냄 — 심사관 4종이 다 "적합"이어도 에스컬레이션되는
+    // 경우가 있는데(예: 인원수 미제공 등 심사관 개별 항목으로 안 잡히는 사유), 그 이유를 화면
+    // "관리자 직접 확인이 필요해요" 배너에 보여주기 위함. reasons가 문자열이면 그대로, 객체면
+    // admin 키만, 없으면 null (LLM팀 요청, 2026-08-12)
+    private String extractAdminReason(String detailJson) {
+        if (detailJson == null || detailJson.isBlank()) {
+            return null;
+        }
+        try {
+            JsonNode root = objectMapper.readTree(detailJson);
+            JsonNode reasons = root.path("reasons");
+            if (reasons.isObject()) {
+                JsonNode admin = reasons.path("admin");
+                return admin.isMissingNode() || admin.isNull() ? null : admin.asText(null);
+            }
+            if (reasons.isTextual()) {
+                return reasons.asText(null);
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     // 프론트(AIReviewCard.tsx)가 심사관 이름을 opinions 배열의 "위치"로만 구분함(REVIEWER_NAMES[index]).
