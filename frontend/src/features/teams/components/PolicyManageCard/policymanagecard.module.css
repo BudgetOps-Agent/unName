@@ -182,7 +182,8 @@
     font-weight: 700;
 }
 
-.aiButton.aiButton:hover {
+/* 선택됨·생성 중처럼 못 누르는 상태에서는 hover 반응을 주지 않음 */
+.aiButton.aiButton:hover:not(:disabled) {
     background-color: #7C3AED;
 }
 
@@ -207,7 +208,7 @@
     background: var(--white);
 }
 
-.aiRefreshButton.aiRefreshButton:hover {
+.aiRefreshButton.aiRefreshButton:hover:not(:disabled) {
     background: #EDE9FE;
 }
 
