@@ -8,6 +8,7 @@ interface ExpenseDetailTableProps {
     expenses: ReportExpense[];
     isLoading: boolean;
     isError: boolean;
+    // 합계 행이 주석 처리돼 있어 지금은 쓰지 않음. 행을 되살릴 때 사용
     totalAmount?: number;
 }
 
@@ -16,9 +17,7 @@ const formatDate = (isoString: string) => {
     return isoString.slice(0, 10);
 }
 
-const ExpenseDetailTable = ({ expenses, isLoading, isError, totalAmount }: ExpenseDetailTableProps) => {
-    const computedTotal = expenses.reduce((sum, item) => sum + item.amount, 0);
-    const displayTotal = totalAmount ?? computedTotal;
+const ExpenseDetailTable = ({ expenses, isLoading, isError }: ExpenseDetailTableProps) => {
 
     return (
         <Card className={styles.tableContainer} noPadding={true}>

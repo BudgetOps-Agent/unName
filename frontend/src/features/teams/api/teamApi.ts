@@ -1,7 +1,7 @@
 import api from "@/shared/api/api";
 import { AcceptInviteResponse, RejectInviteResponse, InviteMemberResponse, TransferAdminResponse, RemoveMemberResponse, ChangeRoleResponse, ResponseMyTeams, CreateTeamRequest, CreateTeamResponse, UpdateTeamSettingsRequest, UpdateTeamSettingsResponse } from "@/types/team";
 import { ResponseExpenses, ExpenseCreateResponse, ExpenseDetailResponse, ExpenseApproveResponse, ExpenseRejectResponse, ExpenseDeleteResponse, ExpenseUpdateResponse, ExpenseReviewResultResponse, CategoryStatsResponse } from "@/types/expense";
-import { Member, ResponseTeamMembers } from "@/types/member";
+import { ResponseTeamMembers } from "@/types/member";
 import { DashboardResponse, MonthlyStatsResponse, AiSummaryResponse } from "@/types/dashboard";
 import { BudgetResponse, BudgetInsightsResponse } from "@/types/budget";
 import { PolicyCreateResponse, PolicyRecommendResponse } from "@/types/policy";

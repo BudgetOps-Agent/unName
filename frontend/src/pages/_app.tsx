@@ -7,7 +7,7 @@ import "@/shared/layouts/mainLayout/MainLayout.css";
 import "@/shared/layouts/authLayout/AuthLayout.css";
 import MainLayout from "@/shared/layouts/mainLayout/MainLayout";
 import AuthLayout from "@/shared/layouts/authLayout/AuthLayout";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/shared/lib/queryClient";
 
 
