@@ -385,8 +385,9 @@ public class ExpenseService {
 
         boolean canEdit    = isOwner && pending;                                  // 수정: 본인 + 대기
         boolean canDelete  = (isOwner || role == TeamRole.ADMIN) && pending;      // 삭제: 본인 또는 ADMIN + 대기
-        boolean canApprove = canApproveReject && pending;                         // 승인: ADMIN/ACCOUNTANT + 대기
-        boolean canReject  = canApproveReject && pending;                         // 반려: ADMIN/ACCOUNTANT + 대기
+        // 승인/반려: ADMIN/ACCOUNTANT + ESCALATED만 (SUBMITTED는 AI 심사 중이라 서버가 막음 — approveExpense/rejectExpense와 동일 기준)
+        boolean canApprove = canApproveReject && expense.getStatus() == ExpenseStatus.ESCALATED;
+        boolean canReject  = canApproveReject && expense.getStatus() == ExpenseStatus.ESCALATED;
 
         // 3. 엔티티 → 상세 응답 DTO로 변환해서 반환
         //    (receiptUrl → receiptFileUrl 변환, 요청자 이름 등은 fromEntity 안에서 처리)
@@ -572,6 +573,12 @@ public class ExpenseService {
             throw new ExpenseException(ExpenseErrorCode.ALREADY_PROCESSED);
         }
 
+        // 5-1. AI 심사가 아직 안 끝난(SUBMITTED) 건은 막기 — AI 의견(에스컬레이션 여부 등)을
+        //      안 보고 사람이 먼저 판단해버리는 걸 방지. ESCALATED(AI가 사람 확인을 요청한 상태)는 허용.
+        if (expense.getStatus() == ExpenseStatus.SUBMITTED) {
+            throw new ExpenseException(ExpenseErrorCode.AI_REVIEW_IN_PROGRESS);
+        }
+
         // 6. 반려 처리 (엔티티의 reject 메서드 호출 → status/사유/처리자/시각 한번에 변경)
         expense.reject(requester, request.getRejectReason());
 
@@ -658,6 +665,12 @@ public class ExpenseService {
         if (expense.getStatus() == ExpenseStatus.APPROVED
                 || expense.getStatus() == ExpenseStatus.REJECTED) {
             throw new ExpenseException(ExpenseErrorCode.ALREADY_PROCESSED);
+        }
+
+        // 5-1. AI 심사가 아직 안 끝난(SUBMITTED) 건은 막기 — AI 의견(에스컬레이션 여부 등)을
+        //      안 보고 사람이 먼저 판단해버리는 걸 방지. ESCALATED(AI가 사람 확인을 요청한 상태)는 허용.
+        if (expense.getStatus() == ExpenseStatus.SUBMITTED) {
+            throw new ExpenseException(ExpenseErrorCode.AI_REVIEW_IN_PROGRESS);
         }
 
         // 6. 예산 조회 (팀당 1개)

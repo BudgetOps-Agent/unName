@@ -200,17 +200,19 @@ public class LlmClient {
     }
 
     // ── LLM-016 예산 인사이트 (잡 방식) ────────────────────────────────
-    // 폴링 파라미터: 1.5초 간격 × 최대 20회 = 최대 약 30초.
-    // (nginx read timeout 60초 안쪽. 무거운 생성이라 대시보드 요약보다 여유를 둠)
+    // 폴링 파라미터: 1.5초 간격 × 최대 30회 = 최대 약 45초.
+    // (LLM팀 권장: 선행 잡이 있으면 10초+ 걸릴 수 있어 30초 이상 권장 → 여유 두고 45초.
+    //  nginx proxy_read_timeout 60초 안쪽. 무거운 생성이라 대시보드 요약보다 여유를 둠)
     private static final long POLL_INTERVAL_MS = 1500L;
-    private static final int POLL_MAX_ATTEMPTS = 20;
+    private static final int POLL_MAX_ATTEMPTS = 30;
 
     /**
-     * LLM-016 예산 관리 AI 메시지 — 접수 + 폴링 + 결과조회를 한 번에 처리하는 블로킹 호출.
+     * LLM-016 예산 관리 AI 메시지 — 접수 + 폴링을 한 번에 처리하는 블로킹 호출.
      * POST /v1/proposals/budget 로 잡을 접수(202)한 뒤,
-     * LLM-004(GET /v1/jobs/{job_id})로 succeeded 될 때까지 상태만 폴링하고,
-     * succeeded면 GET /v1/proposals?team_id=&type=budget 로 실제 결과 본문을 따로 조회한다.
-     * (LLM팀 확인, 2026-08-11 — jobs 응답의 result에는 안 담기고 proposals 조회가 별도 필요)
+     * LLM-004(GET /v1/jobs/{job_id})를 succeeded 될 때까지 폴링해서 결과를 반환한다.
+     * succeeded 응답의 result는 {proposal_id, payload:{category_analysis, ...}} 구조라
+     * payload를 한 번 더 꺼내서 매핑한다 (LLM팀이 실제 로그로 확인해줌, 2026-08-12 —
+     * 이전엔 별도로 GET /v1/proposals를 다시 불렀는데, 그럴 필요 없이 폴링 응답에 이미 담겨 있었음).
      *
      * 화면(API-052)이 캐시 미스일 때 이 메서드로 생성한다. (첫 호출만 수 초 소요)
      * 실패·타임아웃 시 LlmException(502)을 던짐 → 서비스가 잡아 화면에 '실패'로 표시.
@@ -256,9 +258,9 @@ public class LlmClient {
             if (job.isSucceeded()) {
                 log.info("[LLM-016] 완료 - teamId={}, jobId={}, attempts={}",
                         request.getTeamId(), jobId, attempt);
-                BudgetInsightsResult result = fetchBudgetProposal(request.getTeamId());
+                BudgetInsightsResult result = extractBudgetPayload(job);
                 if (result == null) {
-                    log.error("[LLM-016] 완료됐지만 proposals 조회 결과 없음 - teamId={}, jobId={}",
+                    log.error("[LLM-016] 완료됐지만 result.payload를 못 읽음 - teamId={}, jobId={}",
                             request.getTeamId(), jobId);
                     throw new LlmException(LlmErrorCode.LLM_SERVER_ERROR);
                 }
@@ -278,34 +280,23 @@ public class LlmClient {
     }
 
     /**
-     * LLM-016 예산 배분 제안 결과 조회
-     * GET /v1/proposals?team_id={teamId}&type=budget
-     *
-     * jobs 폴링에서 succeeded 확인 후 실제 본문을 가져오는 별도 호출.
-     * LLM팀 확인(2026-08-11): 응답은 봉투 없는 배열, created_at 내림차순(최신이 0번째),
-     * 목록이 비어도 404가 아니라 200+[]. 실제 내용(category_analysis 등)은 각 항목의
-     * "payload" 안에 중첩돼 있음 — 항목 자체가 아니라 항목.payload를 매핑해야 함.
-     * 목록이 비어있으면 null 반환(호출부가 502로 처리).
+     * LLM-016 예산 배분 제안 결과 추출
+     * jobs 폴링(job.getResult())에 담겨온 {proposal_id, payload:{...}} 구조에서
+     * payload만 꺼내 BudgetInsightsResult로 매핑. 못 읽으면 null(호출부가 502로 처리).
      */
-    private BudgetInsightsResult fetchBudgetProposal(Long teamId) {
+    private BudgetInsightsResult extractBudgetPayload(JobResultResponse job) {
         try {
-            JsonNode root = restClient.get()
-                    .uri("/v1/proposals?team_id={teamId}&type=budget", teamId)
-                    .retrieve()
-                    .body(JsonNode.class);
-
-            if (root == null || !root.isArray() || root.isEmpty()) {
+            JsonNode result = job.getResult();
+            if (result == null) {
                 return null;
             }
-
-            JsonNode payload = root.get(0).path("payload"); // 0번째 = 최신(created_at DESC)
+            JsonNode payload = result.path("payload");
             if (payload.isMissingNode()) {
                 return null;
             }
-
             return objectMapper.treeToValue(payload, BudgetInsightsResult.class);
         } catch (Exception e) {
-            log.error("[LLM-016] proposals 조회 실패 - teamId={}", teamId, e);
+            log.error("[LLM-016] result.payload 파싱 실패 - jobId={}", job.getJobId(), e);
             return null;
         }
     }

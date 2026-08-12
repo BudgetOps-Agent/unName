@@ -84,6 +84,15 @@ public enum ExpenseErrorCode {
     BUDGET_EXCEEDED(
             HttpStatus.CONFLICT,
             "남은 예산이 부족하여 승인할 수 없습니다."
+    ),
+
+    // AI 심사가 아직 안 끝난(SUBMITTED) 지출을 사람이 먼저 승인/반려하려 할 때 (019, 020)
+    // AI 의견(에스컬레이션 여부 등)을 안 보고 사람이 먼저 판단하는 걸 막기 위함.
+    // ESCALATED(AI가 사람 확인을 명시적으로 요청한 상태)는 막지 않음 — 그건 정상 흐름.
+    // 409 Conflict = 아직 진행 중인 심사와 요청이 충돌
+    AI_REVIEW_IN_PROGRESS(
+            HttpStatus.CONFLICT,
+            "AI 심사가 아직 끝나지 않았습니다. 심사 결과가 나온 뒤 처리해주세요."
     );
 
     private final HttpStatus status;
