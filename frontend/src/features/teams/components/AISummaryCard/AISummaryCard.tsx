@@ -23,7 +23,7 @@ const AISummaryCard = ({ summary, verified, isLoading, error, onRetry }: AISumma
             ) : error ? (
                 <div className={styles.summaryError}>
                     <p className={styles.summaryErrorText}>{error}</p>
-                    <Button text="다시 시도" onClick={onRetry} style="tertiary" />
+                    <Button text="다시 시도" onClick={onRetry} style="tertiary" size="md" />
                 </div>
             ) : summary ? (
                 <p className={styles.summaryText}>
@@ -35,7 +35,7 @@ const AISummaryCard = ({ summary, verified, isLoading, error, onRetry }: AISumma
                     ))}
                 </p>
             ) : (
-                <p className={styles.summaryText}>이번 달 요약을 아직 준비하지 못했어요.</p>
+                <p className={styles.summaryEmpty}>이번 달 요약을 아직 준비하지 못했어요.</p>
             )}
         </Card>
     );

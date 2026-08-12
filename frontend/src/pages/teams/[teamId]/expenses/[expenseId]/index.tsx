@@ -90,7 +90,7 @@ const ExpenseDetail = () => {
                         <div className={styles.errorContainer}>
                             <p className={styles.errorTextTitle}>⚠️ 지출 정보를 불러오지 못했습니다</p>
                             <p className={styles.errorTextSub}>{error}</p>
-                            <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
+                            <Button text="다시 시도" onClick={() => refetch()} style="tertiary" size="md" />
                         </div>
                     </Card>
                 )}
@@ -177,7 +177,7 @@ const ExpenseDetail = () => {
                             : 'ⓘ AI가 아직 심사 중이에요. 잠시 후 자동으로 갱신돼요.'}
                     </p>
                     {reviewPollTimedOut && (
-                        <Button className={styles.errorBtn} text="다시 확인" onClick={() => refetchReview()} style="tertiary" />
+                        <Button text="다시 확인" onClick={() => refetchReview()} style="tertiary" size="md" />
                     )}
                 </Card>
             )}

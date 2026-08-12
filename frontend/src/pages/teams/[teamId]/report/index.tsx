@@ -94,9 +94,9 @@ const Report = () => {
                             </p>
 
                             <Button
-                                className={styles.errorBtn}
                                 text="다시 시도"
                                 style="tertiary"
+                                size="md"
                                 onClick={() => refetchSummary()}
                             />
                         </div>

@@ -9,7 +9,8 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 600px;
+    /* 바로 앞 단계인 모임 생성 폼(.createTeamForm)과 같은 폭으로 맞춤 */
+    max-width: 500px;
     margin: 0 auto;
     padding: 40px 0;
 }

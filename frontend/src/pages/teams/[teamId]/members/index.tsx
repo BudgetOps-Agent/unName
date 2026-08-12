@@ -69,7 +69,7 @@ const Members = () => {
                     <div className={styles.errorContainer}>
                         <p className={styles.errorTextTitle}>⚠️ 멤버 정보를 불러오지 못했습니다</p>
                         <p className={styles.errorTextSub}>{error}</p>
-                        <Button className={styles.errorBtn} text="다시 시도" onClick={() => refetch()} style="tertiary" />
+                        <Button text="다시 시도" onClick={() => refetch()} style="tertiary" size="md" />
                     </div>
                 ) : (
                     <MemberList teamId={validTeamId} members={members} refetch={refetch} viewerRole={viewerRole} />

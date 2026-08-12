@@ -20,7 +20,7 @@ const BudgetSummaryCard = ({ dashboard, isLoading, error, refetch }: BudgetSumma
             ) : error ? (
                 <div className={styles.budgetError}>
                     <p>{error}</p>
-                    <Button text="다시 시도" onClick={() => refetch()} style="tertiary" />
+                    <Button text="다시 시도" onClick={() => refetch()} style="tertiary" size="md" />
                 </div>
             ) : dashboard && (
                 <>
