@@ -68,6 +68,14 @@ public class TeamController {
         return ResponseEntity.ok(teamService.getSettings(teamId));
     }
 
+    // 모임 삭제 — 관리자 혼자 남았을 때만 가능 (탈퇴 API-043과 별도 API)
+    @DeleteMapping("/{teamId}")
+    public ResponseEntity<com.example.backend.team.dto.DeleteTeamResponse> deleteTeam(
+            @PathVariable("teamId") Long teamId
+    ) {
+        return ResponseEntity.ok(teamService.deleteTeam(teamId));
+    }
+
     // 팀 설정 수정 (API-029) — 마법사 1단계(회비) · 3단계(승인정책) 공용
     @PatchMapping("/{teamId}/settings")
     public ResponseEntity<Map<String, Object>> updateSettings(
