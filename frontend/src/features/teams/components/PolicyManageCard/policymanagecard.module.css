@@ -96,7 +96,10 @@
 .textArea {
     box-sizing: border-box;
     width: 100%;
+    /* 등록된 회칙을 한눈에 보려면 140px로는 부족해서 기본 높이를 키움.
+       상한은 AI 초안 영역(.aiDraftText)과 같은 480px */
     min-height: 140px;
+    max-height: 480px;
     margin-top: 20px;
     padding: 13px 16px;
     border: 2px solid var(--gray-3);
