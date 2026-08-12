@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { ErrorResponse, RequestFindid, ResponseFindid } from "@/types/auth"
 import { findId } from "../../../features/auth/api/authApi";
 

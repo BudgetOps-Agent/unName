@@ -5,7 +5,6 @@ import { ErrorResponse } from '@/types/auth';
 
 const useAiSummary = (teamId: string | undefined) => {
     const [summary, setSummary] = useState<string | null>(null);
-    const [verified, setVerified] = useState<boolean | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -19,13 +18,11 @@ const useAiSummary = (teamId: string | undefined) => {
             const response = await getAiSummary(teamId);
 
             setSummary(response.data.summary);
-            setVerified(response.data.verified);
         } catch (err) {
             const axiosError = err as AxiosError<ErrorResponse>;
             const errMsg = axiosError.response?.data?.message || 'AI 요약을 불러오는 중 오류가 발생했습니다.';
 
             setSummary(null);
-            setVerified(null);
             setError(errMsg);
         } finally {
             setIsLoading(false);
@@ -36,7 +33,7 @@ const useAiSummary = (teamId: string | undefined) => {
         fetchAiSummary();
     }, [fetchAiSummary]);
 
-    return { summary, verified, isLoading, error, refetch: fetchAiSummary };
+    return { summary, isLoading, error, refetch: fetchAiSummary };
 };
 
 export default useAiSummary;

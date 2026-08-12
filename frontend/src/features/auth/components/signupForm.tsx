@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useState, SubmitEvent } from "react";
 import { useRouter } from "next/router";
 import { useSignUp } from "../hooks/useSignup";

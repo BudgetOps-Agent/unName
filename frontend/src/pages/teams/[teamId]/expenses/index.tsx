@@ -11,7 +11,6 @@ import SearchBar from "@/features/teams/components/SearchBar/SearchBar";
 import ExpenseList from "@/features/teams/components/ExpenseList/ExpenseList";
 import LoadingText from "@/shared/components/loading/LoadingText";
 
-import { ExpenseCounts } from "@/features/teams/hooks/useExpenses";
 import { useExpenses } from "@/features/teams/hooks/useExpenses";
 
 const filterBtn = [

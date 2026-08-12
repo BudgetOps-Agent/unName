@@ -121,6 +121,38 @@
     font-weight: 700;
 }
 
+/* 등록된 회칙 파일 내려받기 — 영수증 카드와 같은 형태 */
+.downloadLink {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    margin-top: 12px;
+    gap: 6px;
+    color: var(--blue-8);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.downloadLink img {
+    width: 16px;
+    height: 16px;
+}
+
+/* 수정 버튼은 텍스트 영역 오른쪽 아래에 붙임 */
+.textActions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.policyEditNote {
+    margin-top: 8px;
+    color: var(--blue-8);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: right;
+}
+
 .aiBox {
     margin-top: 20px;
     padding: 20px;
@@ -150,8 +182,34 @@
     font-weight: 700;
 }
 
-.aiButton.aiButton:hover {
+/* 선택됨·생성 중처럼 못 누르는 상태에서는 hover 반응을 주지 않음 */
+.aiButton.aiButton:hover:not(:disabled) {
     background-color: #7C3AED;
+}
+
+/* 새로 추천받기 / 이 초안 사용하기를 한 줄에 */
+.aiActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 16px;
+    gap: 8px;
+}
+
+/* .aiButton은 margin-top을 갖고 있어 이 줄 안에서는 상쇄해야 높이가 맞음 */
+.aiActions .aiButton {
+    margin-top: 0;
+}
+
+.aiRefreshButton.aiRefreshButton {
+    width: fit-content;
+    border: 1px solid #C4B4FF;
+    color: #7008E7;
+    background: var(--white);
+}
+
+.aiRefreshButton.aiRefreshButton:hover:not(:disabled) {
+    background: #EDE9FE;
 }
 
 /* 초안 선택만으로는 저장되지 않는다는 안내 — AI 박스 톤에 맞춰 보라색 계열 */
@@ -163,7 +221,8 @@
 }
 
 .aiDraftText {
-    max-height: 260px;
+    /* 초안이 있을 때만 렌더되는 영역이라, 생성 전 안내 박스 크기에는 영향이 없음 */
+    max-height: 480px;
     margin: 0 0 16px;
     overflow-y: auto;
     color: var(--gray-8);
@@ -217,13 +276,14 @@
 .checkbox:checked::after {
     content: '';
     position: absolute;
-    left: 6px;
-    top: 2px;
+    left: 50%;
+    top: 50%;
     width: 4px;
     height: 8px;
     border: solid var(--white);
     border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+    /* 45도 돌리면 획이 오른쪽 아래로 쏠려서, 그만큼 되돌려 광학적 중앙에 맞춘다 */
+    transform: translate(-50%, -60%) rotate(45deg);
 }
 
 .sectionTitle {

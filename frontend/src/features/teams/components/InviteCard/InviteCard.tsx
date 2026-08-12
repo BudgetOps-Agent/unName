@@ -1,8 +1,6 @@
 import styles from './invitecard.module.css';
 import { Card } from '@/shared/components/card/Card';
-import { Badge } from '@/shared/components/badge/Badge';
 import Button from '@/shared/components/button/Button';
-import { useState } from 'react';
 import Skeleton from '@/shared/components/skeleton/Skeleton';
 
 interface Invitation {

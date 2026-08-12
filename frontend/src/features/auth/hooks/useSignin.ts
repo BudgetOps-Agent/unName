@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { signin } from "@/features/auth/api/authApi";
 import { ErrorResponse, RequestSignin, ResponseSignin } from "@/types/auth";
 

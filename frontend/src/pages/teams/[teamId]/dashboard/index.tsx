@@ -25,7 +25,7 @@ const Dashboard = () => {
 
     const { dashboard, isLoading, error, refetch } = useDashboard(validTeamId);
     const { statistics, isLoading: isStatsLoading, error: statsError, refetch: refetchStats } = useMonthlyStats(validTeamId);
-    const { summary, verified, isLoading: isSummaryLoading, error: summaryError, refetch: refetchSummary } = useAiSummary(validTeamId);
+    const { summary, isLoading: isSummaryLoading, error: summaryError, refetch: refetchSummary } = useAiSummary(validTeamId);
 
     const barData = statistics.map((item) => ({ month: formatMonthLabel(item.month), amount: item.amount }));
 
@@ -56,7 +56,6 @@ const Dashboard = () => {
 
             <AISummaryCard
                 summary={summary}
-                verified={verified}
                 isLoading={isSummaryLoading}
                 error={summaryError}
                 onRetry={refetchSummary}

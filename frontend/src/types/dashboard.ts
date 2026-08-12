@@ -22,7 +22,6 @@ export interface DashboardResponse {
 export interface AiSummaryResponse {
     success: boolean;
     summary: string | null;
-    verified: boolean | null;
 }
 
 export interface MonthlyStat {
