@@ -84,12 +84,6 @@ public enum ExpenseErrorCode {
     BUDGET_EXCEEDED(
             HttpStatus.CONFLICT,
             "남은 예산이 부족하여 승인할 수 없습니다."
-    ),
-
-    // 관리자·총무가 아닌데 정산 리포트를 조회하려 할 때 (API-050·051)
-    NOT_AUTHORIZED_TO_VIEW_REPORT(
-            HttpStatus.FORBIDDEN,
-            "관리자 또는 총무만 정산 리포트를 조회할 수 있습니다."
     );
 
     private final HttpStatus status;

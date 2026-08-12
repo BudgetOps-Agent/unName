@@ -31,7 +31,8 @@ public class ExpenseController {
     @Operation(
             summary = "지출 목록 조회 (API-014)",
             description = "팀의 지출 목록을 상태별로 조회합니다. "
-                    + "status가 없거나 'ALL'이면 전체, 'SUBMITTED'면 대기(SUBMITTED+ESCALATED) 목록을 반환합니다."
+                    + "status가 없거나 'ALL'이면 전체, 'SUBMITTED'면 대기(SUBMITTED+ESCALATED) 목록을 반환합니다. "
+                    + "역할 무관하게 팀 소속이면 누구나 팀 전체 지출을 조회할 수 있습니다(MEMBER도 전체 조회, 2026-08-11 변경)."
     )
     @Parameter(name = "teamId", description = "팀 ID", required = true, example = "1")
     @Parameter(name = "status", description = "조회할 상태 (ALL, SUBMITTED, APPROVED, REJECTED). 생략 시 ALL", example = "SUBMITTED")
@@ -53,7 +54,8 @@ public class ExpenseController {
             summary = "정산 리포트 요약 조회 (API-051)",
             description = "정산 리포트 상단에 표시되는 예산 및 지출 요약 정보를 조회합니다. "
                     + "응답은 { success, summary: { totalExpense, approvedCount, totalBudget, "
-                    + "usedBudget, remainingBudget, usagePercentage } } 형태입니다."
+                    + "usedBudget, remainingBudget, usagePercentage } } 형태입니다. "
+                    + "역할 무관하게 팀 소속이면 누구나 조회할 수 있습니다(2026-08-11 변경, 이전엔 관리자·총무만)."
     )
     @Parameter(name = "teamId", description = "팀 ID", required = true, example = "1")
     @ApiResponses({
@@ -78,7 +80,9 @@ public class ExpenseController {
             summary = "정산 리포트 조회 (API-050)",
             description = "승인된 지출 내역을 페이지 단위로 조회합니다 (정산 리포트 화면용). "
                     + "응답은 { success, page, size, totalElements, totalPages, expenses: [...] } 형태이며, "
-                    + "page/size는 query parameter로도 받습니다 (기본값 page=0, size=10)."
+                    + "expenses 각 항목엔 승인 처리자 이름(processorName, AI 자동승인이면 \"AI\")이 포함됩니다. "
+                    + "page/size는 query parameter로도 받습니다 (기본값 page=0, size=10). "
+                    + "역할 무관하게 팀 소속이면 누구나 조회할 수 있습니다(2026-08-11 변경, 이전엔 관리자·총무만)."
     )
     @Parameter(name = "teamId", description = "팀 ID", required = true, example = "1")
     @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0")
