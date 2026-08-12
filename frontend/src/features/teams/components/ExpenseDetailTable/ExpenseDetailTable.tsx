@@ -33,6 +33,7 @@ const ExpenseDetailTable = ({ expenses, isLoading, isError, totalAmount }: Expen
                             <th>항목</th>
                             <th>카테고리</th>
                             <th>요청자</th>
+                            <th>처리자</th>
                             <th>날짜</th>
                             <th>금액</th>
                         </tr>
@@ -46,6 +47,7 @@ const ExpenseDetailTable = ({ expenses, isLoading, isError, totalAmount }: Expen
                                         <td><Skeleton width={120} height={16} delay={0} /></td>
                                         <td><Skeleton width={70} height={12} delay={0.3} /></td>
                                         <td><Skeleton width={70} height={12} delay={0.5} /></td>
+                                        <td><Skeleton width={70} height={12} delay={0.6} /></td>
                                         <td><Skeleton width={70} height={12} delay={0.7} /></td>
                                         <td><Skeleton width={70} height={12} delay={1.0} /></td>
                                     </tr>
@@ -53,13 +55,13 @@ const ExpenseDetailTable = ({ expenses, isLoading, isError, totalAmount }: Expen
                             </>
                         ) : isError ? (
                             <tr>
-                                <td colSpan={5} className={styles.noData}>
+                                <td colSpan={6} className={styles.noData}>
                                     데이터를 불러오지 못했어요.
                                 </td>
                             </tr>
                         ) : expenses.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className={styles.noData}>
+                                <td colSpan={6} className={styles.noData}>
                                     아직 승인된 지출이 없어요
                                 </td>
                             </tr>
@@ -72,6 +74,7 @@ const ExpenseDetailTable = ({ expenses, isLoading, isError, totalAmount }: Expen
                                             {expense.category ? (CATEGORY_LABEL[expense.category] ?? expense.category) : '-'}
                                         </td>
                                         <td className={styles.requester}>{expense.requesterName}</td>
+                                        <td className={styles.processor}>{expense.processorName ?? '-'}</td>
                                         <td className={styles.date}>{formatDate(expense.date)}</td>
                                         <td className={styles.amount}>{expense.amount.toLocaleString()}원</td>
                                     </tr>

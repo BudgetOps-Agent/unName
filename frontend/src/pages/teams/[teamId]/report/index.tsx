@@ -11,14 +11,10 @@ import Pagination from '@/shared/components/pagination/Pagination';
 import { useState } from 'react';
 import { Card } from '@/shared/components/card/Card';
 import { useReportCsv } from '@/features/teams/hooks/useReportCsv';
-import useRoleGuard from '@/features/teams/hooks/useRoleGuard';
-import LoadingText from '@/shared/components/loading/LoadingText';
 
 const Report = () => {
     const router = useRouter();
     const teamId = Number(router.query.teamId);
-    const validTeamId = typeof router.query.teamId === 'string' ? router.query.teamId : undefined;
-    const { isChecking: isRoleChecking, isAllowed } = useRoleGuard(validTeamId, ['ADMIN', 'ACCOUNTANT']);
     const {
         data: summary,
         isPending: isSummaryPending,
@@ -38,10 +34,6 @@ const Report = () => {
     const { data, isPending, isError } = useReport(teamId, page - 1);
     const expenses = data?.expenses ?? [];
     const totalPages = data?.totalPages ?? 1;
-
-    if (isRoleChecking || !isAllowed) {
-        return <LoadingText />;
-    }
 
     const handleCsvDownload = () => {
         downloadCsv(teamId, {

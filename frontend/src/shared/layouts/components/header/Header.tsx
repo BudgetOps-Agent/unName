@@ -181,7 +181,10 @@ const Header = () => {
                                 <div className="notice-item-info">
                                     <span className="notice-item-title ellipsis">{title}</span>
                                     <span className="notice-item-content ellipsis-2">{content}</span>
-                                    <span className="notice-item-time">{formatNotificationTime(item.createdAt)}</span>
+                                    {/* 여러 팀 알림이 한 목록에 섞이므로 어느 팀 알림인지 시간 앞에 같이 보여줌 */}
+                                    <span className="notice-item-time ellipsis">
+                                        {item.teamName ? `${item.teamName} · ${formatNotificationTime(item.createdAt)}` : formatNotificationTime(item.createdAt)}
+                                    </span>
                                 </div>
 
                                 {item.type === 'APPROVAL_REQUEST' && (

@@ -23,6 +23,15 @@
     align-items: center;
 }
 
+/* 좁은 화면에서 긴 이메일이 버튼을 밀어내지 않도록 왼쪽은 줄어들고 오른쪽은 고정 */
+.itemLeft {
+    min-width: 0;
+}
+
+.itemRight {
+    flex-shrink: 0;
+}
+
 .nameBox {
     gap: 8px;
 }
@@ -37,6 +46,9 @@
     color: var(--gray-6);
     font-size: 12px;
     font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .itemRight {
