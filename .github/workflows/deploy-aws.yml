@@ -1,6 +1,6 @@
 # ═══════════════════════════════════════════════════════════════
 #  AWS EC2 자동 배포 (CI/CD)
-#  dev 브랜치에 push 되면 → EC2에 SSH 접속 → 최신 코드 받고 → 재배포
+#  dev 또는 main 브랜치에 push 되면 → EC2에 SSH 접속 → 그 브랜치 최신 코드 받고 → 재배포
 #
 #  ▶ 필요한 GitHub Secrets (Settings → Secrets and variables → Actions):
 #     EC2_HOST     : EC2 고정 IP (Elastic IP)
@@ -16,6 +16,7 @@ on:
   push:
     branches:
       - dev
+      - main
 
 jobs:
   deploy:
@@ -30,8 +31,8 @@ jobs:
           script: |
             set -e
             cd ~/unName
-            git fetch origin dev
-            git reset --hard origin/dev
+            git fetch origin ${{ github.ref_name }}
+            git reset --hard origin/${{ github.ref_name }}
             cd deploy
             docker compose up -d --build
             docker compose ps
