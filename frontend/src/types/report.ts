@@ -3,6 +3,8 @@ export interface ReportExpense {
     title: string;
     category: string;
     requesterName: string;
+    // 승인/반려를 처리한 사람 이름 (AI 자동처리면 "AI")
+    processorName: string | null;
     date: string;
     amount: number;
 }

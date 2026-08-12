@@ -60,7 +60,7 @@
     font-weight: 700;
 }
 
-.category, .requester, .date {
+.category, .requester, .processor, .date {
     color: var(--gray-8);
     font-weight: 600;
 }
