@@ -13,6 +13,7 @@ import com.example.backend.member.exception.MemberException;
 import com.example.backend.member.repository.UserRepository;
 import com.example.backend.policy.dto.PolicyCreateRequest;
 import com.example.backend.policy.dto.PolicyCreateResponse;
+import com.example.backend.policy.dto.PolicyDetailResponse;
 import com.example.backend.policy.dto.PolicyRecommendResponse;
 import com.example.backend.policy.entity.Policy;
 import com.example.backend.policy.entity.PolicyType;
@@ -178,6 +179,47 @@ public class PolicyService {
                 .success(true)
                 .policyId(policy.getId())
                 .build();
+    }
+
+    // 팀 회칙 조회 — 회칙·정책 관리 화면에서 현재 등록된 회칙(텍스트/AI초안 내용 또는 파일명) 표시용
+    // 팀당 회칙 1개라 teamId로 바로 조회. 아직 등록 안 했으면 policy:null(404 아님)
+    @Transactional(readOnly = true)
+    public PolicyDetailResponse getPolicyByTeam(Long teamId) {
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+        teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        Policy policy = policyRepository.findByTeamId(teamId).orElse(null);
+        return PolicyDetailResponse.fromEntity(policy);
+    }
+
+    // 회칙 파일 다운로드 (API-035)
+    // 조회이므로 등록/수정(031/033)과 달리 관리자 전용이 아니라 팀 소속이면 역할 무관 다운로드 가능
+    @Transactional(readOnly = true)
+    public Policy getPolicyForDownload(Long policyId) {
+
+        // 1. 로그인한 사람 조회 (없으면 404)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 2. 회칙 조회 (없으면 404)
+        Policy policy = policyRepository.findById(policyId)
+                .orElseThrow(() -> new PolicyException(PolicyErrorCode.POLICY_NOT_FOUND));
+
+        // 3. 요청자가 이 회칙이 속한 팀 소속인지 확인 (아니면 403) — 남의 팀 회칙파일 다운로드 방지
+        teamMemberRepository.findByTeamIdAndUserId(policy.getTeam().getId(), requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        // 4. TEXT 방식(직접 입력·AI 초안)은 첨부 파일 자체가 없음
+        if (policy.getPolicyType() != PolicyType.FILE || policy.getFilePath() == null) {
+            throw new PolicyException(PolicyErrorCode.POLICY_FILE_NOT_AVAILABLE);
+        }
+
+        return policy;
     }
 
     // AI 정책 추천 (API-044) — 마법사 회칙 단계의 "AI 초안 생성하기" 버튼

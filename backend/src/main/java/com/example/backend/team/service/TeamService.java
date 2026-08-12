@@ -8,6 +8,7 @@ import com.example.backend.member.exception.MemberException;
 import com.example.backend.member.repository.UserRepository;
 import com.example.backend.team.dto.CreateTeamRequest;
 import com.example.backend.team.dto.CreateTeamResponse;
+import com.example.backend.team.dto.TeamSettingsResponse;
 import com.example.backend.team.dto.UpdateSettingsRequest;
 import com.example.backend.team.entity.Team;
 import com.example.backend.team.entity.TeamSettings;
@@ -103,6 +104,23 @@ public class TeamService {
                 .build();
 
 
+    }
+
+    // 팀 설정 조회 (API-028) — 회칙·정책 관리 화면에서 회비·승인정책 현재값 표시용
+    // 수정(029)은 관리자 전용이지만 조회는 팀 소속이면 역할 무관 가능
+    @Transactional(readOnly = true)
+    public TeamSettingsResponse getSettings(Long teamId) {
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+        teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        TeamSettings settings = teamSettingsRepository.findByTeamId(teamId)
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.TEAM_NOT_FOUND));
+
+        return TeamSettingsResponse.fromEntity(settings);
     }
 
     // 팀 설정 수정 (API-029) — 마법사 1단계(회비) · 3단계(승인정책) 공용

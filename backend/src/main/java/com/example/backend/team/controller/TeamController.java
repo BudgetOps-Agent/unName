@@ -60,6 +60,14 @@ public class TeamController {
         return ResponseEntity.status(201).body(response); // 201 생성 성공
     }
 
+    // 팀 설정 조회 (API-028) — 회칙·정책 관리 화면에서 회비·승인정책 현재값 표시용
+    @GetMapping("/{teamId}/settings")
+    public ResponseEntity<com.example.backend.team.dto.TeamSettingsResponse> getSettings(
+            @PathVariable("teamId") Long teamId
+    ) {
+        return ResponseEntity.ok(teamService.getSettings(teamId));
+    }
+
     // 팀 설정 수정 (API-029) — 마법사 1단계(회비) · 3단계(승인정책) 공용
     @PatchMapping("/{teamId}/settings")
     public ResponseEntity<Map<String, Object>> updateSettings(

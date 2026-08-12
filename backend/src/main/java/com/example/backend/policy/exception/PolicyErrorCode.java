@@ -45,6 +45,12 @@ public enum PolicyErrorCode {
     POLICY_NOT_FOUND(
             HttpStatus.NOT_FOUND,
             "등록된 회칙을 찾을 수 없습니다."
+    ),
+
+    // policyType=TEXT인 회칙을 다운로드하려 할 때 (035) — 파일 자체가 없음
+    POLICY_FILE_NOT_AVAILABLE(
+            HttpStatus.BAD_REQUEST,
+            "텍스트로 등록된 회칙은 다운로드할 파일이 없습니다."
     );
 
     private final HttpStatus status;
