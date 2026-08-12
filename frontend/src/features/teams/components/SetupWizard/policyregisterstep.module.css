@@ -182,3 +182,29 @@
     flex: 2;
     width: auto;
 }
+
+@media screen and (max-width: 768px) {
+    /* 좁은 화면에서 "건너뛰기"가 두 줄로 접히던 문제.
+       nowrap + 기본 min-width:auto 조합이면 글자 폭 아래로는 줄지 않고,
+       flex 비율은 남는 공간을 나눌 때만 쓰인다 */
+    .buttonSection {
+        gap: 8px;
+    }
+
+    .prevBtn,
+    .skipBtn,
+    .completeBtn {
+        padding-left: 10px;
+        padding-right: 10px;
+        white-space: nowrap;
+    }
+
+    /* 글자 수에 맞춰 배분 — 설정 완료가 주 동작이라 가장 넓게 */
+    .prevBtn {
+        flex: 1;
+    }
+
+    .skipBtn {
+        flex: 1.4;
+    }
+}

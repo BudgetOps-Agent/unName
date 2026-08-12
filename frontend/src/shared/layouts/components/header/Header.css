@@ -463,4 +463,28 @@ strong {
     .user-btn-text {
         max-width: 100%;
     }
+
+    /* 알림 목록이 340px 고정이라 좁은 화면에선 왼쪽으로 넘쳐 나감.
+       버튼 기준(absolute) 대신 화면 기준(fixed)으로 띄우고 좌우를 화면에 맞춘다 */
+    .notice .dropdown-container {
+        position: fixed;
+        top: 64px;
+        right: 12px;
+        left: 12px;
+        /* 부모의 align-items:center 때문에 자식이 내용 너비로 줄어들지 않도록 */
+        align-items: stretch;
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
+    }
+
+    .notice-header,
+    .notice-empty {
+        width: auto;
+    }
+
+    /* 폭이 넓어진 만큼 문구도 잘리지 않게 풀어줌 */
+    .notice-item-title,
+    .notice-item-content {
+        max-width: none;
+    }
 }

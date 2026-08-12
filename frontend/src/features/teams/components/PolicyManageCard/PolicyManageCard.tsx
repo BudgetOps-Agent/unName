@@ -99,11 +99,9 @@ const PolicyManageCard = ({ teamId }: PolicyManageCardProps) => {
     const isSaving = isSavingSettings || isSavingPolicy;
 
     const handleSave = async () => {
-        if (method === 'upload' && !uploadedFile) {
-            alert('회칙 파일을 첨부해주세요.');
-            return;
-        }
-        
+        // 회칙 미입력은 세 방식 모두 isPolicyProvided에서 걸러져 저장 블록을 건너뛴다.
+        // 예전엔 파일 업로드만 여기서 return으로 막혀서, 회칙을 건드릴 생각 없이
+        // 회비·승인정책만 바꿔도 저장이 통째로 취소됐다
         if (isFeeProvided || isApprovalPolicyProvided) {
             const result = await submitSettings({
                 ...(isFeeProvided && { membershipFee: noFee ? 0 : membershipFeeNumber }),
@@ -188,12 +186,17 @@ const PolicyManageCard = ({ teamId }: PolicyManageCardProps) => {
                     {aiDraft ? (
                         <>
                             <pre className={styles.aiDraftText}>{aiDraft}</pre>
+                            {/* 이 버튼은 서버에 저장하지 않고 "이 초안을 쓰겠다"는 선택만 함.
+                                실제 등록은 아래 저장하기(handleSave)에서 일어나므로 문구로 구분해 준다 */}
                             <Button
                                 className={styles.aiButton}
-                                text={aiApplied ? "적용됨" : "적용하기"}
+                                text={aiApplied ? "선택됨" : "이 초안 사용하기"}
                                 onClick={handleApplyAiDraft}
                                 disabled={aiApplied}
                             />
+                            {aiApplied && (
+                                <p className={styles.aiApplyNote}>아래 저장하기를 눌러야 반영돼요</p>
+                            )}
                         </>
                     ) : (
                         <>

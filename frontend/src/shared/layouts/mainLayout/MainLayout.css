@@ -1,48 +1,60 @@
+/* 사이드바는 position:fixed라 문서 흐름에서 빠져 있음.
+   그 자리는 .main-area의 margin-left로만 비우고, 여백(padding)에는 섞지 않는다.
+   폭 값이 여기 한 곳에만 있어서 사이드바 크기를 바꿔도 이 변수만 고치면 됨 */
 .layout {
+    --sidebar-width: 220px;
     display: flex;
     width: 100%;
     min-height: 100vh;
     box-sizing: border-box;
 }
-.layout:has(.sidebar-container.closed) .header-container {
-    padding-left: 80px;
+.layout:has(.sidebar-container.closed) {
+    --sidebar-width: 68px;
 }
-.layout:has(.sidebar-container.closed) .main-area main {
-    padding-left: 140px;
-}
+
+/* 헤더는 전체 폭을 쓰는 고정 바라 margin 대신 padding으로 사이드바를 피함 */
 .layout .header-container {
-    padding-left: 240px;
+    padding-left: calc(var(--sidebar-width) + 20px);
 }
-.layout .main-area main {
-    display: flex;
-    justify-content: center;
-    min-width: 0;
-    min-height: 100vh;
-    background-color: #F6F7FB;
-    padding: 84px 72px 32px 292px;
-    box-sizing: border-box;
-}
+
 .layout .main-area {
     flex: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    box-sizing: border-box;    
-    transition: width .3s;
+    margin-left: var(--sidebar-width);
+    box-sizing: border-box;
+    /* 사이드바 접힘 애니메이션(0.3s)과 맞춤 */
+    transition: margin-left .3s;
 }
+
+.layout .main-area main {
+    min-width: 0;
+    min-height: 100vh;
+    background-color: #F6F7FB;
+    /* 좌우 대칭 — 사이드바 폭은 위 margin-left가 이미 처리함 */
+    padding: 84px 72px 32px;
+    box-sizing: border-box;
+}
+
 .main-area .container {
     display: flex;
     flex-direction: column;
     gap: 20px;
     width: 100%;
+    /* 넓은 화면에서 콘텐츠가 끝까지 늘어나지 않도록 제한하고 가운데 정렬 */
+    max-width: 860px;
+    margin: 0 auto;
     min-width: 0;
     box-sizing: border-box;
 }
 
 @media screen and (max-width: 768px) {
-    
-    .layout:has(.sidebar-container.closed) .main-area main {
-        padding-left: 50px;
+    /* 모바일에선 사이드바 자리에 비울 공간이 없음 (메뉴는 하단 탭바가 맡음).
+       접힘 상태 선택자가 :has() 때문에 특이도가 더 높아서, 여기서도 같이 덮어야 함 */
+    .layout,
+    .layout:has(.sidebar-container.closed) {
+        --sidebar-width: 0px;
     }
     .layout .main-area {
         min-width: 0;
@@ -52,10 +64,9 @@
         width: 100%;
         min-width: 0;
         height: auto;
-        padding: 88px 20px 40px 50px;
+        /* 아래쪽 여백은 고정된 하단 탭바(.bottom-nav)에 콘텐츠가 가리지 않도록 확보 */
+        padding: 88px 20px calc(88px + env(safe-area-inset-bottom, 0px));
     }
-    
-    .layout:has(.sidebar-container.closed) .header-container,
     .layout .header-container {
         padding-left: 60px;
     }

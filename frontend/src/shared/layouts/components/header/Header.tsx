@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { logout, mypage } from "@/features/auth/api/authApi";
 import useNotifications from "@/features/notifications/hooks/useNotifications";
 import { NotificationType } from "@/types/notification";
+import { useTeamRoleStore } from "@/store/teamRoleStore";
 
 const NOTIFICATION_ICON: Record<NotificationType, { src: string; className: string }> = {
     APPROVAL_REQUEST: { src: '/header/notice-yellow.svg', className: 'request' },
@@ -59,6 +60,8 @@ const Header = () => {
     const clearAuth = useAuthStore((state) => state.clearAuth);
 
     const { notifications, markAsRead } = useNotifications();
+    // 권한 위임·변경 직후 헤더의 역할 뱃지가 바로 바뀌도록 신호를 구독함
+    const roleVersion = useTeamRoleStore((state) => state.version);
     const pendingCount = notifications.length;
 
     const userName = user?.user?.name ?? "";
@@ -98,7 +101,7 @@ const Header = () => {
         return () => {
             isCancelled = true;
         };
-    }, [effectiveTeamId]);
+    }, [effectiveTeamId, roleVersion]);
 
     const userRole = teamRoleLabel;
     const currentTeamName = myTeams.find((team) => String(team.teamId) === String(effectiveTeamId))?.name ?? "모임 선택";

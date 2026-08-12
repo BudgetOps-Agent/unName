@@ -1,0 +1,41 @@
+/* 모바일 전용 — 데스크톱에선 사이드바가 그 역할을 하므로 숨김 */
+.bottom-nav {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        align-items: stretch;
+        width: 100%;
+        background: var(--white);
+        border-top: 0.8px solid rgba(0, 0, 0, 0.05);
+        box-sizing: border-box;
+        /* 헤더(1000)·사이드바(2000)와 겹치지 않는 범위에서 콘텐츠 위에 뜨게 함 */
+        z-index: 1500;
+        /* 홈 인디케이터가 있는 기기에서 탭이 가려지지 않도록 */
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        /* 메뉴 개수가 역할에 따라 4~5개로 달라져도 균등하게 나눠 가짐 */
+        flex: 1;
+        min-width: 0;
+        padding: 10px 4px;
+        color: var(--gray-6);
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .bottom-nav-item.active {
+        color: var(--blue-8);
+    }
+}

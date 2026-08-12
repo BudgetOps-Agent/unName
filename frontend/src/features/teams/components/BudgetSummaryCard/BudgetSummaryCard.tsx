@@ -26,8 +26,8 @@ const BudgetSummaryCard = ({ dashboard, isLoading, error, refetch }: BudgetSumma
                 <>
                     <div>
                         <div className={styles.progressContent}>
-                            <p>{`${dashboard.usedBudget.toLocaleString()}원`}</p>
-                            <span>사용됨</span>
+                            <p>{`${dashboard.remainingBudget.toLocaleString()}원`}</p>
+                            <span>남음</span>
                         </div>
                         <div className={styles.progressBar}>
                             <ProgressBar total={dashboard.totalBudget} used={dashboard.usedBudget} />

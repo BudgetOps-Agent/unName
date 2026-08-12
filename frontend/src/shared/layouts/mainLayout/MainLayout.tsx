@@ -1,5 +1,6 @@
 import Header from "../components/header/Header";
 import Sidebar from "../components/sidebar/Sidebar";
+import BottomNav from "../components/bottomNav/BottomNav";
 
 type Props = {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ export default function MainLayout({ children }: Props) {
                     </div>
                 </main>
             </div>
+            <BottomNav />
         </div>
     </>
   );

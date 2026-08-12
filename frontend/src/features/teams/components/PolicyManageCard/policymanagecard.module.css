@@ -154,6 +154,14 @@
     background-color: #7C3AED;
 }
 
+/* 초안 선택만으로는 저장되지 않는다는 안내 — AI 박스 톤에 맞춰 보라색 계열 */
+.aiApplyNote {
+    margin-top: 8px;
+    color: #7F22FE;
+    font-size: 12px;
+    font-weight: 600;
+}
+
 .aiDraftText {
     max-height: 260px;
     margin: 0 0 16px;
