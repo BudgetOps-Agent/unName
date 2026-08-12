@@ -19,7 +19,7 @@ const AISummaryCard = ({ summary, verified, isLoading, error, onRetry }: AISumma
             headerRight={verified === false && <Badge text="확인 필요" style="orange" size="sm" />}
         >
             {isLoading ? (
-                <LoadingText />
+                <LoadingText text="AI가 이번 달 지출을 분석하고 있어요" />
             ) : error ? (
                 <div className={styles.summaryError}>
                     <p className={styles.summaryErrorText}>{error}</p>
