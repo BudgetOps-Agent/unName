@@ -93,39 +93,23 @@
 }
 
 @media screen and (max-width: 768px) {
+    /* 모바일에선 메뉴 이동을 하단 탭바(.bottom-nav)가 맡음.
+       사이드바는 헤더 왼쪽의 로고 자리로만 남기고, 메뉴와 여닫기 버튼은 없앤다 */
     .sidebar-container  {
-        width: 100vw;
-        box-sizing: border-box;
+        width: auto;
+        height: 60px;
+        background: none;
         border-right: none;
+        box-sizing: border-box;
+    }
+    .sidebar-container.closed {
+        width: auto;
     }
     .sidebar-container .logo-section {
         border-bottom: none;
     }
+    .sidebar-container .menu-section,
     .sidebar-container .sidebar-toggle {
-        right: 20px;
-    }
-    .sidebar-container .menu-section  {
-        position: absolute;
-        top: 60px;
-        left: 0%;
-        transition: left 0.5s ease; 
-        width: 100%;
-        height: calc(100% - 60px);
-        box-sizing: border-box;
-        overflow: auto;
-        background: var(--white);
-    }
-    .sidebar-container .menu-section .menu {
-        width: 100%;
-    }
-    
-    .sidebar-container.closed  {
-        background: none;
-    }
-    .sidebar-container.closed .sidebar-toggle {
-        left: 5px;
-    }
-    .sidebar-container.closed .menu-section  {
-        left: -100%;
+        display: none;
     }
 }

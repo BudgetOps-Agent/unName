@@ -8,21 +8,25 @@ export const getSidebarMenus = (teamId: string | string[] | undefined, role: Tea
         return [];
     }
 
+    // mobileText — 하단 탭바는 폭이 좁아서 두 글자 안팎으로 줄인 이름을 씀
     const menus = [
         {
             text: "대시보드",
+            mobileText: "홈",
             path: `/teams/${validId}/dashboard`,
             icon: "/sidebar/dashboard.svg",
             activeIcon: "/sidebar/dashboard-active.svg",
         },
         {
             text: "지출 내역",
+            mobileText: "지출",
             path: `/teams/${validId}/expenses`,
             icon: "/sidebar/expenses.svg",
             activeIcon: "/sidebar/expenses-active.svg",
         },
         {
-            text: "예산 관리",
+            text: "모임 관리",
+            mobileText: "모임관리",
             path: `/teams/${validId}/budget`,
             icon: "/sidebar/budget.svg",
             activeIcon: "/sidebar/budget-active.svg",
@@ -30,12 +34,14 @@ export const getSidebarMenus = (teamId: string | string[] | undefined, role: Tea
         },
         {
             text: "멤버",
+            mobileText: "멤버",
             path: `/teams/${validId}/members`,
             icon: "/sidebar/member.svg",
             activeIcon: "/sidebar/member-active.svg",
         },
         {
             text: "정산 리포트",
+            mobileText: "리포트",
             path: `/teams/${validId}/report`,
             icon: "/sidebar/report.svg",
             activeIcon: "/sidebar/report-active.svg",
