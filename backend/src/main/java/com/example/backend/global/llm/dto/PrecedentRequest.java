@@ -24,9 +24,9 @@ public class PrecedentRequest {
     @JsonProperty("expense_id")
     private Long expenseId;
 
-    // 무엇에 대한 판단인지 — 지출 제목/내용
+    // 무엇에 대한 판단인지 — 지출 상세(title/amount/category/date/description)
     @JsonProperty("claim")
-    private String claim;
+    private ExpenseClaim claim;
 
     // 관리자 결정 (approved / rejected)
     @JsonProperty("decision")

@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.backend.global.file.FileStorageService;
 import com.example.backend.global.llm.LlmClient;
 import com.example.backend.global.llm.dto.AnalyzeRequest;
+import com.example.backend.global.llm.dto.ExpenseClaim;
 import com.example.backend.global.llm.dto.PrecedentRequest;
 import com.example.backend.team.entity.Team;
 import com.example.backend.team.repository.TeamRepository;
@@ -621,7 +622,8 @@ public class ExpenseService {
         notificationService.notifyRejected(expense, requester);
 
         // 8. 관리자 반려 결정을 LLM에 판례로 전송 (LLM-007) — 실패해도 반려는 그대로 유지
-        sendPrecedent(expense, "rejected", request.getRejectReason());
+        // decision 값은 LLM 스키마가 'approve'/'reject' 동사원형만 허용함(과거형 보내면 422)
+        sendPrecedent(expense, "reject", request.getRejectReason());
 
         // 9. 응답 반환
         return ExpenseRejectResponse.fromEntity(expense);
@@ -638,15 +640,23 @@ public class ExpenseService {
                 .findTopByExpenseIdAndProcessedByOrderByCreatedAtDesc(expense.getId(), ProcessedBy.AI)
                 .map(aiReview -> {
                     FinalVerdict aiVerdict = aiReview.getFinalVerdict();
-                    return (aiVerdict == FinalVerdict.APPROVED && decision.equals("rejected"))
-                            || (aiVerdict == FinalVerdict.REJECTED && decision.equals("approved"));
+                    return (aiVerdict == FinalVerdict.APPROVED && decision.equals("reject"))
+                            || (aiVerdict == FinalVerdict.REJECTED && decision.equals("approve"));
                 })
                 .orElse(false);
+
+        ExpenseClaim claim = ExpenseClaim.builder()
+                .title(expense.getTitle())
+                .amount(expense.getAmount())
+                .category(expense.getCategory().name())
+                .date(expense.getExpenseDate().toString())   // LocalDate.toString() = "YYYY-MM-DD"
+                .description(expense.getDescription())
+                .build();
 
         PrecedentRequest request = PrecedentRequest.builder()
                 .teamId(expense.getTeam().getId())
                 .expenseId(expense.getId())
-                .claim(expense.getTitle())   // 무엇에 대한 판단인지 — 지출 제목
+                .claim(claim)
                 .decision(decision)
                 .reason(reason)
                 .isOverride(isOverride)
@@ -729,7 +739,7 @@ public class ExpenseService {
 
         // 11. 관리자 승인 결정을 LLM에 판례로 전송 (LLM-007) — 실패해도 승인은 그대로 유지
         //     승인은 별도 사유가 없어 reason은 관례적으로 "관리자 승인" 표기
-        sendPrecedent(expense, "approved", "관리자 승인");
+        sendPrecedent(expense, "approve", "관리자 승인");
 
         // 12. 응답 반환
         return ExpenseApproveResponse.fromEntity(expense);
