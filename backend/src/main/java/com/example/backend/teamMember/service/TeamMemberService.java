@@ -373,6 +373,40 @@ public class TeamMemberService {
                 .build();
     }
 
+    // 모임 탈퇴 (API-043)
+    // 본인이 자진 탈퇴. 관리자는 먼저 권한위임(API-039)으로 넘긴 뒤에만 탈퇴 가능
+    // (추방 041의 "관리자는 못 건드림"과 동일한 이유 — 관리자 없는 모임 방지)
+    @Transactional
+    public LeaveTeamResponse leaveTeam(Long teamId) {
+
+        // 1. 로그인한 사람 이메일 꺼내기
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        // 2. 요청자 조회 (없으면 404)
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.USER_NOT_FOUND));
+
+        // 3. 요청자가 이 팀 소속인지 확인 (아니면 403)
+        TeamMember member = teamMemberRepository.findByTeamIdAndUserId(teamId, requester.getId())
+                .orElseThrow(() -> new TeamMemberException(TeamMemberErrorCode.NOT_TEAM_MEMBER));
+
+        // 4. 관리자는 탈퇴 불가 (관리자 없는 모임 방지)
+        if (member.getRole() == TeamRole.ADMIN) {
+            throw new TeamMemberException(TeamMemberErrorCode.CANNOT_LEAVE_AS_ADMIN);
+        }
+
+        // 5. 탈퇴 처리 (team_members에서 완전 삭제 — 지출 등 다른 기록은 user_id로 남아있어 안 지워짐)
+        teamMemberRepository.delete(member);
+
+        // 6. 응답 반환
+        return LeaveTeamResponse.builder()
+                .success(true)
+                .message("모임에서 탈퇴했습니다.")
+                .build();
+    }
+
     // 멤버 추방 (API-041)
     @Transactional
     public RemoveMemberResponse removeMember(Long memberId) {
