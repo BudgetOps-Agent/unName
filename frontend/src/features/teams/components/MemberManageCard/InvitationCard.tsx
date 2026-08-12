@@ -15,7 +15,6 @@ interface InvitationCardProps {
 const InvitationCard = ({ teamId, onClick, onSuccess }: InvitationCardProps) => {
 
     const [email, setEmail] = useState<string>('');
-    const [role, setRole] = useState<string>('');
     const { isSubmitting, submitInvite } = useInviteMember(teamId);
 
     const handleSubmit = async (e: SubmitEvent) => {

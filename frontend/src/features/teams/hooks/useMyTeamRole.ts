@@ -36,12 +36,12 @@ const useMyTeamRole = (teamId: string | undefined) => {
             setIsLoading(false);
             setHasFetched(true);
         }
-        // roleVersion이 바뀌면 fetchRole도 새로 만들어져 useEffect가 다시 돌음
-    }, [teamId, roleVersion]);
+    }, [teamId]);
 
     useEffect(() => {
         fetchRole();
-    }, [fetchRole]);
+        // roleVersion은 권한 변경 신호 — 값이 오르면 역할을 다시 조회한다
+    }, [fetchRole, roleVersion]);
 
     return { role, isLoading, hasFetched, error, refetch: fetchRole };
 };

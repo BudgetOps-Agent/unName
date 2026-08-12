@@ -24,7 +24,7 @@ const Report = () => {
 
     const [page, setPage] = useState(1);
     const [prevTeamId, setPrevTeamId] = useState(teamId);
-    const { mutate: downloadCsv, isPending: isDownloading } = useReportCsv();
+    const { mutate: downloadCsv } = useReportCsv();
 
     if (!Number.isNaN(teamId) && teamId !== prevTeamId) {
         setPrevTeamId(teamId);

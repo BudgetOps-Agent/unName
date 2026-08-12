@@ -171,7 +171,7 @@ const Header = () => {
                         </div>
                     }
                     items={notifications}
-                    renderItem={(item, index) => {
+                    renderItem={(item) => {
                         const icon = NOTIFICATION_ICON[item.type as NotificationType];
                         const { title, content } = NOTIFICATION_TEXT[item.type as NotificationType](item.expenseTitle, item.actorName);
 

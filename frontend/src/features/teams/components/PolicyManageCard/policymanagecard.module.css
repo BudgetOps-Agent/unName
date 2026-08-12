@@ -121,6 +121,38 @@
     font-weight: 700;
 }
 
+/* 등록된 회칙 파일 내려받기 — 영수증 카드와 같은 형태 */
+.downloadLink {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    margin-top: 12px;
+    gap: 6px;
+    color: var(--blue-8);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.downloadLink img {
+    width: 16px;
+    height: 16px;
+}
+
+/* 수정 버튼은 텍스트 영역 오른쪽 아래에 붙임 */
+.textActions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.policyEditNote {
+    margin-top: 8px;
+    color: var(--blue-8);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: right;
+}
+
 .aiBox {
     margin-top: 20px;
     padding: 20px;
@@ -154,6 +186,31 @@
     background-color: #7C3AED;
 }
 
+/* 새로 추천받기 / 이 초안 사용하기를 한 줄에 */
+.aiActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 16px;
+    gap: 8px;
+}
+
+/* .aiButton은 margin-top을 갖고 있어 이 줄 안에서는 상쇄해야 높이가 맞음 */
+.aiActions .aiButton {
+    margin-top: 0;
+}
+
+.aiRefreshButton.aiRefreshButton {
+    width: fit-content;
+    border: 1px solid #C4B4FF;
+    color: #7008E7;
+    background: var(--white);
+}
+
+.aiRefreshButton.aiRefreshButton:hover {
+    background: #EDE9FE;
+}
+
 /* 초안 선택만으로는 저장되지 않는다는 안내 — AI 박스 톤에 맞춰 보라색 계열 */
 .aiApplyNote {
     margin-top: 8px;
@@ -163,7 +220,8 @@
 }
 
 .aiDraftText {
-    max-height: 260px;
+    /* 초안이 있을 때만 렌더되는 영역이라, 생성 전 안내 박스 크기에는 영향이 없음 */
+    max-height: 480px;
     margin: 0 0 16px;
     overflow-y: auto;
     color: var(--gray-8);

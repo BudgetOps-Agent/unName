@@ -1,10 +1,10 @@
 import api from "@/shared/api/api";
-import { AcceptInviteResponse, RejectInviteResponse, InviteMemberResponse, TransferAdminResponse, RemoveMemberResponse, ChangeRoleResponse, ResponseMyTeams, CreateTeamRequest, CreateTeamResponse, UpdateTeamSettingsRequest, UpdateTeamSettingsResponse } from "@/types/team";
+import { AcceptInviteResponse, RejectInviteResponse, InviteMemberResponse, TransferAdminResponse, RemoveMemberResponse, ChangeRoleResponse, ResponseMyTeams, CreateTeamRequest, CreateTeamResponse, UpdateTeamSettingsRequest, UpdateTeamSettingsResponse, TeamSettingsResponse } from "@/types/team";
 import { ResponseExpenses, ExpenseCreateResponse, ExpenseDetailResponse, ExpenseApproveResponse, ExpenseRejectResponse, ExpenseDeleteResponse, ExpenseUpdateResponse, ExpenseReviewResultResponse, CategoryStatsResponse } from "@/types/expense";
-import { Member, ResponseTeamMembers } from "@/types/member";
+import { ResponseTeamMembers } from "@/types/member";
 import { DashboardResponse, MonthlyStatsResponse, AiSummaryResponse } from "@/types/dashboard";
 import { BudgetResponse, BudgetInsightsResponse } from "@/types/budget";
-import { PolicyCreateResponse, PolicyRecommendResponse } from "@/types/policy";
+import { PolicyCreateResponse, PolicyRecommendResponse, PolicyResponse } from "@/types/policy";
 import { AxiosResponse } from "axios";
 
 export const createTeam = (data: CreateTeamRequest): Promise<AxiosResponse<CreateTeamResponse>> => {
@@ -13,6 +13,14 @@ export const createTeam = (data: CreateTeamRequest): Promise<AxiosResponse<Creat
 
 export const updateTeamSettings = (teamId: string, data: UpdateTeamSettingsRequest): Promise<AxiosResponse<UpdateTeamSettingsResponse>> => {
   return api.patch<UpdateTeamSettingsResponse>(`/api/teams/${teamId}/settings`, data);
+}
+
+export const getTeamSettings = (teamId: string): Promise<AxiosResponse<TeamSettingsResponse>> => {
+  return api.get<TeamSettingsResponse>(`/api/teams/${teamId}/settings`);
+}
+
+export const getTeamPolicy = (teamId: string): Promise<AxiosResponse<PolicyResponse>> => {
+  return api.get<PolicyResponse>(`/api/teams/${teamId}/policy`);
 }
 
 export const createPolicy = (teamId: string, formData: FormData): Promise<AxiosResponse<PolicyCreateResponse>> => {
