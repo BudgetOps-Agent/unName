@@ -155,11 +155,22 @@ public class AgentCallbackService {
 
     private enum Verdict { APPROVED, REJECTED, ESCALATED }
 
-    // 반려 사유 텍스트 뽑기 (reasons가 문자열이면 그대로, 아니면 JSON 문자열로, 500자 제한)
+    // 반려 사유 텍스트 뽑기.
+    // reasons가 문자열이면 그대로, {"requester":..., "admin":...}처럼 대상별로 나뉜 객체면
+    // 화면(요청자용) 문구인 requester 값만 사용, 그 외 형태는 JSON 문자열로. 500자 제한.
+    // admin용 상세 근거는 buildDetailJson()이 원본 reasons를 통째로 저장해두므로 안 사라짐.
     private String extractReasonText(AgentCallbackRequest req) {
         Object reasons = req.getReasons();
         if (reasons == null) return "AI 심사 반려";
-        String text = (reasons instanceof String s) ? s : safeJson(reasons);
+
+        String text;
+        if (reasons instanceof String s) {
+            text = s;
+        } else if (reasons instanceof Map<?, ?> map && map.get("requester") != null) {
+            text = String.valueOf(map.get("requester"));
+        } else {
+            text = safeJson(reasons);
+        }
         return text.length() > 500 ? text.substring(0, 500) : text;
     }
 
