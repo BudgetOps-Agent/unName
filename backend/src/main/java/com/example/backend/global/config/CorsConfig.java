@@ -40,7 +40,11 @@ public class CorsConfig {
                                 "http://localhost:3001",
                                 "http://localhost:3002",
                                 "http://localhost:8081",
-                                "https://un-name.vercel.app"    // 프론트 배포(Vercel)
+                                "https://un-name.vercel.app",   // 프론트 배포(Vercel 기본 주소)
+                                // 커스텀 도메인 — 백엔드(api.budget-ops.site)와 상위 도메인이 같아
+                                // 쿠키가 1st-party로 취급됨(iOS Safari 제3자 쿠키 차단 회피)
+                                "https://budget-ops.site",
+                                "https://www.budget-ops.site"
                         )
                         .allowedMethods("*")                // 모든 HTTP Method 허용 -> GET, POST, PUT, PATCH, DELETE 등
                         .allowedHeaders("*")                // 모든 요청 헤더 허용
