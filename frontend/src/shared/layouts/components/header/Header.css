@@ -62,6 +62,17 @@
 /* 사이드바 토글 버튼(사이드바 오른쪽 끝에 반쯤 걸쳐 있음)과 겹치지 않게 오른쪽으로 밀어둠 */
 .grouplist .dropdown-container {
     left: 16px;
+    max-height: 285px;
+}
+
+/* overflow를 주면 flex 자식의 자동 최소 높이가 0이 되어 실제로 줄어들며 스크롤된다 */
+.grouplist .dropdown-items {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.grouplist .dropdown-footer {
+    flex-shrink: 0;
 }
 
 .grouplist-item {

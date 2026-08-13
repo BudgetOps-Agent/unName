@@ -89,6 +89,18 @@ export interface RemoveMemberResponse {
   message: string;
 }
 
+// API-043 본인이 모임에서 나가기. 관리자는 권한 위임 후에만 가능
+export interface LeaveTeamResponse {
+  success: boolean;
+  message: string;
+}
+
+// API-053 모임 전체 삭제. 관리자 혼자 남았을 때만 가능하고, 다른 멤버가 있으면 409
+export interface DeleteTeamResponse {
+  success: boolean;
+  message: string;
+}
+
 export interface ChangeRoleResponse {
   success: boolean;
   member: {

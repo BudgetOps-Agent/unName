@@ -1,0 +1,41 @@
+/* 지출 삭제 확인 카드(DeleteExpenseCard)와 같은 형태 — 되돌릴 수 없는 동작이라 톤을 맞춤 */
+.title {
+    color: var(--gray-9);
+    font-size: 16px;
+    font-weight: 700;
+    word-break: keep-all;
+}
+
+.subTitle {
+    color: var(--gray-6);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.buttonSection {
+    display: flex;
+    gap: 8px;
+    padding-top: 20px;
+}
+
+.buttonSectionBtn {
+    padding: 12px 0;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.cancelBtn {
+    border: 0.8px solid #E5E7EB;
+}
+
+.cancelBtn:hover {
+    background-color: var(--gray-3);
+}
+
+.buttonSection .leaveBtn {
+    background-color: var(--red-5);
+}
+
+.buttonSection .leaveBtn:hover {
+    background-color: var(--red-8);
+}

@@ -55,7 +55,7 @@
     text-align: center;
 }
 
-.logout {
+.leaveTeam {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -68,4 +68,18 @@
     font-size: 14px;
     font-weight: 700;
     color: var(--red-7);
+}
+
+/* 사이드바를 뺀 본문 영역 기준으로 가운데 정렬 (--sidebar-width는 .layout에서 상속) */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width, 0px);
+    width: calc(100% - var(--sidebar-width, 0px));
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
 }

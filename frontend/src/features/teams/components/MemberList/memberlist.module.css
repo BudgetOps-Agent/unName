@@ -1,8 +1,9 @@
+/* 사이드바를 뺀 본문 영역 기준으로 가운데 정렬 (--sidebar-width는 .layout에서 상속) */
 .modalOverlay {
     position: fixed;
     top: 0;
-    left: 0;
-    width: 100%;
+    left: var(--sidebar-width, 0px);
+    width: calc(100% - var(--sidebar-width, 0px));
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.2);
     display: flex;

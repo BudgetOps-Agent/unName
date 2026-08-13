@@ -1,5 +1,5 @@
 import api from "@/shared/api/api";
-import { AcceptInviteResponse, RejectInviteResponse, InviteMemberResponse, TransferAdminResponse, RemoveMemberResponse, ChangeRoleResponse, ResponseMyTeams, CreateTeamRequest, CreateTeamResponse, UpdateTeamSettingsRequest, UpdateTeamSettingsResponse, TeamSettingsResponse } from "@/types/team";
+import { AcceptInviteResponse, RejectInviteResponse, InviteMemberResponse, TransferAdminResponse, RemoveMemberResponse, LeaveTeamResponse, DeleteTeamResponse, ChangeRoleResponse, ResponseMyTeams, CreateTeamRequest, CreateTeamResponse, UpdateTeamSettingsRequest, UpdateTeamSettingsResponse, TeamSettingsResponse } from "@/types/team";
 import { ResponseExpenses, ExpenseCreateResponse, ExpenseDetailResponse, ExpenseApproveResponse, ExpenseRejectResponse, ExpenseDeleteResponse, ExpenseUpdateResponse, ExpenseReviewResultResponse, CategoryStatsResponse } from "@/types/expense";
 import { ResponseTeamMembers } from "@/types/member";
 import { DashboardResponse, MonthlyStatsResponse, AiSummaryResponse } from "@/types/dashboard";
@@ -13,6 +13,14 @@ export const createTeam = (data: CreateTeamRequest): Promise<AxiosResponse<Creat
 
 export const updateTeamSettings = (teamId: string, data: UpdateTeamSettingsRequest): Promise<AxiosResponse<UpdateTeamSettingsResponse>> => {
   return api.patch<UpdateTeamSettingsResponse>(`/api/teams/${teamId}/settings`, data);
+}
+
+export const leaveTeam = (teamId: string): Promise<AxiosResponse<LeaveTeamResponse>> => {
+  return api.delete<LeaveTeamResponse>(`/api/teams/${teamId}/leave`);
+}
+
+export const deleteTeam = (teamId: string): Promise<AxiosResponse<DeleteTeamResponse>> => {
+  return api.delete<DeleteTeamResponse>(`/api/teams/${teamId}`);
 }
 
 export const getTeamSettings = (teamId: string): Promise<AxiosResponse<TeamSettingsResponse>> => {
