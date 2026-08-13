@@ -133,7 +133,12 @@ AI가 자동으로 처리하기 어려운 지출은 관리자 검토 대상으�
 ### Infra
 
 - AWS EC2
-- Cloudflare
+- Docker / Docker Compose
+- Nginx
+- GoDaddy (DNS)
+- Let's Encrypt (SSL)
+- AWS S3 (파일 저장)
+- GitHub Actions (CI/CD)
 
 ## System Architecture
 
@@ -460,6 +465,50 @@ npm run start
 ```bash
 npm run lint
 ```
+
+## 배포 주소
+
+- 프론트엔드: https://budget-ops.site
+- 백엔드 API: https://api.budget-ops.site
+
+## Back-End 실행 방법
+
+### 1. 로컬 실행 (Docker 없이)
+
+```bash
+cd backend
+./gradlew bootRun
+```
+
+로컬 MySQL/Redis 없이도 기본 설정으로 기동됩니다. 실제 DB 연동 시 `application.properties`의 데이터소스 값을 로컬 환경에 맞게 설정합니다.
+
+### 2. 배포 환경 실행 (Docker Compose)
+
+```bash
+cd deploy
+cp .env.example .env   # 값 채우기 (DB 비밀번호, JWT 시크릿, LLM 토큰 등)
+docker compose up -d --build
+```
+
+- `nginx` → `backend`(Spring Boot, 8080) → `mysql` / `redis` 순서로 컨테이너가 뜹니다.
+- DB는 최초 실행 시 비어 있는 상태로 시작하며, Hibernate(`ddl-auto=update`)가 엔티티 기준으로 테이블을 자동 생성합니다.
+- 영수증·회칙 파일은 `AWS_S3_BUCKET` 환경변수가 설정된 경우 S3에, 없으면 로컬 디스크에 저장됩니다(로컬 개발 시 AWS 키 불필요).
+
+### 3. 환경변수 (`deploy/.env`)
+
+| 변수 | 설명 |
+|---|---|
+| `DB_ROOT_PASSWORD`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD` | MySQL 접속 정보 |
+| `JWT_SECRET` | JWT 서명 키 (32자 이상) |
+| `FILE_BASE_URL` | 파일 URL에 쓸 배포 도메인 |
+| `LLM_BASE_URL`, `LLM_SERVICE_TOKEN` | 우리 → LLM 서버 호출용 |
+| `AGENT_SERVICE_TOKEN` | LLM → 우리 서버 호출(콜백·내부 API) 검증용 |
+| `AWS_S3_BUCKET`, `AWS_REGION` | 파일 저장용 S3 버킷 (미설정 시 로컬 디스크 모드) |
+| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | EC2에 IAM 역할을 붙인 경우 비워둬도 SDK가 자동 인증 |
+
+### 4. CI/CD
+
+`main` 브랜치에 push되면 GitHub Actions(`.github/workflows/deploy-aws.yml`)가 EC2에 SSH로 접속해 자동으로 재배포합니다. `dev`는 기능 통합 브랜치로, 배포에 영향을 주지 않습니다.
 
 ## 상태 관리
 
